@@ -1,0 +1,2054 @@
+/* ========================================
+   Student Dashboard & Subpages
+
+   Layout, components, and interactions for
+   the student portal. Defines the shell,
+   sidebar navigation, stat cards, charts,
+   calendar, and all subpage layouts.
+   ======================================== */
+
+.student-dashboard-page {
+  background: var(--color-bg-app-grad);
+  background-attachment: fixed;
+  color: var(--color-text-primary);
+}
+
+.student-subpage-page {
+  min-height: 100vh;
+  background: var(--color-bg-app-grad);
+  background-attachment: fixed;
+  color: var(--color-text-primary);
+}
+
+/* Mobile: fixed background attachment is expensive on mobile GPUs */
+@media (max-width: 768px) {
+  .student-dashboard-page,
+  .student-subpage-page {
+    background-attachment: scroll;
+  }
+}
+
+/* --- Student Main Content --- */
+.student-main {
+  flex: 1;
+  min-width: 0;
+  padding: 0 4.5%;
+}
+
+.student-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--topbar-height);
+  border-bottom: 1px solid var(--color-border-default);
+  color: var(--color-text-muted);
+  font-size: .78rem;
+  position: sticky;
+  top: 0;
+  background: rgba(248,250,249,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 20;
+}
+
+.student-breadcrumb { margin-right: 8px; color: var(--color-text-muted); opacity: .8; }
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.topbar-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-input);
+  color: var(--color-text-primary);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  border: 1px solid var(--color-border-default);
+  box-shadow: 0 1px 2px rgba(0,0,0,.02);
+}
+
+.icon-button {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-circle);
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: transform 160ms var(--ease),
+              background-color 160ms var(--ease),
+              color 160ms var(--ease),
+              border-color 160ms var(--ease),
+              box-shadow 160ms var(--ease);
+  box-shadow: 0 1px 2px rgba(0,0,0,.03);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .icon-button:hover {
+    border-color: var(--bs-primary);
+    color: var(--brand-600);
+    background: var(--brand-50);
+    box-shadow: var(--shadow-xs);
+  }
+}
+
+.icon-button:active {
+  transform: scale(.92);
+  transition-duration: 80ms;
+}
+
+/* Keyboard focus — visible green ring, matching styles.css focus */
+.icon-button:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Theme toggle — same tactile "flick" as the login page: the
+   moon/sun icon does a quick counter-rotation on press. Scoped to
+   [data-theme-toggle] so other .icon-button uses (notifications,
+   calendar controls) stay plain. */
+.icon-button[data-theme-toggle] i {
+  transition: transform 180ms var(--ease);
+}
+
+.icon-button[data-theme-toggle]:active {
+  transform: scale(.92);
+  transition-duration: 80ms;
+}
+
+.icon-button[data-theme-toggle]:active i {
+  transform: rotate(-40deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-button[data-theme-toggle],
+  .icon-button[data-theme-toggle] i {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* --- Dashboard Intro --- */
+.dashboard-intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 44px 0 28px;
+}
+
+/* Gentle page entrance — sections rise in sequence. Occasional (load),
+   so a little delight is earned; disabled for reduced-motion. */
+.student-main > section,
+.student-main > .dashboard-intro {
+  animation: sectionRise .22s var(--ease) both;
+}
+
+.student-main > section:nth-of-type(1) { animation-delay: .03s; }
+.student-main > section:nth-of-type(2) { animation-delay: .07s; }
+.student-main > section:nth-of-type(3) { animation-delay: .11s; }
+
+@keyframes sectionRise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-main > section,
+  .student-main > .dashboard-intro {
+    animation: none;
+  }
+}
+
+.section-kicker {
+  margin: 0 0 10px;
+  color: var(--brand-500);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.dashboard-intro h1 {
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.15;
+}
+
+.intro-copy {
+  margin: 12px 0 0;
+  color: var(--color-text-muted);
+  font-size: .94rem;
+  line-height: 1.5;
+}
+
+.dashboard-link,
+.text-link {
+  color: var(--bs-primary);
+  font-size: .8rem;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--transition-fast) var(--ease);
+}
+
+.dashboard-link:hover,
+.text-link:hover { color: var(--brand-700); }
+
+button.text-link {
+  display: inline;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Stat cards now live in css/stat-card.css (shared component). */
+
+/* Student dashboard stat row: all four cards share one row height, and
+   each card's label / number / caption are balanced between the top and
+   bottom edges (auto margins split the leftover space). */
+.student-dashboard-page .stat-grid {
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+}
+.student-dashboard-page .stat-card .stat-value { margin-top: auto; }
+.student-dashboard-page .stat-card .stat-foot { margin-top: auto; }
+
+.dashboard-card {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-card), 0 0 0 0.5px rgba(0,0,0,.02);
+  transition: box-shadow var(--transition-normal) var(--ease),
+              transform var(--transition-normal) var(--ease),
+              border-color var(--transition-normal) var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top accent bar — same --accent-bar-* treatment as stat cards and role
+   panels. This used to be a solid bar permanently visible at rest, which
+   meant the student dashboard read differently from every other card
+   family until dashboard-hover.css hid it again. */
+.dashboard-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--accent-bar-height);
+  background: var(--accent-bar-fill);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  opacity: 0;
+  transform-origin: center;
+  transform: scaleX(var(--accent-bar-rest-scale));
+  transition: var(--accent-bar-transition);
+  z-index: 2;
+}
+
+/* Dashboard cards contain information and controls; they are not themselves
+   clickable. Keep their geometry stable while users move between fields. */
+
+.card-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--color-text-muted);
+  font-size: .76rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  margin-bottom: 12px;
+}
+
+.card-menu {
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast) var(--ease);
+}
+
+/* Enrollment pill — status badge for student onboarding state */
+.enrollment-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: var(--radius-pill);
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.enrollment-pill.enrolled {
+  background: var(--brand-100);
+  color: var(--brand-700);
+  border: 1px solid var(--brand-200);
+}
+
+.enrollment-pill.needs-reenrollment {
+  background: var(--color-bg-warning-light);
+  color: var(--color-text-warning);
+  border: 1px solid #ffd97a;
+}
+
+.enrollment-pill.not-enrolled {
+  background: var(--color-bg-danger-light);
+  color: var(--color-text-danger);
+  border: 1px solid #f5c6c6;
+  animation: pulse-warning 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-warning {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(220, 53, 69, .12); }
+  50% { box-shadow: 0 0 0 5px rgba(220, 53, 69, .06); }
+}
+
+/* --- Dashboard Columns --- */
+.dashboard-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, .7fr);
+  align-items: stretch;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+/* NOTE: .announcements-card, .calendar-card and .weather-card were removed from
+   this group. Those panels are `class="dash-panel <name>-panel"` in
+   student-dashboard.html and space themselves with .dash-panel-header /
+   .dash-panel-body, so the old rule could never have matched them. */
+.attendance-chart-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 22px;
+}
+
+.attendance-chart-card .card-heading {
+  width: 100%;
+}
+
+/* Keep the chart and its legend together, centered within the card body. */
+.attendance-chart-card .attendance-chart {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.attendance-chart-card .stats-content {
+  justify-content: center;
+  align-items: center;
+}
+
+/* Announcements: rows stack from the top of the panel at their natural
+   content height. If the list outgrows the card it scrolls inside the
+   panel body instead of stretching the rows apart. */
+.announcements-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-card);
+}
+
+.announcements-panel .dash-panel-header,
+.announcements-panel .dash-panel-body {
+    width: 100%;
+}
+
+.announcements-panel .dash-panel-body {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.announcements-panel .announcement-list {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.card-heading h2 {
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: var(--font-size-card-title);
+  font-weight: 700;
+  letter-spacing: -.01em;
+  line-height: 1.3;
+}
+
+/* ── Card-heading section kicker ── */
+.card-heading .section-kicker {
+  position: static;
+  margin: 0 0 4px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--brand-500);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+/* Padded variant cards: keep the legend label on the same left edge as
+   the card's own content gutter instead of the flush-card default. */
+.attendance-chart-card { --legend-gutter: 22px; }
+.records-card { --legend-gutter: 28px; }
+.profile-card { --legend-gutter: 26px; }
+.student-id-card { --legend-gutter: 28px; }
+
+/* Records card uses a tinted gradient surface — match the label to it
+   so the border interruption is seamless in both themes. */
+.records-card .card-heading .section-kicker {
+  background: #f1faf5;
+  border-color: var(--brand-200);
+}
+[data-theme="dark"] .records-card .card-heading .section-kicker {
+  background: #1b2a22;
+  border-color: #2a3f33;
+}
+
+/* Attendance Donut Chart */
+.attendance-chart {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  justify-content: flex-start;
+  min-height: 190px;
+}
+
+/* Register the donut's fill as an animatable custom property so the
+   ring eases up from 0% on load. Browsers without @property support
+   simply snap to the final value — a safe enhancement. */
+@property --present-rate {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+.donut-chart {
+  display: grid;
+  flex: 0 0 150px;
+  width: 150px;
+  height: 150px;
+  place-items: center;
+  border-radius: var(--radius-circle);
+  background: conic-gradient(var(--bs-primary) var(--present-rate, 0%), #eceff0 0);
+  position: relative;
+  transition: --present-rate 1.1s var(--ease-in-out);
+  box-shadow: 0 2px 12px rgba(14,159,110,.12), 0 0 0 6px rgba(14,159,110,.04);
+}
+
+.donut-chart::before {
+  position: absolute;
+  width: 106px;
+  height: 106px;
+  border-radius: var(--radius-circle);
+  background: var(--color-bg-card);
+  content: '';
+}
+
+.donut-chart > div {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.donut-chart strong,
+.donut-chart small { display: block; }
+
+.donut-chart strong { font-size: 1.55rem; font-weight: 800; letter-spacing: -.02em; }
+
+.donut-chart small {
+  color: var(--color-text-muted);
+  font-size: .7rem;
+}
+
+.chart-legend { flex: 0 0 150px; width: 150px; }
+
+.chart-legend > div {
+display: flex;
+align-items: center;
+justify-content: space-between;
+width: 150px;
+gap: 8px;
+margin: 14px 0;
+color: var(--color-text-muted);
+font-size: .78rem;
+}
+
+.chart-legend > div > span:nth-child(2) {
+flex: 1;
+}
+
+.chart-legend strong {
+  color: var(--color-text-heading);
+  font-weight: 700;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-circle);
+}
+
+.present-dot { background: var(--bs-primary); }
+
+.absent-dot { background: #e4e8e6; }
+
+.chart-caption {
+  margin: 20px 0 0;
+  color: var(--color-text-muted);
+  font-size: .68rem;
+}
+
+/* Announcements */
+.announcement-list { min-height: 164px; }
+
+.announcement-empty {
+  display: flex;
+  min-height: 164px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.announcement-empty > i {
+  margin-bottom: 4px;
+  color: var(--brand-500);
+  font-size: 1.4rem;
+}
+
+.announcement-empty > strong {
+  color: var(--color-text-heading);
+  font-size: .86rem;
+}
+
+.announcement-empty > span {
+  max-width: 240px;
+  font-size: .74rem;
+  line-height: 1.5;
+}
+
+.announcement-item {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 10px;
+  border-bottom: 1px solid var(--color-border-table);
+  border-radius: var(--radius-sm);
+  scroll-margin-top: 10px;
+  transition: background-color var(--transition-fast) var(--ease),
+              transform var(--transition-fast) var(--ease),
+              box-shadow var(--transition-fast) var(--ease);
+}
+
+.announcement-item:last-child { border-bottom: 0; }
+
+@media (hover: hover) and (pointer: fine) {
+  .announcement-item:hover {
+    background: var(--brand-50);
+    transform: translateX(3px);
+  }
+}
+
+.announcement-icon {
+  display: grid;
+  flex: 0 0 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--brand-100);
+  color: var(--brand-600);
+  box-shadow: 0 1px 3px rgba(14,159,110,.08);
+}
+
+.announcement-icon.event-icon {
+  background: var(--brand-100);
+  color: var(--brand-600);
+}
+
+.announcement-item strong,
+.announcement-item small { display: block; }
+
+.announcement-item strong {
+  overflow: hidden;
+  color: var(--color-text-heading);
+  font-size: .78rem;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.announcement-item small {
+  margin-top: 3px;
+  color: var(--color-text-muted);
+  font-size: .68rem;
+}
+
+/* Full list in the "View all" modal — same rows as the panel, but titles
+   wrap, each row starts at the top of its icon, and the date gets its own
+   muted line under the detail. */
+.announcement-list--modal { min-height: 0; }
+
+.announcement-list--modal .announcement-item {
+  align-items: flex-start;
+  padding: 14px 4px;
+}
+
+.announcement-list--modal .announcement-item-copy { min-width: 0; }
+
+.announcement-list--modal .announcement-item strong {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.announcement-list--modal .announcement-item small {
+  font-size: .74rem;
+  line-height: 1.5;
+}
+
+.announcement-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 7px !important;
+  font-size: .66rem !important;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+.announcement-date i {
+  color: var(--brand-500);
+  font-size: .68rem;
+}
+
+/* ── Enlarged QR modal ──
+   The body is solid white in both themes so the kiosk camera always sees a
+   clean, high-contrast code; the canvas itself is rendered at 320px. */
+.qr-enlarge-modal-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.qr-enlarge-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.qr-enlarge-container canvas {
+  display: block;
+  width: min(320px, 100%);
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.qr-enlarge-container p {
+  margin: 0;
+  color: #405047;
+  font-size: .86rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+#qrCodeEnlargeModal .modal-header,
+#qrCodeEnlargeModal .modal-footer {
+  display: none !important;
+}
+
+.qr-focus-modal .modal-dialog {
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.qr-focus-modal .modal-content {
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: #FFFFFF;
+}
+
+.qr-focus-modal .modal-body {
+  position: relative;
+  min-height: 100%;
+  padding: 0;
+  background: #FFFFFF;
+}
+
+#qrCodeEnlargeModal .qr-enlarge-container {
+  min-height: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+#qrCodeEnlargeModal .qr-enlarge-container canvas {
+  width: min(80vw, 80vh) !important;
+  height: min(80vw, 80vh) !important;
+  max-width: none;
+  border-radius: 0;
+}
+
+.qr-close-hint {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  width: 100%;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: .75rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Lower Columns — explicit grid row so the calendar and forecast
+   cards are normal-flow siblings with a real gap between them. */
+.lower-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr);
+  align-items: stretch;
+  gap: 18px;
+  margin-bottom: 44px;
+}
+
+/* Calendar & Weather panels — normal flow within their own grid
+   track; independent stacking contexts (isolation) so internal
+   divider lines never bleed onto the sibling. */
+.calendar-panel,
+.weather-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* Both bottom-row bodies take the shared row height; the forecast spreads
+   its blocks over that space and the calendar keeps its key at the bottom. */
+.calendar-panel .dash-panel-body,
+.weather-panel .dash-panel-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.calendar-panel .dash-panel-body { justify-content: space-between; }
+.weather-panel .dash-panel-body { justify-content: space-between; }
+
+/* The forecast card keeps its own full surface in normal flow.
+   No z-index override, so it can never paint over the calendar. */
+.weather-panel {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+}
+
+.weather-panel .dash-panel-body {
+  padding: 16px 20px;
+}
+
+/* Calendar */
+.calendar-controls { display: flex; gap: 6px; }
+
+.calendar-panel .dash-panel-body {
+  padding: 18px 20px;
+}
+
+.calendar-controls .icon-button {
+  width: 32px;
+  height: 32px;
+  font-size: .78rem;
+}
+
+.calendar-controls .icon-button:hover,
+.calendar-controls .icon-button:focus-visible {
+  background: var(--brand-50);
+  border-color: var(--brand-400);
+  color: var(--brand-700);
+}
+
+[data-theme="dark"] .calendar-controls .icon-button:hover,
+[data-theme="dark"] .calendar-controls .icon-button:focus-visible {
+  background: var(--color-bg-input);
+  border-color: var(--brand-400);
+  color: var(--color-text-success-light);
+}
+
+.calendar-weekdays,
+.mini-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+
+.calendar-weekdays {
+  margin: 4px 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-default);
+  color: var(--color-text-muted);
+  font-size: .64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.calendar-cell {
+  display: grid;
+  min-height: 36px;
+  place-items: center;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  padding: 0;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: .74rem;
+  font-weight: 600;
+  cursor: default;
+  position: relative;
+  transition: background var(--transition-fast) var(--ease),
+              color var(--transition-fast) var(--ease),
+              transform var(--transition-fast) var(--ease),
+              box-shadow var(--transition-fast) var(--ease);
+}
+
+.calendar-cell.has-event { cursor: pointer; }
+
+.calendar-cell.has-event:focus-visible {
+  outline: 3px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .calendar-cell:not(.today):not(.has-event):hover {
+    background: var(--color-bg-input);
+    transform: translateY(-1px);
+  }
+  .calendar-cell.has-event:hover {
+    box-shadow: 0 3px 10px rgba(14, 159, 110, .22);
+    transform: translateY(-1px);
+  }
+  .calendar-cell.today:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(14, 159, 110, .4);
+  }
+}
+
+/* Event days — circular badge that reads at a glance */
+.calendar-cell.has-event {
+  min-height: 34px;
+  width: 34px;
+  height: 34px;
+  justify-self: center;
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+/* Upcoming — solid primary green draws the eye to what is still ahead. */
+.calendar-cell.has-event.is-upcoming-event {
+  background: var(--brand-700);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(14, 159, 110, .3);
+}
+
+/* Past — muted surface plus the completion checkmark rendered in the cell. */
+.calendar-cell.has-event.is-past-event,
+.calendar-cell.has-event.is-cancelled-event {
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+  box-shadow: none;
+}
+
+.calendar-cell.has-event.is-cancelled-event { text-decoration: line-through; }
+
+/* Today — solid emerald disc with a ring so it never reads as just another
+   future event day. */
+/* Repeat .has-event so "today" also wins over the past/upcoming state rules
+   above when today's event has already ended. */
+.calendar-cell.today,
+.calendar-cell.today.has-event {
+  min-height: 34px;
+  width: 34px;
+  height: 34px;
+  justify-self: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-500), var(--brand-600));
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px var(--color-bg-card),
+              0 0 0 4px var(--brand-400),
+              0 3px 10px rgba(14,159,110,.32);
+}
+
+/* Selected calendar day — an outline (not a box-shadow) so it composes with
+   today's ring and with the past/upcoming cell shadows. */
+.calendar-cell.is-selected {
+  outline: 3px solid var(--brand-700);
+  outline-offset: 2px;
+}
+
+/* A small dot marks an event day that is still ahead; past days use the
+   checkmark instead. */
+.calendar-cell.has-event:not(.is-past-event):not(.is-cancelled-event)::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .85;
+}
+
+.calendar-cell-mark {
+  position: absolute;
+  right: 4px;
+  bottom: 2px;
+  font-size: .55rem;
+  line-height: 1;
+}
+
+.calendar-hint {
+  margin: 8px 0 0;
+  color: var(--color-text-muted);
+  font-size: .66rem;
+  line-height: 1.4;
+}
+
+.calendar-cell.empty {
+  cursor: default;
+}
+
+.calendar-key {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 12px 0 2px;
+  border-top: 1px solid var(--color-border-default);
+  color: var(--color-text-muted);
+  font-size: .66rem;
+}
+
+.calendar-key span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* Legend swatches mirror the circular cell treatment */
+.calendar-dot,
+.calendar-today {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--brand-100);
+  border: 1px solid var(--brand-300);
+}
+
+.calendar-dot.upcoming {
+  background: var(--brand-700);
+  border-color: var(--brand-700);
+}
+
+.calendar-dot.past {
+  background: var(--color-bg-input);
+  border-color: var(--color-border-default);
+}
+
+.calendar-today {
+  background: var(--brand-600);
+  border-color: var(--brand-600);
+}
+
+/* Month label event summary */
+.calendar-month-count {
+  margin-left: 8px;
+  font-size: .62rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* ── Campus events list ──────────────────────────────────────── */
+.dashboard-events {
+  margin-top: 18px;
+  margin-bottom: 44px;
+}
+
+.events-panel {
+  width: 100%;
+  min-width: 0;
+}
+
+.events-panel .dash-panel-body { padding: 18px 20px 20px; }
+
+.events-list-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+}
+
+.events-group-title {
+  margin: 0 0 4px;
+  color: var(--color-text-muted);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.dashboard-event-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-event-list .dashboard-event-item {
+  align-items: flex-start;
+  padding: 12px 0;
+}
+
+.dashboard-event-item.is-past:hover,
+.dashboard-event-item.is-cancelled:hover { transform: none; }
+
+.dashboard-event-item .event-date-badge {
+  flex: 0 0 44px;
+  align-self: center;
+}
+
+.dashboard-event-item .event-info strong {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.dashboard-event-item .status-badge {
+  flex: 0 0 auto;
+  align-self: center;
+  padding: 4px 9px;
+  font-size: .62rem;
+  white-space: nowrap;
+}
+
+.dashboard-event-meta {
+  display: block;
+  margin-top: 3px;
+  line-height: 1.45;
+}
+
+.dashboard-event-meta i { margin-right: 3px; }
+
+.dashboard-event-sep { margin: 0 5px; }
+
+.dashboard-event-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.event-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.event-badge i { font-size: .55rem; }
+
+.event-badge.is-mandatory {
+  background: var(--color-bg-success-light);
+  color: var(--color-text-success);
+}
+
+.event-badge.is-optional,
+.event-badge.is-minor {
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+}
+
+.event-badge.is-major {
+  background: var(--color-bg-warning-light);
+  color: var(--color-text-warning);
+}
+
+.event-badge.is-cancelled {
+  background: var(--color-bg-danger-light);
+  color: var(--color-text-danger);
+}
+
+.dashboard-event-item.is-past .event-date-badge {
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+}
+
+.dashboard-event-item.is-past .event-info strong { color: var(--color-text-muted); }
+
+.dashboard-event-item.is-cancelled { opacity: .8; }
+
+.dashboard-event-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 18px 0;
+  color: var(--color-text-muted);
+  font-size: .78rem;
+}
+
+.dashboard-event-empty i { font-size: 1rem; }
+
+.selected-day-details {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-success-light);
+}
+
+.selected-day-details[hidden] { display: none; }
+
+.selected-day-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.selected-day-head .section-kicker { margin: 0 0 2px; }
+
+.selected-day-head h4 {
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: .92rem;
+}
+
+.selected-day-list .dashboard-event-item:last-child { border-bottom: 0; }
+
+.event-sanction-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.event-sanction-badge[hidden] { display: none; }
+
+.event-sanction-badge.is-warning {
+  background: var(--color-bg-warning-light);
+  color: var(--color-text-warning);
+}
+
+.event-sanction-badge.is-probation {
+  background: var(--color-probation-bg);
+  color: var(--color-text-probation);
+}
+
+.event-sanction-badge.is-suspension {
+  background: var(--color-bg-danger-light);
+  color: var(--color-text-danger);
+}
+
+/* Attendance state chips added for the events list. The present/late/absent
+   variants reuse the table badge palette above. */
+.status-badge.excused {
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-default);
+}
+
+.status-badge.upcoming {
+  background: var(--color-bg-success-light);
+  color: var(--color-text-success);
+  border: 1px solid var(--brand-200);
+}
+
+.status-badge.cancelled {
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-default);
+  text-decoration: line-through;
+}
+
+/* Weather */
+.weather-symbol {
+  color: #f0b23d;
+  font-size: 2rem;
+  display: inline-block;
+  filter: drop-shadow(0 2px 6px rgba(240,178,61,.35));
+  animation: weatherFloat 4s ease-in-out infinite;
+}
+
+@keyframes weatherFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weather-symbol { animation: none; }
+}
+
+.weather-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 24px 0 20px;
+  padding: 18px 22px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(240,178,61,.07) 0%, rgba(100,169,215,.07) 100%);
+  border: 1px solid rgba(240,178,61,.08);
+}
+
+.weather-main strong {
+  color: var(--color-text-heading);
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.weather-main span {
+  color: var(--color-text-muted);
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.weather-details {
+  display: flex;
+  gap: 24px;
+  color: var(--color-text-muted);
+  font-size: .82rem;
+}
+
+.weather-details i { margin-right: 4px; color: #64a9d7; }
+
+.weather-details strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-text-primary);
+  font-size: .88rem;
+}
+
+.weather-location {
+  margin: 24px 0 0;
+  color: var(--color-text-muted);
+  font-size: .82rem;
+}
+
+.weather-location i { color: var(--bs-primary); margin-right: 6px; }
+
+.weather-feels-like {
+  color: var(--color-text-muted) !important;
+  font-size: .82rem !important;
+}
+.weather-updated {
+  font-size: .72rem !important;
+  line-height: 1.4;
+}
+.weather-symbol i { color: inherit; }
+
+/* --- Subpage Styles --- */
+.subpage-intro {
+  padding: 48px 0 32px;
+  animation: sectionRise .5s var(--ease) both;
+}
+
+.subpage-intro h1 {
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -.025em;
+  line-height: 1.15;
+}
+
+.records-card {
+  padding: 28px;
+  background: linear-gradient(135deg, #f0fbf6 0%, #e8f5ee 100%);
+  border-color: var(--brand-200);
+  position: relative;
+}
+
+/* Inside highlights — the heading keeps the shared card-title colour. */
+.records-card .card-heading h2 {
+  font-weight: 700;
+}
+
+.records-card .student-table thead th {
+  background: rgba(14, 159, 110, 0.06);
+  border-bottom-color: rgba(14, 159, 110, 0.12);
+  color: var(--brand-700);
+}
+
+.records-card .student-table tbody tr:hover {
+  background: rgba(14, 159, 110, 0.04);
+}
+
+[data-theme="dark"] .records-card {
+  background: linear-gradient(135deg, #1a2920 0%, #1f3027 100%);
+  border-color: #2a3f33;
+}
+
+[data-theme="dark"] .records-card .card-heading h2 {
+  color: var(--color-text-heading);
+}
+
+[data-theme="dark"] .records-card .student-table thead th {
+  background: rgba(79, 206, 159, 0.06);
+  border-bottom-color: rgba(79, 206, 159, 0.12);
+}
+
+[data-theme="dark"] .records-card .student-table tbody tr:hover {
+  background: rgba(79, 206, 159, 0.04);
+}
+
+.student-table {
+  margin-top: 24px;
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+
+.student-table thead th {
+  border-bottom: 1px solid var(--color-border-table);
+  color: var(--color-text-muted);
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.student-table tbody td {
+  border-color: var(--color-border-table);
+  padding: 16px 12px;
+  font-size: .84rem;
+}
+
+.student-table tbody tr {
+  transition: background-color var(--transition-normal) var(--ease);
+}
+
+.student-table tbody tr:hover { background: rgba(14, 159, 110, 0.04); }
+
+/* Status badges - softer colors that blend with the card */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  font-size: .72rem;
+  font-weight: 650;
+  text-transform: capitalize;
+}
+
+.status-badge.absent {
+  background: linear-gradient(135deg, #fce8e8 0%, #fdecec 100%);
+  color: #c33535;
+  border: 1px solid #f5c6c6;
+}
+
+.status-badge.present {
+  background: linear-gradient(135deg, #e3f7ee 0%, #e7f8f0 100%);
+  color: #0b7f58;
+  border: 1px solid #b8e8d4;
+}
+
+.status-badge.late {
+  background: linear-gradient(135deg, #fff6e0 0%, #fff8e8 100%);
+  color: #a06a00;
+  border: 1px solid #ffd97a;
+}
+
+.student-table tbody tr:last-child td { border-bottom: 0; }
+
+.empty-records {
+  padding: 38px;
+  color: var(--color-text-muted);
+  font-size: .85rem;
+  text-align: center;
+}
+
+/* Profile Styles */
+/* Profile settings dashboard cards.
+   These cards are flush surfaces, so the card supplies the gutter and the
+   Bootstrap .card-body inset is reset. Without this the zero-padded
+   .card-heading sat against the rounded border and was clipped by the
+   card's overflow: hidden. */
+.profile-section-card {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(20px, 2.4vw, 28px);
+}
+
+.profile-section-card .card-heading {
+  margin: 0 0 20px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.profile-section-card .card-body {
+  padding: 0;
+}
+
+.profile-section-card .form-text {
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* ── Personal information: read-only academic panel ── */
+.profile-readonly-panel {
+  margin-bottom: 26px;
+  padding: 16px 18px 14px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-input);
+}
+
+.profile-readonly-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.profile-readonly-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.profile-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 24px;
+  border-top: 1px solid var(--color-border-table);
+}
+
+.profile-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-table);
+}
+
+/* The final row sits against the panel padding, not against a divider. */
+.profile-readonly-panel .profile-detail:nth-last-child(-n + 2) {
+  padding-bottom: 4px;
+  border-bottom: 0;
+}
+
+.profile-detail-label {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-muted);
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.profile-detail-value {
+  color: var(--color-text-heading);
+  font-size: .9rem;
+  font-weight: 650;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.profile-detail-value.profile-detail-empty {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.profile-readonly-note {
+  margin: 6px 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-muted);
+  line-height: 1.5;
+}
+
+.profile-account-head {
+  margin-bottom: 10px;
+}
+
+.profile-contact-grid {
+  margin-top: 0;
+}
+
+/* Read-only fields read as a summary until Edit Info unlocks them. */
+.profile-section-card .form-control[readonly] {
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+/* ── Account management: vertical action list ── */
+.account-action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.account-action-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast) var(--ease),
+              border-color var(--transition-fast) var(--ease),
+              box-shadow var(--transition-fast) var(--ease);
+}
+
+.account-action-item:hover {
+  background: var(--color-bg-input);
+  border-color: var(--brand-300);
+}
+
+.account-action-item:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--brand-500) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.account-action-icon {
+  display: grid;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-success-light);
+  color: var(--color-text-success);
+  font-size: .95rem;
+}
+
+.account-action-copy {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.account-action-copy strong {
+  color: var(--color-text-heading);
+  font-size: .85rem;
+  font-weight: 650;
+}
+
+.account-action-copy small {
+  color: var(--color-text-muted);
+  font-size: .74rem;
+  line-height: 1.4;
+}
+
+.account-action-chevron {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+  font-size: .75rem;
+  transition: transform var(--transition-fast) var(--ease),
+              color var(--transition-fast) var(--ease);
+}
+
+.account-action-item:hover .account-action-chevron {
+  color: var(--brand-600);
+  transform: translateX(2px);
+}
+
+.account-action-divider {
+  height: 1px;
+  margin: 4px 2px;
+  background: var(--color-border-default);
+}
+
+.account-action-item.is-danger {
+  border-color: color-mix(in srgb, var(--color-text-danger) 28%, var(--color-border-default));
+}
+
+.account-action-item.is-danger .account-action-icon {
+  background: var(--color-bg-danger-light);
+  color: var(--color-text-danger);
+}
+
+.account-action-item.is-danger .account-action-copy strong,
+.account-action-item.is-danger .account-action-chevron {
+  color: var(--color-text-danger);
+}
+
+.account-action-item.is-danger:hover {
+  background: var(--color-bg-danger-light);
+  border-color: var(--color-text-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-action-item,
+  .account-action-chevron {
+    transition: none;
+  }
+  .account-action-item:hover .account-action-chevron {
+    transform: none;
+  }
+}
+
+/* Student ID Card */
+.student-id-card {
+  padding: 0;
+  overflow: visible;
+  position: relative;
+}
+
+.student-id-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand-400), var(--brand-500), var(--brand-600));
+}
+
+.student-id-inner {
+  padding: 28px;
+}
+
+.student-id-avatar {
+  flex: 0 0 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-circle);
+  background: linear-gradient(135deg, var(--brand-400), var(--brand-600));
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(14, 159, 110, .3);
+  border: 3px solid rgba(255, 255, 255, .8);
+}
+
+.profile-card { padding: 26px; }
+
+.profile-card .form-label {
+  color: var(--color-label);
+  font-size: var(--font-size-label);
+  font-weight: 600;
+}
+
+.profile-card .form-control {
+  border-color: var(--color-border-input);
+  border-radius: var(--radius-sm);
+  font-size: .84rem;
+}
+
+.profile-card .form-control:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), .14);
+}
+
+.profile-card .form-control[readonly] {
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+}
+
+.profile-saved {
+  margin-top: 17px;
+  color: var(--bs-primary);
+  font-size: .78rem;
+}
+
+/* NOTE: .profile-biometric-card and .profile-note were removed here.
+   .guide-icon and .enrollment-pill keep their standalone rules (student.js
+   toggles the latter at runtime). */
+
+/* Biometric styles removed — the app now uses QR code attendance. */
+
+/* Responsive - Student Dashboard */
+@media (max-width: 900px) {
+  .student-main { padding: 0 24px; }
+
+  .dashboard-columns,
+  .lower-columns { grid-template-columns: 1fr 1fr; }
+
+  /* A half-width card at tablet size is too narrow for the donut and legend
+     side by side, so stack them instead of letting the card clip the legend. */
+  .attendance-chart {
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .chart-legend {
+    flex: 0 0 auto;
+    width: 100%;
+    text-align: center;
+  }
+
+  .chart-legend > div { margin: 8px 0; }
+
+  .chart-caption { margin-top: 12px; }
+
+  .events-list-columns { grid-template-columns: 1fr; gap: 18px; }
+}
+
+@media (max-width: 650px) {
+  .student-topbar { height: var(--topbar-height-mobile); }
+
+  .dashboard-intro {
+    align-items: start;
+    flex-direction: column;
+    padding-top: 28px;
+  }
+
+  .dashboard-columns,
+  .lower-columns { grid-template-columns: 1fr; }
+
+  .dashboard-event-item { gap: 10px; }
+
+  .attendance-chart { justify-content: center; gap: 20px; }
+
+  .weather-details { justify-content: space-between; }
+}
+
+@media (max-width: 700px) {
+  .student-table { min-width: 600px; }
+  .records-card { overflow: hidden; }
+}
+
+
+/* Notifications */
+.icon-button { position: relative; }
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  border-radius: var(--radius-pill);
+  background: var(--bs-danger, #dc3545);
+  color: #fff;
+  font-size: .6rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 0 0 2px var(--color-bg-card);
+}
+
+.notification-badge.hidden { display: none; }
+
+.notification-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(15, 23, 42, .45);
+}
+
+.notification-backdrop[hidden] { display: none; }
+
+.notification-panel {
+  position: fixed;
+  top: calc(var(--topbar-height, 76px) + 10px);
+  right: 24px;
+  z-index: 1000;
+  width: min(400px, calc(100vw - 32px));
+  max-height: min(520px, calc(100vh - 110px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, .18);
+}
+
+.notification-panel[hidden] { display: none; }
+
+body.notification-open { overflow: hidden; }
+
+.notification-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.notification-panel-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: var(--color-text-heading);
+}
+
+.notification-close {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  font-size: .8rem;
+}
+
+.notification-panel-list {
+  overflow-y: auto;
+  padding: 14px 0 6px;
+}
+
+.notification-panel-list .announcement-item {
+  padding: 12px 20px;
+  scroll-margin-top: 14px;
+}
+
+.notification-empty {
+  margin: 0;
+  padding: 34px 20px;
+  color: var(--color-text-muted);
+  font-size: .8rem;
+  text-align: center;
+}
+
+@media (max-width: 650px) {
+  .notification-panel {
+    right: 16px;
+    left: 16px;
+    width: auto;
+  }
+}
+
+/* Student subpage polish: quieter surfaces, clearer page hierarchy, and
+   comfortable controls without changing the page data or interactions. */
+.student-subpage-page .subpage-intro {
+  padding: 34px 0 24px;
+}
+
+.student-subpage-page .subpage-intro .section-kicker {
+  margin-bottom: .55rem;
+  color: var(--color-text-success);
+  font-size: .7rem;
+  font-weight: 750;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.student-subpage-page .subpage-intro h1 {
+  letter-spacing: -.04em;
+}
+
+.student-subpage-page .intro-copy {
+  max-width: 680px;
+  margin-top: .65rem;
+  line-height: 1.6;
+}
+
+.student-subpage-page .dashboard-card {
+  border-radius: 20px;
+}
+
+.student-subpage-page .records-card {
+  padding: clamp(18px, 2.5vw, 28px);
+  background: var(--color-bg-card);
+  border-color: var(--color-border-default);
+}
+
+[data-theme="dark"] .student-subpage-page .records-card {
+  background: var(--color-bg-card);
+  border-color: var(--color-border-default);
+}
+
+.records-card .card-heading {
+  margin-bottom: .5rem;
+}
+
+.records-card .records-caption {
+  margin: .35rem 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-muted);
+}
+
+.records-card .student-table {
+  margin-top: 14px;
+}
+
+.records-card .student-table thead th {
+  white-space: nowrap;
+}
+
+.records-card .student-table tbody td {
+  padding-block: 15px;
+}
+
+.empty-records:not(.d-none) {
+  display: flex;
+  min-height: 190px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  border-top: 1px solid var(--color-border-default);
+}
+
+.empty-records > i {
+  margin-bottom: .25rem;
+  color: var(--color-text-success);
+  font-size: 1.55rem;
+}
+
+.empty-records > strong {
+  color: var(--color-text-heading);
+  font-size: .9rem;
+}
+
+.empty-records > span {
+  max-width: 320px;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+.student-subpage-page .profile-card {
+  padding: clamp(20px, 2.5vw, 28px);
+}
+
+.student-subpage-page .student-record-note {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(24px, 3vw, 36px);
+}
+
+.student-record-note .student-id-avatar {
+  margin-bottom: 1.25rem;
+}
+
+.student-record-note .section-kicker {
+  margin-bottom: .4rem;
+}
+
+.student-record-note h2 {
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: 1.15rem;
+  font-weight: 750;
+}
+
+.student-record-note p:last-child {
+  max-width: 400px;
+  margin: .65rem 0 0;
+  color: var(--color-text-muted);
+  font-size: .82rem;
+  line-height: 1.6;
+}
+
+.student-subpage-page .profile-card .form-control {
+  min-height: 48px;
+}
+
+.student-subpage-page .profile-card .btn {
+  min-height: 46px;
+  padding-inline: 1.1rem;
+}
+
+.student-subpage-page :is(.role-profile, .role-nav a, .icon-button, .btn):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--brand-500) 55%, transparent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .student-subpage-page .subpage-intro {
+    padding: 26px 0 20px;
+  }
+
+  .student-subpage-page .records-card .card-heading {
+    align-items: center;
+  }
+
+  .student-subpage-page .profile-card {
+    padding: 20px;
+  }
+
+  .profile-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-readonly-panel .profile-detail:nth-last-child(-n + 2) {
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border-table);
+  }
+
+  .profile-readonly-panel .profile-detail:last-child {
+    padding-bottom: 4px;
+    border-bottom: 0;
+  }
+}

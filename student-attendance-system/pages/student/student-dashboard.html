@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard | Attendance System</title>
+  <!-- Preconnect to font origins to reduce DNS/TLS latency -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'light'}catch(e){}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="../../css/styles.css" rel="stylesheet">
+  <link href="../../css/dark-style.css" rel="stylesheet">
+</head>
+<body class="student-dashboard-page dashboard-hover-accent">
+  <!-- Skip to main content — WCAG 2.4.1 (Bypass Blocks) -->
+  <a href="#main-content" class="visually-hidden focusable">Skip to main content</a>
+  <div class="student-shell">
+    <aside class="role-sidebar">
+      <a class="role-brand" href="student-dashboard.html"><i class="bi bi-person-bounding-box"></i><span>ATTENDLY</span></a>
+      <div class="role-profile">
+        <div class="role-avatar ssc-avatar">JS</div>
+        <div><strong id="studentName">Student</strong><small>Student</small></div>
+      </div>
+      <nav class="role-nav" aria-label="Student navigation">
+        <a class="active" aria-current="page" href="student-dashboard.html"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="student-attendance.html"><i class="bi bi-calendar-check"></i> My attendance</a>
+        <a href="student-sanctions.html"><i class="bi bi-shield-exclamation"></i> Sanctions</a>
+        <a href="student-profile.html"><i class="bi bi-person"></i> Profile</a>
+      </nav>
+      <div class="role-sidebar-footer">
+        <button class="role-sidebar-action logout-action" type="button" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Log out</button>
+      </div>
+    </aside>
+
+    <main id="main-content" class="student-main">
+      <header class="student-topbar">
+        <div><span class="student-breadcrumb">Workspace /</span><strong>Dashboard</strong></div>
+        <div class="topbar-actions">
+          <button class="icon-button" type="button" aria-label="Notifications" id="notificationBtn"><i class="bi bi-bell"></i><span class="notification-badge" id="notificationBadge">3</span></button>
+          <button class="icon-button" type="button" aria-label="Toggle theme" data-theme-toggle><i class="bi bi-moon" data-theme-icon></i></button>
+          <span class="topbar-date" id="todayLabel"></span>
+        </div>
+      </header>
+
+      <section class="dashboard-intro">
+        <div>
+          <p class="section-kicker">Good morning</p>
+          <h1>Welcome back, <span id="welcomeName">student</span>.</h1>
+          <p class="intro-copy">Here is your attendance overview and what is happening on campus.</p>
+        </div>
+        <a class="dashboard-link" href="student-attendance.html">View full history <i class="bi bi-arrow-up-right"></i></a>
+      </section>
+
+      <div class="stat-grid" role="group" aria-label="Attendance summary">
+        <!-- Attendance Rate (featured) -->
+        <article class="stat-card stat-card--featured">
+          <div class="stat-head">
+            <span class="stat-label">Attendance rate</span>
+            <i class="stat-icon bi bi-three-dots" aria-hidden="true"></i>
+          </div>
+          <div class="stat-value" id="attendanceRate">0%</div>
+          <div class="stat-progress" aria-hidden="true"><span id="attendanceProgress"></span></div>
+          <div class="stat-foot"><i class="bi bi-arrow-up-right"></i> Based on your event records</div>
+        </article>
+
+        <!-- Present Count -->
+        <article class="stat-card">
+          <div class="stat-head">
+            <span class="stat-label">Present</span>
+            <i class="stat-icon bi bi-check-circle" aria-hidden="true"></i>
+          </div>
+          <div class="stat-value" id="presentCount">0</div>
+          <div class="stat-foot">Events attended</div>
+        </article>
+
+        <!-- Sanctions Count -->
+        <article class="stat-card">
+          <div class="stat-head">
+            <span class="stat-label">Sanctions</span>
+            <i class="stat-icon bi bi-exclamation-circle" aria-hidden="true"></i>
+          </div>
+          <div class="stat-value" id="sanctionCount">0</div>
+          <div class="stat-foot">Active records</div>
+        </article>
+
+        <!-- Event-specific check-in QR Code -->
+        <article class="stat-card stat-card--qr">
+          <div class="stat-head">
+            <span class="stat-label">Event check-in QR</span>
+            <i class="stat-icon bi bi-qr-code" aria-hidden="true"></i>
+          </div>
+          <div class="stat-value qr-card-body">
+            <div class="qr-event-picker" hidden>
+              <label class="qr-event-label" for="qrEventSelect">Live event</label>
+              <select class="qr-event-select" id="qrEventSelect" aria-describedby="qrCardHint">
+                <option value="">Choose a live event…</option>
+              </select>
+            </div>
+            <div class="qr-card-main">
+              <button class="qr-card-canvas-button" id="qrEnlargeTrigger" type="button" aria-label="Enlarge check-in QR code" aria-haspopup="dialog" hidden>
+                <span id="studentQrCanvas" class="qr-card-canvas"></span>
+                <span class="qr-zoom-badge" aria-hidden="true"><i class="bi bi-zoom-in"></i></span>
+              </button>
+              <div class="qr-card-copy">
+                <p class="qr-card-hint" id="qrCardHint" aria-live="polite">Loading active events…</p>
+                <p class="qr-card-note"><i class="bi bi-shield-check" aria-hidden="true"></i> This code only works for its live event.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <section class="dashboard-columns">
+        <!-- Attendance Chart -->
+        <article class="dashboard-card attendance-chart-card">
+          <div class="card-heading">
+            <div>
+              <p class="section-kicker" aria-hidden="true">Your activity</p>
+              <h2>Attendance statistics</h2>
+            </div>
+            <span class="card-menu"><i class="bi bi-bar-chart-line"></i></span>
+          </div>
+          <div class="attendance-chart stats-content">
+            <div class="donut-chart" id="attendanceDonut">
+              <div>
+                <strong id="donutPercent">0%</strong>
+                <small>present</small>
+              </div>
+            </div>
+            <div class="chart-legend">
+              <div>
+                <span class="legend-dot present-dot"></span>
+                <span>Present</span>
+                <strong id="presentLegend">0%</strong>
+              </div>
+              <div>
+                <span class="legend-dot absent-dot"></span>
+                <span>Absent</span>
+                <strong id="absentLegend">0%</strong>
+              </div>
+              <p class="chart-caption">Attendance is recorded by the event kiosk.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Announcements -->
+        <div class="dash-panel announcements-panel">
+          <div class="dash-panel-header">
+            <h3><i class="bi bi-megaphone" style="margin-right:6px;color:var(--color-text-success)"></i>Announcements</h3>
+            <button class="text-link" type="button" id="viewAllAnnouncements" data-bs-toggle="modal" data-bs-target="#allAnnouncementsModal" aria-controls="allAnnouncementsModal">View all <i class="bi bi-arrow-right"></i></button>
+          </div>
+          <div class="dash-panel-body">
+            <div id="announcementList" class="announcement-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-columns lower-columns">
+        <!-- Calendar -->
+        <div class="dash-panel calendar-panel">
+          <div class="dash-panel-header">
+            <h3><i class="bi bi-calendar-event" style="margin-right:6px;color:var(--color-text-success)"></i><span id="calendarMonthLabel">Calendar</span><small id="calendarEventCount" class="calendar-month-count"></small></h3>
+            <div class="calendar-controls">
+              <button class="icon-button" type="button" aria-label="Previous month"><i class="bi bi-chevron-left"></i></button>
+              <button class="icon-button" type="button" aria-label="Next month"><i class="bi bi-chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="dash-panel-body">
+            <div class="calendar-weekdays">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div id="miniCalendar" class="mini-calendar"></div>
+            <div class="calendar-key">
+              <span><i class="calendar-dot upcoming"></i> Upcoming</span>
+              <span><i class="calendar-dot past"></i> Past event</span>
+              <span><i class="calendar-today"></i> Today</span>
+            </div>
+            <p class="calendar-hint">Select a highlighted day to see that day's events.</p>
+          </div>
+        </div>
+
+        <!-- Weather -->
+        <div class="dash-panel weather-panel">
+          <div class="dash-panel-header">
+            <h3><i class="bi bi-cloud-sun" style="margin-right:6px;color:var(--color-text-warning)"></i>Today's forecast</h3>
+            <span class="weather-symbol" id="weatherIcon"><i class="bi bi-cloud-sun"></i></span>
+          </div>
+          <div class="dash-panel-body">
+            <div class="weather-main">
+              <strong id="weatherTemp">--°</strong>
+              <div>
+                <span id="weatherCondition">Loading…</span>
+                <div class="weather-feels-like" id="weatherFeelsLike" style="margin-top:4px;font-size:.72rem;color:var(--color-text-muted)">Feels like --°</div>
+              </div>
+            </div>
+            <div class="weather-details">
+              <span><i class="bi bi-droplet"></i> Humidity <strong id="weatherHumidity">--%</strong></span>
+              <span><i class="bi bi-cloud-rain"></i> Rain chance <strong id="weatherRain">--%</strong></span>
+            </div>
+            <p class="weather-location"><i class="bi bi-geo-alt"></i> JHCSC Balangasan, Pagadian City</p>
+            <p class="weather-updated" id="weatherUpdated" style="margin-top:8px;color:var(--color-text-muted)"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-columns">
+        <!-- Recent Activity feed -->
+        <div class="dash-panel">
+          <div class="dash-panel-header">
+            <h3><i class="bi bi-activity" style="margin-right:6px;color:var(--color-text-success)"></i>Recent Activity</h3>
+          </div>
+          <div class="dash-panel-body" id="recentActivityList">
+            <!-- JS-populated -->
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-events" aria-label="Campus events">
+        <div class="dash-panel events-panel">
+          <div class="dash-panel-header">
+            <h3><i class="bi bi-calendar2-week" style="margin-right:6px;color:var(--color-text-success)"></i>Campus events<small id="eventsPanelCount" class="calendar-month-count"></small></h3>
+            <span class="event-sanction-badge" id="eventsSanctionBadge" hidden></span>
+          </div>
+          <div class="dash-panel-body">
+            <div id="selectedDayDetails" class="selected-day-details" hidden></div>
+            <div class="events-list-columns">
+              <section class="events-group" aria-labelledby="upcomingEventsHeading">
+                <h4 class="events-group-title" id="upcomingEventsHeading">Upcoming events</h4>
+                <ul class="dashboard-event-list" id="upcomingEventsList">
+                  <li class="dashboard-event-empty">Loading events…</li>
+                </ul>
+              </section>
+              <section class="events-group" aria-labelledby="pastEventsHeading">
+                <h4 class="events-group-title" id="pastEventsHeading">Recent past events</h4>
+                <ul class="dashboard-event-list event-list-past" id="pastEventsList">
+                  <li class="dashboard-event-empty">Loading events…</li>
+                </ul>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastContainer" class="position-fixed top-0 end-0 p-3"></div>
+
+  <!-- Notifications panel -->
+  <div class="notification-panel" id="notificationPanel" role="dialog" aria-modal="true" aria-labelledby="notificationPanelTitle" hidden>
+    <div class="notification-panel-head">
+      <div>
+        <p class="section-kicker">From the SCC</p>
+        <h2 id="notificationPanelTitle">Notifications</h2>
+      </div>
+      <button class="icon-button notification-close" type="button" aria-label="Close notifications"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="notification-panel-list" id="notificationList"></div>
+  </div>
+  <div class="notification-backdrop" id="notificationBackdrop" hidden></div>
+
+  <!-- Enlarged QR code modal: white body so the code scans in either theme -->
+  
+
+  <!-- All announcements modal (opened by the panel's "View all" link) -->
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/data.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/ui.js"></script>
+  <script src="../../js/vendor/qrcode.min.js"></script>
+  <script src="../../js/qr.js"></script>
+  <script src="../../js/student.js"></script>
+
+
+  <!-- Page modals -->
+  <div class="modal fade qr-focus-modal" id="qrCodeEnlargeModal" tabindex="-1" aria-hidden="true" aria-label="Full screen check-in QR code">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body qr-enlarge-modal-body" data-bs-dismiss="modal">
+          <div id="enlargedQrContainer" class="qr-enlarge-container"></div>
+          <span class="qr-close-hint">Tap anywhere to close</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="allAnnouncementsModal" tabindex="-1" aria-hidden="true" aria-labelledby="allAnnouncementsModalTitle">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="allAnnouncementsModalTitle"><i class="bi bi-megaphone me-2" aria-hidden="true"></i>All announcements</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="allAnnouncementList" class="announcement-list announcement-list--modal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

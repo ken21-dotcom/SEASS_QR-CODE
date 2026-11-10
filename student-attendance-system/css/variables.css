@@ -1,0 +1,223 @@
+/* ========================================
+   CSS Custom Properties (Design Tokens)
+   Modern refresh — ATTENDLY
+   Brand identity preserved: emerald green
+   ======================================== */
+
+:root {
+  /* ── Brand Colors ── */
+  --bs-primary: #0e9f6e;
+  --bs-primary-rgb: 14, 159, 110;
+  --bs-success: #0e9f6e;
+  --bs-success-rgb: 14, 159, 110;
+  --brand-700: #0b7f58;
+  --brand-600: #0e9f6e;
+  --brand-500: #20b486;
+  --brand-400: #4fce9f;
+  --brand-300: #8ae0c0;
+  --brand-200: #b8e8d4;
+  --brand-100: #e3f7ee;
+  --brand-50: #f0fbf6;
+
+  /* ── Semantic Surfaces (Phase 2 — minimalist palette) ──
+     --color-bg-body is the canonical app background. --color-bg-app and
+     --color-bg-app-grad alias it so every surface that already references
+     them (role/student dashboards, subpages, kiosk) gets the new tone
+     without markup changes. */
+  --color-bg-body: #f8fafc;
+  --color-bg-app: var(--color-bg-body);
+  --color-bg-app-grad: var(--color-bg-body);
+  --color-bg-card: #ffffff;
+  --color-bg-card-elevated: #ffffff;
+  /* Sidebar keeps the deep brand green (#0d221b) — the JHCSC emerald
+     signature — rather than switching to slate, so the shell still reads
+     as ATTENDLY. Not part of the 6-token spec; left intentionally. */
+  --color-bg-sidebar: #0d221b;
+  --color-bg-sidebar-hover: rgba(14, 159, 110, .14);
+  --color-bg-input: #ffffff;
+  --color-bg-success-light: #ecfdf5;
+  --color-bg-warning-light: #fffbeb;
+  --color-bg-danger-light: #fef2f2;
+  --color-probation-bg: #fff7ed;
+  /* Two activity-feed accents that are deliberately off-brand: enrollment
+     reads as "info". Both were raw hex in role-dashboard.css with no
+     dark-theme override, which put near-white chips on dark cards.
+     Tokenised here so they adapt. */
+  --color-bg-info-light: #eff6ff;
+  --color-bg-violet-light: #faf5ff;
+
+  /* ── Border Colors ── */
+  --color-border-default: #e2e8f0;
+  --color-border-input: #7f97b5;
+  --color-border-sidebar: rgba(255,255,255,.08);
+  --color-border-table: #e2e8f0;
+  --color-border-focus: #0e9f6e;
+
+  /* ── Text Colors ── */
+  --color-text-primary: #334155;
+  --color-text-heading: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-sidebar: rgba(226,240,233,.72);
+  --color-text-sidebar-active: #ffffff;
+  --color-text-success: #0c835c;
+  --color-text-success-light: #0c835b;
+  --color-text-warning: #b45309;
+  --color-text-danger: #da2323;
+  /* Solid danger fill used by destructive table actions (Deactivate).
+     White on #dc2626 clears 4.5:1 in both light and dark themes. */
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-text-on-danger: #ffffff;
+  --color-text-probation: #c64a0a;
+  /* Paired with the two tints above. #2563eb / #7c3aed both clear 4.5:1 on
+     their own tint in light theme (5.68:1 and 5.39:1). */
+  --color-text-info: #2563eb;
+  --color-text-violet: #7c3aed;
+
+  /* ── Severity Badge Colors ── */
+  --color-badge-warning: #f59e0b;
+  --color-badge-probation: #f97316;
+  --color-badge-suspension: #eb1616;
+
+  /* ── Typography ── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Shared type scale for cards, labels, and muted copy. Keeping these as
+     tokens stops one dashboard from drifting to a different label size or
+     muted colour than another. */
+  --font-size-card-title: 1rem;
+  --font-size-label: .8125rem;
+  --font-size-muted: .8125rem;
+  --color-label: var(--color-text-heading);
+
+  /* ── Spacing — 4px base grid ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 40px;
+  --space-3xl: 56px;
+
+  /* ── Border Radius ── */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  /* ── Card radius ──
+     Every surface card in every workspace (stat cards, role cards, dashboard
+     panels, activity panels) shares one radius so cards sitting side by side
+     line up. This replaced a hardcoded `--stat-radius: 20px` in stat-card.css
+     that stat cards used while everything around them used --radius-lg (18px).
+     frontend-refresh.css already forced a single 16px at mobile, which is the
+     same intent. */
+  --radius-card: 16px;
+
+  /* ── Shadows — layered depth system ──
+     Cast in the new slate heading colour (15,23,42) so the depth reads
+     against the #f8fafc background instead of the old dark-green tone. */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, .04);
+  --shadow-sm: 0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.03);
+  --shadow-card: 0 1px 2px rgba(15,23,42,.035);
+  --shadow-card-hover: 0 2px 8px rgba(15,23,42,.07);
+  --shadow-focus: 0 0 0 2px rgba(14, 159, 110, .18);
+  --shadow-pop: 0 12px 32px rgba(15,23,42,.14), 0 4px 8px rgba(15,23,42,.04);
+  --shadow-inset: inset 0 1px 2px rgba(15,23,42,.06);
+
+  /* ── Transitions — crisp, intentional ── */
+  --ease: cubic-bezier(.23, 1, .32, 1);
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --transition-fast: .14s;
+  --transition-normal: .22s;
+  --transition-slow: .35s;
+
+  /* ── Top-accent bar — one shared visual language for every card.
+     Flat solid emerald, hidden at rest, revealed on hover (scaleX from
+     centre) and clipped into the card's --radius-card corners.
+
+     This replaces --accent-glow, a centre-bright gradient that was
+     documented as the shared treatment but only actually reached
+     .role-card / .dash-panel / .activity-panel on the 9 pages without
+     the `dashboard-hover-accent` modifier — so the same panel rendered a
+     gradient bar on one page and a flat bar on another. A 5px-tall
+     gradient read as a rendering artefact anyway.
+     Dark-theme override lives in dark-style.css. ── */
+  --accent-bar-height: 5px;
+  --accent-bar-fill: var(--brand-500);
+  --accent-bar-rest-scale: .15;
+  --accent-bar-transition: opacity 200ms ease-out, transform 240ms ease-out;
+
+  /* ── Layout ── */
+  --sidebar-width: 244px;
+  --topbar-height: 72px;
+  --topbar-height-mobile: 58px;
+
+  /* ── Form spacing ── */
+  --form-spacing-xs: 8px;
+  --form-spacing-sm: 12px;
+  --form-spacing-md: 16px;
+  --form-spacing-lg: 24px;
+  --form-spacing-xl: 32px;
+
+  /* ── Card spacing ── */
+  --card-padding: 20px;
+  --card-gap: 24px;
+  --card-header-padding: 14px 20px;
+
+  /* ── Camera/video aspect ratio ── */
+  --camera-aspect-ratio: 4 / 3;
+  --camera-max-height: 300px;
+
+  /* ── Quality meter colors ── */
+  --quality-poor: #ef4444;
+  --quality-good: #f59e0b;
+  --quality-excellent: #0e9f6e;
+}
+
+/* ========================================
+   Auth / Login Page — Campus-Identity Tokens
+   Grounded in JHCSC's actual identity (green roof + gold seal),
+   not a generic dark-mode teal.
+   ======================================== */
+.auth-page {
+  /* JHCSC palette */
+  --campus-green: #1a4d3a;   /* deep forest green — primary brand color, from the building's green roof */
+  --campus-gold:  #c8a94e;   /* warm campus gold — accent, from the college seal/logo overlay */
+  --campus-cream: #f7f4ed;   /* warm off-white surface for the form panel — not sterile SaaS gray */
+  --campus-bark:  #1e1e1e;   /* warm near-black text — readable, institutional */
+  --campus-fog:   #9ca8a0;   /* muted sage-gray — secondary text & borders that bridge green and neutral */
+  --campus-fog-strong: #5f6f66; /* legible muted sage for small light-mode labels/subtext (better contrast on cream) */
+
+  /* Bright accent for highlights on the (always-dark) hero — a vivid
+     emerald/mint from the brand palette that reads as green and stays
+     legible over the deep forest background. */
+  --campus-accent: #4fce9f;
+
+  /* Link text on the auth surface. Split out from --campus-green because that
+     token is also the solid CTA fill, where white text needs the dark green.
+     Link text needs to be legible as *text*, which on the dark form panel
+     means the bright accent instead. One job, one token. */
+  --campus-link: var(--campus-green);
+
+  /* Risk accent for the sign-up password strength meter. Kept separate
+     from --campus-green/--campus-gold so the four meter steps read as one
+     ordered scale (weak → fair → good → strong) rather than four
+     unrelated colours. Dark-theme value lives in dark-style.css. */
+  --campus-risk: #c33535;
+
+  /* Typefaces — institutional-but-modern security product */
+  --font-display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  background: var(--campus-cream);
+}
+
+/* NOTE: All dark-theme code (the [data-theme="dark"] token palette
+   and component overrides) lives in dark-style.css for easy
+   identification. Load dark-style.css AFTER this sheet on every page. */

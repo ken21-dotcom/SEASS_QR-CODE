@@ -1,0 +1,255 @@
+/* ========================================
+   SSC Officer — design enhancement layer
+   ------------------------------------------------------------
+   Additive styles that lift the SSC (and Admin) workspace to the
+   same craft bar as the student dashboard. Load AFTER
+   role-dashboard.css (i.e. via styles.css) and dark-style.css.
+
+   Contents:
+   • Report / list page summary cards (shared .stat-grid / .stat-card)
+   • Token-based status pills in tables (replaces default
+     Bootstrap `.badge` colors inside `.student-table`)
+   • Consistent filter + export toolbar
+   • Design-styled nav tabs (report tabs)
+   • Polished role-page buttons (success / outline)
+   ======================================== */
+
+/* ── Report / list page summary strips now use the shared
+     .stat-grid / .stat-card component in css/stat-card.css ── */
+
+/* ── Token status pills — replaces default Bootstrap badges
+     inside student tables so status reads like the rest of the app ── */
+.student-table .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: .32em .68em;
+  border-radius: var(--radius-pill);
+  font-size: .62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.student-table .badge.bg-success {
+  background: var(--color-bg-success-light) !important;
+  color: var(--color-text-success);
+}
+.student-table .badge.bg-secondary {
+  background: var(--color-bg-input) !important;
+  color: var(--color-text-muted);
+}
+.student-table .badge.bg-danger {
+  background: var(--color-bg-danger-light) !important;
+  color: var(--color-text-danger);
+}
+.student-table .badge.bg-warning {
+  background: var(--color-bg-warning-light) !important;
+  color: var(--color-text-warning);
+}
+.student-table .badge.bg-primary {
+  background: var(--brand-50) !important;
+  color: var(--brand-700);
+}
+
+/* Neutral severity pill used by the sanction tables */
+.student-table td .severity-pill { white-space: nowrap; }
+
+/* ── Filter + export toolbar ── */
+.role-main > .stat-grid {
+  margin-bottom: 10px;
+}
+
+.role-main > .dashboard-card {
+  margin-top: 8px;
+}
+
+.role-main > .dashboard-card {
+  padding: 18px 18px 16px;
+}
+
+.role-main > .dashboard-card .card-heading {
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.role-main > .dashboard-card .nav-tabs.role-tabs {
+  margin: 0 0 12px;
+}
+
+.report-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.report-toolbar .field-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: end;
+  flex: 1 1 420px;
+  max-width: 640px;
+}
+
+.field-group .form-label {
+  margin: 0 0 6px;
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--color-text-muted);
+}
+
+.field-group .form-select {
+  font-size: .8rem;
+  font-weight: 600;
+  background-color: var(--color-bg-input);
+  border-color: var(--color-border-input);
+  color: var(--color-text-primary);
+}
+
+.field-group .form-select:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 2px rgba(14, 159, 110, .18);
+}
+
+/* ── Report export actions ── */
+.report-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding-top: 4px;
+}
+
+.report-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .76rem;
+  min-height: 38px;
+  padding-inline: 14px;
+}
+
+/* ── Tabs styled like the app (reports page) ── */
+.nav-tabs.role-tabs {
+  border-bottom: 0;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.nav-tabs.role-tabs .nav-link {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-bg-card);
+  transition: all var(--transition-fast) var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-tabs.role-tabs .nav-link:hover {
+    border-color: var(--brand-300);
+    color: var(--brand-700);
+  }
+}
+
+.nav-tabs.role-tabs .nav-link.active {
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-700) 100%);
+  border-color: var(--brand-600);
+  color: #fff;
+  box-shadow: 0 0 0 1px rgba(14, 159, 110, .18);
+}
+
+/* ── Polished role-page buttons ── */
+.role-main .btn-success {
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-700) 100%);
+  border-color: var(--brand-600);
+  transition: transform var(--transition-fast) var(--ease),
+              box-shadow var(--transition-fast) var(--ease),
+              filter var(--transition-fast) var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .role-main .btn-success:hover {
+    background: linear-gradient(135deg, var(--brand-700) 0%, #096847 100%);
+    border-color: var(--brand-700);
+    box-shadow: 0 4px 12px rgba(14,159,110,.28);
+    transform: translateY(-1px);
+  }
+}
+
+.role-main .btn-success:active { transform: scale(.97); }
+
+.role-main .btn-outline-success {
+  color: var(--brand-700);
+  border-color: var(--brand-300);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .role-main .btn-outline-success:hover {
+    background: var(--color-bg-success-light);
+    border-color: var(--brand-600);
+    color: var(--brand-700);
+  }
+}
+
+.role-main .btn-outline-danger {
+  color: var(--color-text-danger);
+  border-color: rgba(195,53,53,.35);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .role-main .btn-outline-danger:hover {
+    background: var(--color-bg-danger-light);
+    border-color: var(--color-text-danger);
+    color: var(--color-text-danger);
+  }
+}
+
+.role-main .btn-secondary {
+  background: var(--color-bg-input);
+  border-color: var(--color-border-input);
+  color: var(--color-text-primary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .role-main .btn-secondary:hover {
+    background: var(--color-border-input);
+    border-color: var(--color-border-input);
+    color: var(--color-text-heading);
+  }
+}
+
+/* ── Card-heading legend label — heading clearance ──
+   The section-label pill straddles the card's top border using a 16px
+   left gutter. The flush (non-padded) manage-page cards give the
+   heading the same inner gutter + enough top room so the title clears
+   the pill bottom. */
+.role-main .dashboard-card .card-heading {
+  padding: 20px 16px 14px;
+}
+
+/* Compact in-table actions */
+.student-table .btn-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-pill);
+  font-size: .68rem;
+  font-weight: 600;
+}
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .report-toolbar { flex-direction: column; align-items: stretch; }
+  .report-toolbar .field-group { max-width: none; grid-template-columns: 1fr; }
+}

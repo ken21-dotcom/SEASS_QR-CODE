@@ -1,0 +1,10 @@
+# Local config (copy from config.example.php)
+config/config.php
+
+# Environment / logs
+.env
+*.log
+
+# OS
+Thumbs.db
+.DS_Store

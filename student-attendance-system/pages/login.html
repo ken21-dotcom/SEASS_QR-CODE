@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | ATTENDLY</title>
+  <!-- Preconnect to font origins to reduce DNS/TLS latency -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'dark';}catch(e){document.documentElement.dataset.theme='dark'}</script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="../css/styles.css" rel="stylesheet">
+  <link href="../css/dark-style.css?v=2" rel="stylesheet">
+</head>
+<body class="auth-page">
+  <!-- Skip to main content — WCAG 2.4.1 (Bypass Blocks) -->
+  <a href="#main-content" class="visually-hidden focusable">Skip to main content</a>
+
+  <div class="auth-split">
+    <button class="icon-button theme-toggle-fab" type="button" aria-label="Toggle theme" data-theme-toggle><i class="bi bi-moon" data-theme-icon></i></button>
+    <!-- Hero panel (carousel) -->
+    <div class="auth-hero">
+      <div class="auth-hero-slides">
+        <div class="auth-hero-slide active" style="background-image:url('../images/LOGIN4.webp')"></div>
+        <div class="auth-hero-slide" style="background-image:url('../images/LOGIN.webp')"></div>
+        <div class="auth-hero-slide" style="background-image:url('../images/LOGIN2.webp')"></div>
+        <div class="auth-hero-slide" style="background-image:url('../images/LOGIN3.webp')"></div>
+      </div>
+      <div class="auth-hero-content">
+        <!-- Slide 1 — primary content -->
+        <div class="auth-hero-slide-content active">
+          <h1>Track attendance<br>with <em>a single scan.</em></h1>
+          <p>Fast, reliable QR check-ins for campus events, built for the students and council officers of J.H. Cerilles State College.</p>
+          <div class="auth-hero-details">
+            <span class="auth-hero-detail"><i class="bi bi-qr-code-scan"></i> Secure QR check-in</span>
+            <span class="auth-hero-detail"><i class="bi bi-lightning-charge"></i> Instant attendance logs</span>
+          </div>
+        </div>
+        <div class="auth-hero-slide-content">
+          <h1>Enroll once,<br><em>check in fast.</em></h1>
+          <p>Scan your personal QR code once and breeze through every campus event with hands-free check-in.</p>
+          <div class="auth-hero-details">
+            <span class="auth-hero-detail"><i class="bi bi-check2-circle"></i> Automated event check-ins</span>
+          </div>
+        </div>
+        <div class="auth-hero-slide-content">
+          <h1>Real-time<br><em>attendance tracking.</em></h1>
+          <p>Officers see live attendance dashboards as students check in — no more manual headcounts.</p>
+          <div class="auth-hero-details">
+            <span class="auth-hero-detail"><i class="bi bi-graph-up"></i> Live attendance analytics</span>
+            <span class="auth-hero-detail"><i class="bi bi-calendar-check"></i> Event scheduling</span>
+          </div>
+        </div>
+        <div class="auth-hero-slide-content">
+          <h1>Secure,<br><em>transparent records.</em></h1>
+          <p>Each check-in is verified against the student's unique QR code and included in the attendance audit trail.</p>
+          <div class="auth-hero-details">
+            <span class="auth-hero-detail"><i class="bi bi-file-earmark-check"></i> Exportable attendance logs</span>
+            <span class="auth-hero-detail"><i class="bi bi-clock-history"></i> Audit trail history</span>
+          </div>
+        </div>
+      </div>
+      <!-- Carousel controls -->
+      <div class="auth-hero-controls" id="heroControls">
+        <div class="auth-hero-indicators">
+          <button class="auth-hero-progress active" data-slide="0" aria-label="Go to slide 1"><span class="auth-hero-track"><span class="auth-hero-progress-fill"></span></span></button>
+          <button class="auth-hero-progress" data-slide="1" aria-label="Go to slide 2"><span class="auth-hero-track"><span class="auth-hero-progress-fill"></span></span></button>
+          <button class="auth-hero-progress" data-slide="2" aria-label="Go to slide 3"><span class="auth-hero-track"><span class="auth-hero-progress-fill"></span></span></button>
+          <button class="auth-hero-progress" data-slide="3" aria-label="Go to slide 4"><span class="auth-hero-track"><span class="auth-hero-progress-fill"></span></span></button>
+        </div>
+        <span class="auth-hero-slide-label">Slide <span class="auth-hero-slide-num" id="slideNum"><span class="auth-hero-slide-num-inner current">01</span></span> / 04</span>
+        <div class="auth-hero-arrows">
+<button class="auth-hero-arrow" id="heroPrev" aria-label="Previous slide"><i class="bi bi-arrow-left"></i></button>
+        <button class="auth-hero-arrow" id="heroNext" aria-label="Next slide"><i class="bi bi-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form panel -->
+    <main id="main-content" class="auth-form-panel">
+      <div class="auth-form-brand">
+        <div class="auth-logo-badge"><i class="bi bi-person-bounding-box"></i></div>
+        <span>Attendly</span>
+      </div>
+      <div class="auth-form-header">
+        <h2 id="authFormTitle">Welcome, JHCSCians</h2>
+        <p id="authFormSubtitle">Sign in to your Attendly account to manage or record check-ins.</p>
+      </div>
+      <form id="loginForm" class="auth-form" novalidate>
+        <div class="mb-3">
+          <label for="login-email-field" class="form-label auth-label-uppercase">EMAIL ADDRESS</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <input type="email" class="form-control" id="login-email-field" name="email" autocomplete="username" placeholder="Email" required>
+          </div>
+          <div class="invalid-feedback" id="login-email-error">Please enter your email.</div>
+        </div>
+        <div class="mb-4">
+          <label for="login-password-field" class="form-label auth-label-uppercase">PASSWORD</label>
+          <div class="input-group input-group-password">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" class="form-control" id="login-password-field" name="password" autocomplete="current-password" placeholder="Password" required>
+            <button type="button" class="input-group-text auth-password-toggle" id="passwordToggle" aria-label="Show password"><i class="bi bi-eye" id="passwordToggleIcon"></i></button>
+          </div>
+          <div class="invalid-feedback" id="login-password-error">Invalid email or password.</div>
+          <div class="d-flex justify-content-end mt-2">
+            <a href="#" class="auth-forgot" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot password?</a>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary auth-login-btn">
+          Sign in
+        </button>
+        <p class="auth-switch">New to Attendly? <a href="signup.html">Create an account</a></p>
+      </form>
+    </main>
+  </div>
+
+  <!-- Forgot password placeholder modal -->
+  
+
+  <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1090;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/auth.js?v=4"></script>
+  <script src="../js/ui.js?v=3"></script>
+
+
+  <!-- Page modals -->
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Forgot password?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">Password reset isn't available in this prototype yet. Please contact an administrator if you need help signing in.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

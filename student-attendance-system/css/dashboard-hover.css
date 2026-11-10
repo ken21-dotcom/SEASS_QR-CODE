@@ -1,0 +1,106 @@
+/* ════════════════════════════════════════════════════════════
+   DASHBOARD HOVER TOP-ACCENT BARS — unified hover-reveal system.
+
+   Applied via the `dashboard-hover-accent` modifier class on the
+   three dashboard pages (Student / SSC / Admin) and every subpage
+   that uses the shared card system.
+
+   The top accent bar is a HOVER REVEAL:
+   - Hidden at rest (opacity: 0, scaleX from the --accent-bar-rest-scale token)
+   - On hover: flat solid green (--accent-bar-fill) grows in smoothly
+     from center, spanning the full card width and curving into
+     the --radius-card top corners
+   - Subtle lift (-2px), enhanced shadow, and brand border highlight
+
+   Every value below comes from the --accent-bar-* / --radius-card tokens,
+   the same ones the equivalent rules in role-dashboard.css and
+   student-dashboard.css read, so all four card families reveal identically
+   whether or not a page carries this modifier.
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Positioning & overflow for all dashboard cards ── */
+.dashboard-hover-accent .stat-card,
+.dashboard-hover-accent .dashboard-card,
+.dashboard-hover-accent .dash-panel,
+.dashboard-hover-accent .activity-panel,
+.dashboard-hover-accent .role-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  transition: box-shadow var(--transition-normal) var(--ease),
+              transform var(--transition-normal) var(--ease),
+              border-color var(--transition-normal) var(--ease);
+}
+
+/* ── Bar shell — hidden at rest, scales in from center on hover ── */
+.dashboard-hover-accent .stat-card::before,
+.dashboard-hover-accent .dashboard-card::before,
+.dashboard-hover-accent .dash-panel::before,
+.dashboard-hover-accent .activity-panel::before,
+.dashboard-hover-accent .role-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--accent-bar-height);
+  background: var(--accent-bar-fill);
+  opacity: 0;
+  transform: scaleX(var(--accent-bar-rest-scale));
+  transform-origin: center;
+  transition: var(--accent-bar-transition);
+  z-index: 2;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+
+/* ── Hover: reveal the top accent bar and lift the card ── */
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-hover-accent .stat-card:hover::before,
+  .dashboard-hover-accent .dashboard-card:hover::before,
+  .dashboard-hover-accent .dash-panel:hover::before,
+  .dashboard-hover-accent .activity-panel:hover::before,
+  .dashboard-hover-accent .role-card:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  .dashboard-hover-accent .stat-card:hover,
+  .dashboard-hover-accent .dashboard-card:hover,
+  .dashboard-hover-accent .dash-panel:hover,
+  .dashboard-hover-accent .activity-panel:hover,
+  .dashboard-hover-accent .role-card:hover {
+    box-shadow: var(--shadow-card-hover), 0 1px 8px rgba(14, 159, 110, .10);
+    transform: translateY(-2px);
+    border-color: var(--brand-200);
+  }
+}
+
+/* ── Reduced motion: fade in place, no scale grow ── */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-hover-accent .stat-card::before,
+  .dashboard-hover-accent .dashboard-card::before,
+  .dashboard-hover-accent .dash-panel::before,
+  .dashboard-hover-accent .activity-panel::before,
+  .dashboard-hover-accent .role-card::before {
+    transition: none;
+    transform: none;
+  }
+
+  .dashboard-hover-accent .stat-card:hover::before,
+  .dashboard-hover-accent .dashboard-card:hover::before,
+  .dashboard-hover-accent .dash-panel:hover::before,
+  .dashboard-hover-accent .activity-panel:hover::before,
+  .dashboard-hover-accent .role-card:hover::before {
+    opacity: 1;
+    transform: none;
+  }
+
+  .dashboard-hover-accent .stat-card:hover,
+  .dashboard-hover-accent .dashboard-card:hover,
+  .dashboard-hover-accent .dash-panel:hover,
+  .dashboard-hover-accent .activity-panel:hover,
+  .dashboard-hover-accent .role-card:hover {
+    transform: none;
+  }
+}

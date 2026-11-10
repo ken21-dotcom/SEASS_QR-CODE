@@ -1,0 +1,442 @@
+/* ════════════════════════════════════════════════════════════
+   STAT CARD — single shared summary-metric component.
+
+   Canonical design for every stat/summary card across the
+   ATTENDLY (SEASS) prototype (Student, SSC and Admin workspaces):
+   - --radius-card corners, shared with every other card family
+   - flat emerald top accent, hidden at rest and revealed on hover
+     (the reveal itself is asserted in dashboard-hover.css)
+   - subtle top-left gradient fill + slightly visible border
+   - heavy, tight-tracked value text
+   - optional thin proportional progress bar
+   - small muted footer caption (arrow ↗ when actionable)
+   - top-right icon: "…" overflow only where further actions exist,
+     otherwise a status icon that reflects the card's state.
+
+   Per-card values/labels/icons stay as page data — only the
+   container styling and spacing are unified here.
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Grid wrapper ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  align-items: start;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+/* ── Card shell ── */
+.stat-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px;
+  overflow: hidden;
+  border: 1px solid rgba(130, 145, 136, .28);
+  border-radius: var(--radius-card);
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(249,251,250,.98));
+  box-shadow: var(--shadow-card), 0 1px 3px rgba(14, 159, 110, .04);
+  transition: box-shadow var(--transition-normal) var(--ease),
+              transform var(--transition-normal) var(--ease),
+              border-color var(--transition-normal) var(--ease);
+}
+
+/* Top accent bar — flat solid emerald hugging the card's corners. Hidden at
+   rest; dashboard-hover.css scales it in from centre on hover. Both sheets
+   now read the same --accent-bar-* tokens, so a card looks identical whether
+   or not the page carries the `dashboard-hover-accent` modifier. */
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--accent-bar-height);
+  background: var(--accent-bar-fill);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  opacity: 0;
+  transform-origin: center;
+  transform: scaleX(var(--accent-bar-rest-scale));
+  transition: var(--accent-bar-transition);
+  z-index: 2;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stat-card:hover {
+    box-shadow: var(--shadow-card-hover), 0 1px 8px rgba(14, 159, 110, .10);
+    transform: translateY(-2px);
+    border-color: var(--brand-200);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-card:hover {
+    transform: none;
+  }
+}
+
+/* ── Featured / primary variant (e.g. the attendance-rate card) ── */
+.stat-card--featured {
+  border-color: var(--brand-200);
+  box-shadow: var(--shadow-card), 0 1px 4px rgba(14, 159, 110, .08);
+  background: var(--color-bg-card);
+}
+
+/* ── Header row: label + top-right icon ── */
+.stat-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stat-label {
+  color: var(--color-text-muted);
+  font-size: .74rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.stat-icon {
+  color: var(--color-text-muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  transition: color var(--transition-fast) var(--ease),
+              transform var(--transition-fast) var(--ease-spring);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stat-card:hover .stat-icon {
+    color: var(--brand-500);
+  }
+}
+
+/* ── Value — heavy weight, tight tracking, large, 100% solid text. ── */
+.stat-value {
+  position: relative;
+  z-index: 1;
+  margin: 10px 0 0;
+  color: var(--color-text-heading);
+  font-size: clamp(2rem, 2.4vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Progress track / fill (only for percentage-ish metrics) ── */
+.stat-progress {
+  position: relative;
+  z-index: 1;
+  margin: 9px 0 0;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-input);
+  overflow: hidden;
+  box-shadow: var(--shadow-inset);
+}
+
+.stat-progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--brand-400), var(--brand-500));
+  box-shadow: 0 0 10px rgba(79, 206, 159, .45);
+  transition: width 700ms var(--ease);
+}
+
+/* ── Footer caption — small muted text; ↑ arrow when actionable.
+   Lives in the value block's grid (below the progress bar), so it tucks
+   under the number instead of floating to the card's bottom edge. ── */
+.stat-foot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 10px 0 0;
+  color: var(--color-text-muted);
+  font-size: .7rem;
+  text-decoration: none;
+}
+
+.stat-foot i {
+  color: var(--brand-500);
+  font-size: .74rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.stat-foot:hover {
+    color: var(--brand-700);
+  }
+}
+
+/* ── Trend pill (dashboard deltas, rendered inside the footer) ── */
+.stat-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  font-size: .64rem;
+  font-weight: 700;
+}
+
+.stat-trend.up { background: var(--color-bg-success-light); color: var(--color-text-success); }
+.stat-trend.down { background: var(--color-bg-danger-light); color: var(--color-text-danger); }
+.stat-trend.neutral { background: var(--color-bg-input); color: var(--color-text-muted); }
+.stat-trend i { font-size: .6rem; }
+.stat-trend[hidden] { display: none; }
+
+/* ── Dark theme ── */
+[data-theme="dark"] .stat-card {
+  border-color: #1d3529;
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-card);
+}
+
+[data-theme="dark"] .stat-card:hover { border-color: #2a4a3a; }
+
+[data-theme="dark"] .stat-card:hover {
+  box-shadow: var(--shadow-card-hover), 0 1px 8px rgba(79, 206, 159, .14);
+}
+
+[data-theme="dark"] .stat-card--featured {
+  border-color: #1f3d2e;
+  background: var(--color-bg-card);
+}
+
+/* ── QR check-in card ──
+   The check-in QR card is a compact, visual summary card: the stat-value
+   area hosts a small canvas instead of a metric number, so it gets its
+   own flex layout rather than reusing the tabular-numeric value style. */
+.stat-card--qr {
+  border-color: var(--brand-200);
+  box-shadow: var(--shadow-card), 0 1px 4px rgba(14, 159, 110, .08);
+  background: var(--color-bg-card);
+}
+
+.stat-card--qr .stat-value {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: auto 0;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+/* Event picker above the QR thumbnail. The select stays compact so the
+   stat-card row keeps its original height as much as possible. */
+.qr-event-picker[hidden] {
+  display: none;
+}
+
+.qr-event-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.qr-event-label {
+  color: var(--color-text-muted);
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.qr-event-select {
+  width: 100%;
+  min-height: 30px;
+  padding: 4px 26px 4px 9px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-input);
+  color: var(--color-text-heading);
+  font-size: .72rem;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+}
+
+.qr-event-select:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 1px;
+}
+
+.qr-event-select:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+.qr-card-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* A square QR thumbnail: small enough that the card never drives the
+   stat row's height, large enough to stay scannable at the kiosk. */
+.qr-card-canvas {
+  display: flex;
+  flex: 0 0 96px;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  aspect-ratio: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.qr-card-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.qr-card-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qr-card-hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: .7rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.qr-card-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: .66rem;
+  line-height: 1.4;
+}
+
+.qr-card-note i {
+  color: var(--brand-500);
+  font-size: .7rem;
+}
+
+/* The "not yet generated" fallback injected by renderStudentQr() sits
+   inside the square thumbnail, so keep it legible without overflowing. */
+.qr-card-canvas p {
+  margin: 0;
+  font-size: .6rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+/* The thumbnail is a button: it opens the enlarged QR modal. */
+.qr-card-canvas-button[hidden] {
+  display: none;
+}
+
+.qr-card-canvas-button {
+  position: relative;
+  display: block;
+  flex: 0 0 96px;
+  width: 96px;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  line-height: 0;
+  cursor: pointer;
+}
+
+.qr-card-canvas-button .qr-card-canvas {
+  width: 100%;
+  height: 100%;
+  flex-basis: auto;
+}
+
+.qr-card-canvas-button:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.qr-zoom-badge {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  z-index: 2;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand-600);
+  color: #fff;
+  font-size: .68rem;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(14, 159, 110, .35);
+  transition: transform var(--transition-fast) var(--ease-spring);
+}
+
+.qr-card-canvas-button:hover .qr-zoom-badge,
+.qr-card-canvas-button:focus-visible .qr-zoom-badge {
+  transform: scale(1.1);
+}
+
+[data-theme="dark"] .stat-card--qr {
+  border-color: #1f3d2e;
+  background: var(--color-bg-card);
+}
+
+[data-theme="dark"] .stat-value {
+  color: var(--color-text-heading);
+}
+
+[data-theme="dark"] .stat-label,
+[data-theme="dark"] .stat-foot { color: var(--color-text-muted); }
+
+[data-theme="dark"] .stat-progress { background: #15241c; }
+
+/* The admin overview carries five stat cards. Five equal tracks keep the
+   final card from sitting alone on a second row at common laptop widths;
+   below that the fourth card spans two tracks so the 3 + 2 rhythm stays
+   balanced. Other dashboards keep the auto-fit behaviour above. */
+.stat-grid--five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+@media (min-width: 901px) and (max-width: 1199px) {
+  .stat-grid--five { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stat-grid--five > :nth-child(4) { grid-column: span 2; }
+}
+
+/* Four-card dashboards sit in a balanced 2 × 2 grid on small laptops
+   instead of leaving one card stranded beside an empty track. */
+@media (min-width: 901px) and (max-width: 1180px) {
+  :is(.role-main, .student-main) > .stat-grid:not(.stat-grid--five) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-grid--five > :nth-child(4) { grid-column: auto; }
+}
+
+@media (max-width: 650px) {
+  .stat-grid { grid-template-columns: 1fr; }
+}

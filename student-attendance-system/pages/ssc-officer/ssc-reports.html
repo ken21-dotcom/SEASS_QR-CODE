@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports | Attendance System</title>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'light'}catch(e){}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="../../css/styles.css" rel="stylesheet">
+  <link href="../../css/dark-style.css" rel="stylesheet">
+  <link href="../../css/reports.css?v=20261107b" rel="stylesheet">
+</head>
+<body class="role-dashboard-page">
+  <a href="#main-content" class="visually-hidden focusable">Skip to main content</a>
+  <div class="role-shell">
+    <aside class="role-sidebar">
+      <a class="role-brand" href="ssc-dashboard.html"><i class="bi bi-person-bounding-box"></i><span>ATTENDLY</span></a>
+      <div class="role-profile">
+        <div class="role-avatar ssc-avatar">SSC</div>
+        <div><strong>SSC Officer</strong><small>Supreme Student Council</small></div>
+      </div>
+      <nav class="role-nav" aria-label="SSC navigation">
+        <a href="ssc-dashboard.html"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="ssc-manage-students.html"><i class="bi bi-people"></i> Students</a>
+        <a href="ssc-manage-events.html"><i class="bi bi-calendar-event"></i> Events</a>
+        <a class="active" aria-current="page" href="ssc-reports.html"><i class="bi bi-bar-chart-line"></i> Reports</a>
+        <a href="../kiosk.html"><i class="bi bi-display"></i> Kiosk</a>
+      </nav>
+      <div class="role-sidebar-footer">
+        <button class="role-sidebar-action logout-action" type="button" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Log out</button>
+      </div>
+    </aside>
+    <main id="main-content" class="role-main">
+      <header class="role-topbar">
+        <div><span class="student-breadcrumb">Workspace /</span><strong>Reports</strong></div>
+        <div class="topbar-actions"><button class="icon-button" type="button" aria-label="Notifications"><i class="bi bi-bell"></i></button><button class="icon-button" type="button" aria-label="Toggle theme" data-theme-toggle><i class="bi bi-moon" data-theme-icon></i></button><div class="user-dropdown-wrap" id="userDropdownWrap"><button class="user-dropdown-toggle" id="userDropdownToggle" type="button"><div class="user-dropdown-avatar">SSC</div><span>SSC Officer</span><i class="bi bi-chevron-down" style="font-size:.6rem;color:var(--color-text-muted)"></i></button><div class="user-dropdown-menu" id="userDropdownMenu" role="menu"><div class="user-dropdown-header"><strong>SSC Officer</strong><small>ssc-officer@attendly.edu</small></div><button class="user-dropdown-item" role="menuitem" onclick="window.location.href='ssc-manage-students.html'"><i class="bi bi-person-circle"></i> My profile</button><div class="user-dropdown-divider"></div><button class="user-dropdown-item logout" role="menuitem" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Log out</button></div></div></div>
+      </header>
+      <section class="role-intro"><div><p class="section-kicker">Analytics</p><h1>System-wide reports.</h1><p class="intro-copy">Review attendance and sanction data across all officers and events. Export for offline records.</p></div></section>
+
+      <section class="dashboard-card mb-4 report-hide-print" aria-labelledby="correctionReviewHeading"><div class="card-heading"><div><p class="section-kicker">Student requests</p><h2 id="correctionReviewHeading">Attendance corrections</h2><p class="records-caption">Approving a request updates the attendance record and marks it as manually verified.</p></div></div><div class="table-responsive"><table class="table correction-review-table"><caption class="visually-hidden">Attendance correction requests awaiting or completed review</caption><thead><tr><th scope="col">Student</th><th scope="col">Event</th><th scope="col">Requested time</th><th scope="col">Reason</th><th scope="col">Proof</th><th scope="col">Status</th><th scope="col">Review</th></tr></thead><tbody id="attendanceCorrectionsBody"><tr><td colspan="7" class="text-muted">Loading requests…</td></tr></tbody></table></div></section>
+
+      <div class="report-tabs-container">
+        <div class="report-tabs">
+          <button type="button" class="report-tab active" data-tab="attendance">Attendance Report</button>
+          <button type="button" class="report-tab" data-tab="sanction">Sanction Reports</button>
+        </div>
+      </div>
+
+      <div class="tab-content report-print-root">
+        <div class="tab-pane fade show active" id="attendancePane" role="tabpanel" aria-labelledby="attendanceTab" tabindex="0">
+          <section class="report-sheet" id="attendanceReportSection" aria-labelledby="attendanceReportHeading">
+            <h2 class="visually-hidden" id="attendanceReportHeading">Attendance report</h2>
+
+            <div class="report-filters" id="reportFilters" role="group" aria-label="Attendance report filters">
+              <div class="report-filter-field">
+                <label class="form-label" for="reportEvent">Event</label>
+                <select class="form-select" id="reportEvent"></select>
+              </div>
+              <div class="report-filter-field">
+                <label class="form-label" for="reportDepartment">Department</label>
+                <select class="form-select" id="reportDepartment"></select>
+              </div>
+              <div class="report-filter-field">
+                <label class="form-label" for="reportProgram">Course / Program</label>
+                <select class="form-select" id="reportProgram"></select>
+              </div>
+              <div class="report-filter-field">
+                <label class="form-label" for="reportYear">Year Level</label>
+                <select class="form-select" id="reportYear"></select>
+              </div>
+              <div class="report-filter-field">
+                <label class="form-label" for="reportSemester">Semester</label>
+                <select class="form-select" id="reportSemester">
+                  <option value="">All Semesters</option>
+                  <option value="1st Semester">1st Semester</option>
+                  <option value="2nd Semester">2nd Semester</option>
+                  <option value="Summer">Summer</option>
+                </select>
+              </div>
+              <div class="report-filter-actions">
+                <button class="btn btn-primary" id="generateReportBtn" type="button"><i class="bi bi-funnel"></i> Generate Report</button>
+                <button class="btn btn-outline-secondary" id="printReportBtn" type="button"><i class="bi bi-printer"></i> Print Report</button>
+                <button class="btn btn-outline-success" id="exportExcelBtn" type="button"><i class="bi bi-file-earmark-spreadsheet"></i> Export CSV</button>
+              </div>
+            </div>
+            <div class="attendance-summary" id="attendanceSummaryView">
+              <!-- Rendered by ReportsPage.renderAttendanceSummary() -->
+            </div>
+            <div class="attendance-detail-view report-hide-print" id="attendanceDetailView">
+              <div class="table-responsive report-table-wrap">
+                <table class="table student-table report-table mb-0" id="attendanceReportTable">
+                  <caption class="visually-hidden">Filtered attendance report</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Student</th>
+                      <th scope="col">Student ID</th>
+                      <th scope="col">Department</th>
+                      <th scope="col">Program</th>
+                      <th scope="col">Year Level</th>
+                      <th scope="col">Event</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Check-in</th>
+                      <th scope="col">Check-out</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="attendanceReportBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div id="attendancePrintSections" class="attendance-print-sections"></div>
+            <p class="report-generated-note" id="reportGeneratedNote" aria-live="polite"></p>
+          </section>
+        </div>        <div class="tab-pane fade" id="sanctionPane" role="tabpanel" aria-labelledby="sanctionTab" tabindex="0">
+          <section class="report-sheet" id="sanctionReportSection" aria-labelledby="sanctionReportHeading">
+              <h2 class="visually-hidden" id="sanctionReportHeading">Sanction and absence report</h2>
+
+              <div class="sanction-report-toolbar report-hide-print">
+                <div class="row g-3 align-items-end sanction-filter-row">
+                  <div class="col-md-3 sanction-event-field">
+                    <label class="form-label" for="filterEvent">Events</label>
+                    <select class="form-select" id="filterEvent" multiple aria-describedby="filterEventHint" title="Leave empty for all events (semester view). Ctrl/Cmd-click to select multiple events."></select>
+                    <small class="form-text visually-hidden" id="filterEventHint">Leave empty for all events (semester view). Ctrl/Cmd-click to select multiple events.</small>
+                  </div>
+                  <div class="col-md-3 sanction-semester-field">
+                    <label class="form-label" for="sanctionSemesterFilter">Semester</label>
+                    <select class="form-select" id="sanctionSemesterFilter">
+                      <option value="">All Semesters</option>
+                      <option value="1st Semester">1st Semester</option>
+                      <option value="2nd Semester">2nd Semester</option>
+                      <option value="Summer">Summer</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2 sanction-department-field">
+                    <label class="form-label" for="sanctionDepartmentFilter">Department</label>
+                    <select class="form-select" id="sanctionDepartmentFilter"></select>
+                  </div>
+                  <div class="col-md-2 sanction-program-field">
+                    <label class="form-label" for="sanctionProgramFilter">Program</label>
+                    <select class="form-select" id="sanctionProgramFilter"></select>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="sanction-filter-actions">
+                      <button class="btn btn-success" id="printSanctionBtn" type="button"><i class="bi bi-printer"></i> Print Report</button>
+                      <button class="btn btn-outline-success" id="exportSanctionCsvBtn" type="button"><i class="bi bi-file-earmark-spreadsheet"></i> Export CSV</button>
+                      <button class="btn btn-outline-success sanction-clear-link" id="filterEventClear" type="button">Clear filters</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sanction-summary" id="sanctionSummaryView">
+                <div class="stat-grid sanction-summary-stats" role="group" aria-label="Sanction report summary">
+                  <article class="stat-card">
+                    <div class="stat-head"><span class="stat-label">Total Students</span><i class="stat-icon bi bi-people" aria-hidden="true"></i></div>
+                    <div class="stat-value" id="sanctionTotalStudents">0</div>
+                    <div class="stat-foot">Active students in range</div>
+                  </article>
+                  <article class="stat-card">
+                    <div class="stat-head"><span class="stat-label">Students for Sanction</span><i class="stat-icon bi bi-shield-exclamation" aria-hidden="true"></i></div>
+                    <div class="stat-value" id="sanctionStudentsWithSanctions">0</div>
+                    <div class="stat-foot">Absences > 3</div>
+                  </article>
+                  <article class="stat-card">
+                    <div class="stat-head"><span class="stat-label">Total Absences Recorded</span><i class="stat-icon bi bi-calendar-x" aria-hidden="true"></i></div>
+                    <div class="stat-value" id="sanctionTotalAbsences">0</div>
+                    <div class="stat-foot">Ended mandatory events</div>
+                  </article>
+                </div>
+                <p class="sanction-summary-note"><i class="bi bi-info-circle" aria-hidden="true"></i><span>Screen preview is summarized. Click <strong>Print Report</strong> or <strong>Export CSV</strong> to generate the full attendance matrix.</span></p>
+                <div class="table-responsive sanction-summary-wrap">
+                  <table class="table sanction-summary-table mb-0">
+                    <caption class="visually-hidden">Summary of total absences and sanction status per student</caption>
+                    <thead><tr><th scope="col">Student ID</th><th scope="col">Name</th><th scope="col" class="text-center">Total Absences</th><th scope="col" class="text-center">For Sanction</th></tr></thead>
+                    <tbody id="sanctionSummaryBody"><tr><td colspan="4" class="text-center text-muted py-4">Loading summary…</td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="sanction-matrix-view" id="sanctionMatrixView">
+                <div class="table-responsive report-table-wrap sanction-matrix-wrap">
+                  <table class="table table-bordered sanction-matrix-table mb-0" id="sanctionReportTable">
+                    <caption class="visually-hidden">Semester attendance matrix with total absences and sanction status</caption>
+                    <thead id="sanctionMatrixHead"></thead>
+                    <tbody id="sanctionReportBody"></tbody>
+                  </table>
+                </div>
+              </div>
+              <p class="report-generated-note" id="sanctionReportGeneratedNote" aria-live="polite"></p>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  
+  <div id="toastContainer" class="position-fixed top-0 end-0 p-3"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/data.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/ui.js"></script>
+  <script src="../../js/vendor/xlsx.full.min.js"></script>      <script src="../../js/reports.js?v=20261107b"></script>
+  <script src="../../js/ssc.js"></script>
+
+
+  <!-- Page modals -->
+  <div class="modal fade" id="denyRequestModal" tabindex="-1" aria-hidden="true" aria-labelledby="denyRequestModalTitle" aria-describedby="denyRequestHint">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="denyRequestModalTitle">Deny correction request</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <label for="denyReasonInput" class="form-label">Reason for denial</label>
+          <textarea class="form-control" id="denyReasonInput" rows="4" maxlength="3000" required placeholder="State the reason for denial..." aria-describedby="denyRequestHint denyReasonError"></textarea>
+          <p class="deny-request-error" id="denyReasonError" role="alert"></p>
+          <p class="form-text" id="denyRequestHint">The student will see this note next to the denied request.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="denyRequestConfirm"><i class="bi bi-x-circle me-1" aria-hidden="true"></i>Confirm deny</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="correctionProofModal" tabindex="-1" aria-hidden="true" aria-labelledby="correctionProofModalTitle">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="correctionProofModalTitle">Proof of attendance</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="correction-proof-caption" id="correctionProofCaption"></p>
+          <div id="correctionProofLoading" class="d-none"><div class="d-flex align-items-center gap-2 text-muted py-3"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span>Loading proof…</span></div></div>
+          <p id="correctionProofError" class="text-danger small mb-2 d-none" role="alert"></p>
+          <div class="correction-proof-frame"><img id="correctionProofModalImage" class="d-none" alt="Proof photo submitted by the student"></div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1034 @@
+.report-sheet {
+  background: var(--color-bg-card, #fff);
+  border: 1px solid var(--color-border-default, #dce2ea);
+  border-radius: var(--radius-lg, 16px);
+  padding: clamp(16px, 2.5vw, 28px);
+}
+
+/* ── Segmented Control Tabs ──────────────────────────────────────
+   Modern pill-shaped tab selector for report pages. The container acts
+   as the track, and each button is a segmented segment that slides the
+   active state into place with a smooth transition. */
+.report-tabs-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.report-tabs {
+  display: inline-flex;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  gap: 4px;
+}
+
+.report-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 24px;
+  font-size: .875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+.report-tab:hover {
+  background: rgba(14, 159, 110, .06);
+  color: var(--color-text-primary);
+}
+
+.report-tab.active {
+  background: var(--brand-500);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.report-tab.active:hover {
+  background: var(--brand-600);
+  color: #ffffff;
+}
+
+/* Focus styles for accessibility */
+.report-tab:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .report-tabs {
+  background: var(--color-bg-card);
+  border-color: var(--color-border-default);
+}
+
+[data-theme="dark"] .report-tab {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .report-tab:hover {
+  background: rgba(79, 206, 159, .08);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .report-tab.active {
+  background: var(--brand-500);
+  color: #ffffff;
+}
+
+/* Hide the default Bootstrap nav styles when our segmented control is used */
+.report-tabs .nav-item {
+  display: inline-block;
+  margin: 0;
+}
+
+.report-tabs .nav-link {
+  display: none;
+}
+
+/* Print: hide the segmented control */
+@media print {
+  .report-tabs {
+    display: none !important;
+  }
+}
+
+.report-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 14px;
+  align-items: end;
+  margin: 0 0 20px;
+  padding: 16px;
+  border: 1px solid var(--color-border-default, #dce2ea);
+  border-radius: 12px;
+  background: var(--color-bg-input, #f4f8f6);
+}
+
+.report-filter-field { min-width: 0; }
+.report-filter-field .form-label { margin-bottom: 6px; font-weight: 600; }
+.report-filter-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding-top: 2px; }
+.report-filter-actions .btn { min-height: 42px; }
+.report-filter-field .form-control,
+.report-filter-field .form-select { min-height: 42px; }
+.report-table-wrap { overflow-x: auto; max-width: 100%; border-radius: 10px; }
+.report-table { min-width: 900px; }
+.report-table th { white-space: nowrap; }
+.report-generated-note { margin: 12px 0 0; color: var(--color-text-muted, #687385); font-size: .82rem; }
+.report-print-header { display: none; }
+
+/* ── Grouped attendance print sections ─────────────────────────
+   The on-screen report stays a single filterable table. Printing
+   replaces it with one section per event so every header carries
+   the event name and public ID next to its attendee list. */
+.attendance-print-sections { display: none; }
+
+/* ── On-screen attendance summary ────────────────────────────────
+   The detailed attendance table is print/CSV output only. Keeping it
+   out of the screen flow avoids horizontal scroll while the summary
+   cards and four-column event list remain easy to present. */
+.attendance-summary { margin: 0 0 18px; }
+
+.attendance-summary-stats { margin: 0 0 16px; }
+
+.attendance-summary-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+  border: 1px solid var(--color-border-default, #dce2ea);
+  border-radius: 12px;
+  background: var(--color-bg-card, #fff);
+}
+
+.attendance-summary-table {
+  --bs-table-bg: transparent;
+  min-width: 560px;
+  margin: 0;
+}
+
+.attendance-summary-table th,
+.attendance-summary-table td {
+  padding: 11px 14px;
+  border-color: var(--color-border-default, #dce2ea);
+  vertical-align: middle;
+}
+
+.attendance-summary .attendance-summary-table thead th {
+  background: var(--color-bg-input, #f4f8f6);
+  color: var(--color-text-primary, #1a2921);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.attendance-summary-table tbody tr:nth-child(even) td {
+  background: var(--color-bg-input, #f4f8f6);
+}
+
+.attendance-summary-table tbody tr:hover td {
+  background: var(--color-bg-card-elevated, #fff);
+}
+
+.attendance-summary-table td:last-child {
+  text-align: center;
+}
+
+/* ── Attendance by Department breakdown ────────────────────────── */
+.attendance-dept-breakdown {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--color-border-default, #dce2ea);
+  border-radius: 12px;
+  background: var(--color-bg-card, #fff);
+}
+
+/* Department acronym cell — the inline style that used to live in the
+   reports.js markup. Tokenised so it follows the brand palette and dark
+   mode without a second copy of the value to maintain. */
+.dept-acronym {
+  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  color: var(--brand-600);
+}
+
+.attendance-dept-heading {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border-default, #dce2ea);
+  color: var(--color-text-primary, #1a2921);
+  font-size: .85rem;
+  font-weight: 700;
+}
+
+.attendance-dept-heading i {
+  color: var(--brand-600, #0e9f6e);
+  font-size: .95rem;
+}
+
+.attendance-dept-table {
+  --bs-table-bg: transparent;
+  min-width: 560px;
+  margin: 0;
+}
+
+.attendance-dept-table th,
+.attendance-dept-table td {
+  padding: 11px 14px;
+  border-color: var(--color-border-default, #dce2ea);
+  vertical-align: middle;
+}
+
+.attendance-dept-table thead th {
+  background: var(--color-bg-input, #f4f8f6);
+  color: var(--color-text-primary, #1a2921);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.attendance-dept-table tbody tr:nth-child(even) td {
+  background: var(--color-bg-input, #f4f8f6);
+}
+
+.attendance-dept-table tbody tr:hover td {
+  background: var(--color-bg-card-elevated, #fff);
+}
+
+.attendance-dept-table td:first-child {
+  font-weight: 600;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: .78rem;
+  color: var(--brand-600, #0e9f6e);
+}
+
+.attendance-dept-table td:nth-child(3),
+.attendance-dept-table td:nth-child(4),
+.attendance-dept-table td:nth-child(5),
+.attendance-dept-table td:nth-child(6) {
+  text-align: center;
+}
+
+.attendance-dept-table td:nth-child(6) {
+  font-weight: 700;
+  color: var(--brand-600, #0e9f6e);
+}
+
+/* The detailed attendance table is hidden on screen (print/CSV only) */
+.attendance-detail-view { display: none; }
+
+/* Print reveals the detailed table */
+@media print {
+  .attendance-detail-view {
+    display: block !important;
+    visibility: visible !important;
+  }
+}
+
+/* ── Semester attendance & sanction matrix ───────────────────── */
+.sanction-report-toolbar {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border-default, #dce2ea);
+  border-radius: 12px;
+  background: var(--color-bg-input, #f4f8f6);
+}
+
+/* The filter row sits flush with the toolbar padding; Bootstrap's negative
+   column margins cancel the gutter so the first and last fields align with
+   the toolbar edges instead of inset by the gap. */
+.sanction-filter-row {
+  --bs-gutter-x: 14px;
+  --bs-gutter-y: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Keep every control the same visual height so the row reads as one unit. */
+.sanction-filter-row .form-select { min-height: 42px; }
+
+/* Small, quiet uppercase labels let the controls carry the bar. */
+.sanction-report-toolbar .form-label {
+  margin-bottom: 6px;
+  color: var(--color-text-muted, #65756c);
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* The event filter is a listbox: cap its height so it can never dominate
+   the row the way an unbounded multi-select does. */
+.sanction-event-field .form-select {
+  height: 100px;
+  max-height: 100px;
+  overflow-y: auto;
+  padding: 6px 10px;
+  border-color: var(--color-border-default, #dce2ea);
+  background-color: var(--color-bg-card, #fff);
+  background-image: none;
+  color: var(--color-text-primary, #1a2921);
+}
+
+.sanction-event-field .form-select option {
+  padding: 3px 6px;
+  color: var(--color-text-primary, #1a2921);
+  background-color: var(--color-bg-card, #fff);
+}
+
+/* With no events the listbox would be an empty 100px hole, so collapse it
+   back to a standard single-line field. */
+.sanction-event-field .form-select:has(> option:only-child:disabled) {
+  height: 42px;
+  max-height: 42px;
+  padding-block: 8px;
+  color: var(--color-text-muted, #65756c);
+}
+
+/* Actions share the last column and bottom-align with the selects. */
+.sanction-filter-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sanction-filter-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-size: .84rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+
+.sanction-filter-actions .btn-success {
+  --bs-btn-bg: var(--brand-600, #0e9f6e);
+  --bs-btn-border-color: var(--brand-600, #0e9f6e);
+  --bs-btn-hover-bg: var(--brand-700, #0b7f58);
+  --bs-btn-hover-border-color: var(--brand-700, #0b7f58);
+  --bs-btn-active-bg: var(--brand-700, #0b7f58);
+  --bs-btn-active-border-color: var(--brand-700, #0b7f58);
+}
+
+.sanction-filter-actions .btn-outline-success {
+  --bs-btn-color: var(--brand-700, #0b7f58);
+  --bs-btn-border-color: var(--brand-500, #20b486);
+  --bs-btn-hover-bg: var(--brand-600, #0e9f6e);
+  --bs-btn-hover-border-color: var(--brand-600, #0e9f6e);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--brand-700, #0b7f58);
+  --bs-btn-active-border-color: var(--brand-700, #0b7f58);
+}
+
+.sanction-filter-actions .sanction-clear-link {
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid var(--brand-500, #20b486);
+  color: #fff;
+  background-color: transparent;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.sanction-clear-link:hover,
+.sanction-clear-link:focus-visible {
+  color: #fff;
+  background-color: var(--brand-600, #0e9f6e);
+  border-color: var(--brand-600, #0e9f6e);
+}
+
+/* ── On-screen sanction summary ────────────────────────────────
+   The detailed semester matrix is print/CSV output only. Keeping it
+   out of the screen flow avoids a 10+ column horizontal scroll while
+   the summary cards and four-column table remain easy to present. */
+.sanction-summary { margin: 0 0 18px; }
+
+.sanction-summary-stats { margin: 0 0 16px; }
+
+.sanction-summary-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border-default, #dce2ea);
+  border-left: 3px solid var(--brand-500, #20b486);
+  border-radius: 10px;
+  background: var(--color-bg-input, #f4f8f6);
+  color: var(--color-text-muted, #65756c);
+  font-size: .82rem;
+  line-height: 1.45;
+}
+
+.sanction-summary-note i {
+  color: var(--brand-600, #0e9f6e);
+  font-size: .95rem;
+  line-height: 1.35;
+}
+
+.sanction-summary-note strong {
+  color: var(--color-text-primary, #1a2921);
+  font-weight: 600;
+}
+
+.sanction-summary-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+  border: 1px solid var(--color-border-default, #dce2ea);
+  border-radius: 12px;
+  background: var(--color-bg-card, #fff);
+}
+
+.sanction-summary-table {
+  --bs-table-bg: transparent;
+  min-width: 640px;
+  margin: 0;
+}
+
+.sanction-summary-table th,
+.sanction-summary-table td {
+  padding: 11px 14px;
+  border-color: var(--color-border-default, #dce2ea);
+  vertical-align: middle;
+}
+
+.sanction-summary .sanction-summary-table thead th {
+  background: var(--color-bg-input, #f4f8f6);
+  color: var(--color-text-primary, #1a2921);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sanction-summary-table tbody tr:nth-child(even) td {
+  background: var(--color-bg-input, #f4f8f6);
+}
+
+.sanction-summary-table tbody tr:hover td {
+  background: var(--color-bg-card-elevated, #fff);
+}
+
+.sanction-summary-table .sanction-summary-id {
+  width: 150px;
+  color: var(--color-text-muted, #65756c);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: .78rem;
+  white-space: nowrap;
+}
+
+.sanction-summary-table .sanction-summary-name {
+  font-weight: 600;
+}
+
+.sanction-summary-table .sanction-summary-absences {
+  width: 140px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sanction-summary-table .sanction-summary-absences.is-zero {
+  color: var(--color-text-muted, #65756c);
+  font-weight: 500;
+}
+
+.sanction-summary-table .sanction-summary-status {
+  width: 170px;
+  text-align: center;
+}
+
+/* Hidden on screen; revealed while printing and for the print capture. */
+.sanction-matrix-view { display: none; }
+.sanction-matrix-view.is-print-visible { display: block; }
+
+.sanction-matrix-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+  border: 1px solid var(--color-border-default, #dce2ea);
+  border-radius: 12px;
+  background: var(--color-bg-card, #fff);
+}
+
+.sanction-matrix-table {
+  --bs-table-bg: transparent;
+  width: max-content;
+  min-width: 100%;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: .82rem;
+}
+
+.sanction-matrix-table th,
+.sanction-matrix-table td {
+  padding: 8px 10px;
+  border-color: var(--color-border-default, #dce2ea);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.sanction-matrix-table thead th {
+  background: var(--color-bg-input, #f4f8f6);
+  color: var(--color-text-primary, #1f2937);
+  vertical-align: bottom;
+}
+
+/* Keep the identity columns in view while the event columns scroll. */
+.sanction-matrix-table .matrix-student-id,
+.sanction-matrix-table .matrix-student-name {
+  position: sticky;
+  z-index: 2;
+  background: var(--color-bg-card, #fff);
+  box-shadow: 1px 0 0 var(--color-border-default, #dce2ea);
+}
+
+.sanction-matrix-table thead .matrix-student-id,
+.sanction-matrix-table thead .matrix-student-name {
+  z-index: 4;
+  background: var(--color-bg-input, #f4f8f6);
+}
+
+.sanction-matrix-table .matrix-student-id {
+  left: 0;
+  width: 108px;
+  min-width: 108px;
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+.sanction-matrix-table .matrix-student-name {
+  left: 108px;
+  width: 200px;
+  min-width: 200px;
+  text-align: left;
+}
+
+.matrix-name {
+  display: block;
+  font-weight: 600;
+  white-space: normal;
+}
+
+.matrix-student-meta,
+.matrix-event-meta {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-text-muted, #687385);
+  font-size: .68rem;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+.matrix-major-head {
+  border-bottom: 0 !important;
+  text-align: center;
+}
+
+.matrix-major-head .matrix-event-name,
+.matrix-minor-head .matrix-event-name {
+  display: block;
+  font-size: .74rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  white-space: normal;
+}
+
+.matrix-minor-head {
+  min-width: 92px;
+  max-width: 130px;
+  text-align: center;
+}
+
+.matrix-minor-head .matrix-event-meta { text-align: center; }
+
+.matrix-subhead {
+  min-width: 54px;
+  padding: 6px 8px !important;
+  background: var(--color-bg-card, #fff) !important;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.sanction-matrix-table .matrix-check {
+  min-width: 54px;
+  padding: 7px 8px;
+  color: var(--color-text-muted, #9aa4b2);
+  font-size: .95rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+.sanction-matrix-table .matrix-check.is-present {
+  color: #157347;
+  background: rgba(25, 135, 84, .08);
+}
+
+.sanction-matrix-table .matrix-absences {
+  min-width: 82px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sanction-matrix-table .matrix-status {
+  min-width: 118px;
+  text-align: center;
+}
+
+/* Use the theme's input surface rather than a hard-coded light colour
+   so zebra striping stays legible in both light and dark mode. */
+.sanction-matrix-table tbody tr:nth-child(even) td,
+.sanction-matrix-table tbody tr:nth-child(even) th {
+  background: var(--color-bg-input, #f4f8f6);
+}
+
+.sanction-matrix-table tbody tr:nth-child(even) .matrix-student-id,
+.sanction-matrix-table tbody tr:nth-child(even) .matrix-student-name {
+  background: var(--color-bg-input, #f4f8f6);
+}
+
+.sanction-matrix-table tbody tr:hover td,
+.sanction-matrix-table tbody tr:hover th {
+  background: var(--color-bg-card-elevated, #fff);
+}
+
+.sanction-matrix-table tbody tr:hover .matrix-student-id,
+.sanction-matrix-table tbody tr:hover .matrix-student-name {
+  background: var(--color-bg-card-elevated, #fff);
+}
+
+/* The dark theme's card background is nearly black, so the light-theme
+   present tint would turn the checkmark into a dark green smudge. */
+[data-theme="dark"] .sanction-matrix-table .matrix-check.is-present {
+  color: #4fce9f;
+  background: rgba(79, 206, 159, .12);
+}
+
+/* The attendance report has eleven columns. On laptop widths the two
+   identifier columns are reference-only, so they step out of the screen
+   table before the layout has to scroll. Print and CSV still receive the
+   complete record set from the same rows. */
+@media (max-width: 1366px) {
+  .report-table { min-width: 0; }
+  .report-table .report-col-secondary { display: none; }
+  .report-table tbody td { padding-block: 11px; }
+}
+
+/* Below the sidebar-shrink breakpoint the organisational context columns
+   also step out, leaving student, event, time and status readable without
+   a horizontal scrollbar. */
+@media (max-width: 1150px) {
+  .report-table .report-col-context { display: none; }
+}
+
+@media (max-width: 900px) {
+  .report-filters { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
+}
+
+@media (max-width: 991.98px) {
+  /* The action column narrows before the layout stacks, so let the button
+     labels wrap instead of spilling out of the column. */
+  .sanction-filter-actions .btn {
+    padding: 8px 10px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 720px) {
+  /* The columns are stacked here, so the action pair can share one line. */
+  .sanction-filter-actions { flex-direction: row; }
+  .sanction-filter-actions .btn { flex: 1 1 0; min-width: 0; }  .sanction-clear-link {
+    align-self: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .report-filters { grid-template-columns: 1fr; }
+  .report-filter-actions { flex-direction: column; }
+  .report-filter-actions .btn { width: 100%; }
+}
+
+/* Keep the layout consistent in dark mode: the toolbar surface and the
+   emerald action ramp stay legible without re-declaring each token. */
+[data-theme="dark"] .sanction-report-toolbar {
+  background: var(--color-bg-input, #1f2522);
+  border-color: var(--color-border-default, #3a4340);
+}
+
+[data-theme="dark"] .sanction-event-field .form-select,
+[data-theme="dark"] .sanction-event-field .form-select option {
+  background-color: var(--color-bg-card, #2a3230);
+  color: var(--color-text-primary, #e7edf0);
+  border-color: var(--color-border-default, #3a4340);
+}
+
+[data-theme="dark"] .sanction-event-field .form-select:has(> option:only-child:disabled) {
+  color: var(--color-text-muted, #8a9792);
+}
+
+[data-theme="dark"] .sanction-report-toolbar .form-label {
+  color: var(--color-text-muted, #8a9792);
+}
+
+@media print {
+  /* The sanction matrix is the widest report, so every print job uses a
+     landscape page. Attendance sections also read better side by side. */
+  @page { size: landscape; margin: 10mm; }
+
+  html, body { width: 100%; min-height: 0; background: #fff !important; color: #111 !important; }
+  body * { visibility: hidden !important; }
+  .role-sidebar, .role-topbar, .role-intro, .report-hide-print,
+  #toastContainer, .report-filters, .report-generated-note,
+  .sanction-report-toolbar, .stat-grid, .nav-tabs,
+  .dashboard-card > .card-heading { display: none !important; }
+
+  /* Keep only the report container in the print flow. Any card above it
+     (for example attendance corrections) is removed instead of merely
+     hidden, so it cannot push the report down the first page. */
+  .role-main > :not(.report-print-root) { display: none !important; }
+  .report-print-root > .card-heading,
+  .report-print-root > .nav-tabs { display: none !important; }
+
+  .role-shell, .role-main, .tab-content, .dashboard-card,
+  #attendanceReportSection, #sanctionReportSection, .report-sheet {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #fff !important;
+    visibility: visible !important;
+  }
+
+  .tab-pane { display: none !important; visibility: hidden !important; }
+  .tab-pane.active { display: block !important; visibility: visible !important; }
+  .tab-pane.active * { visibility: visible !important; }
+
+  .report-print-header, .report-print-header * { display: block !important; visibility: visible !important; }
+  .report-print-header { border-bottom: 2px solid #222; margin: 0 0 14px; padding: 0 0 10px; }
+  .report-print-brand { display: flex !important; align-items: center; gap: 10px; }
+  .report-print-logo { display: inline-flex !important; align-items: center; justify-content: center; width: 42px; height: 42px; border: 1px solid #333; border-radius: 50%; font-size: 10px; font-weight: 700; }
+  .report-print-brand strong { font-size: 16px; }
+  .report-print-brand span:not(.report-print-logo) { margin-top: 2px; font-size: 11px; }
+  .report-print-meta { margin-top: 8px; font-size: 10px; }
+  .report-print-meta p { display: block !important; margin: 2px 0; }
+  .report-print-meta span { display: inline !important; }
+
+  /* ── Attendance: hide summary, show detailed event sections ── */
+  .attendance-summary { display: none !important; visibility: hidden !important; }
+  .attendance-detail-view { display: block !important; visibility: visible !important; }
+  .report-table-wrap { overflow: visible !important; }
+  #attendanceReportTable { display: none !important; }
+
+  .attendance-print-sections {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  .attendance-print-breakdown {
+    display: block !important;
+    margin: 0 0 16px;
+    break-inside: auto;
+  }
+
+  .attendance-print-breakdown-title {
+    margin: 0 0 7px;
+    font-size: 11pt;
+    font-weight: 700;
+    border-bottom: 1.5px solid #333;
+    padding: 0 0 5px;
+  }
+
+  .attendance-print-breakdown table {
+    width: 100% !important;
+    margin: 0;
+    border-collapse: collapse !important;
+    table-layout: fixed;
+    font-size: 8.5pt;
+  }
+
+  .attendance-print-breakdown th,
+  .attendance-print-breakdown td {
+    padding: 3px 5px !important;
+    border: 1px solid #888 !important;
+    color: #111 !important;
+    background: #fff !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal !important;
+  }
+
+  .attendance-print-breakdown thead { display: table-header-group; }
+  .attendance-print-breakdown tr { break-inside: avoid; page-break-inside: avoid; }
+
+  .report-event-section {
+    display: block !important;
+    margin: 0 0 16px;
+    break-inside: auto;
+  }
+
+  .report-event-header {
+    display: flex !important;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 0 0 7px;
+    padding: 0 0 5px;
+    border-bottom: 1.5px solid #333;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .report-event-title {
+    display: flex !important;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .report-event-title h3 {
+    margin: 0;
+    font-size: 12pt;
+    line-height: 1.15;
+  }
+
+  .report-event-id {
+    padding: 1px 5px;
+    border: 1px solid #777;
+    border-radius: 3px;
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: .03em;
+  }
+
+  .report-event-meta {
+    margin: 0;
+    font-size: 8.5pt;
+    white-space: nowrap;
+  }
+
+  .report-event-empty {
+    margin: 0;
+    font-size: 10pt;
+  }
+
+  .report-event-table {
+    width: 100% !important;
+    margin: 0;
+    border-collapse: collapse !important;
+    table-layout: fixed;
+    font-size: 8.5pt;
+  }
+
+  .report-event-table th,
+  .report-event-table td {
+    padding: 3px 5px !important;
+    border: 1px solid #888 !important;
+    color: #111 !important;
+    background: #fff !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal !important;
+  }
+
+  .report-event-table thead { display: table-header-group; }
+  .report-event-table tr { break-inside: avoid; page-break-inside: avoid; }
+
+  .report-event-table th:nth-child(1) { width: 4%; }
+  .report-event-table th:nth-child(2) { width: 21%; }
+  .report-event-table th:nth-child(3) { width: 13%; }
+  .report-event-table th:nth-child(4) { width: 9%; }
+  .report-event-table th:nth-child(5) { width: 17%; }
+  .report-event-table th:nth-child(6) { width: 12%; }
+  .report-event-table th:nth-child(7) { width: 8%; }
+  .report-event-table th:nth-child(8) { width: 8%; }
+  .report-event-table th:nth-child(9) { width: 8%; }
+
+  .report-event-table .badge {
+    padding: 0;
+    color: #111 !important;
+    background: transparent !important;
+    font-weight: 600;
+  }
+
+  /* ── Matrix: landscape, compact, repeat headers per page ────── */
+  .sanction-summary { display: none !important; visibility: hidden !important; }
+
+  .sanction-matrix-view {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  .sanction-matrix-wrap {
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0;
+  }
+
+  .sanction-matrix-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed;
+    border-collapse: collapse !important;
+    font-size: 7pt;
+  }
+
+  .sanction-matrix-table th,
+  .sanction-matrix-table td {
+    box-sizing: border-box !important;
+    padding: 3px 4px !important;
+    border: 1px solid #888 !important;
+    color: #111 !important;
+    background: #fff !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+
+  .sanction-matrix-table thead th { font-size: 6.4pt !important; }
+
+  .sanction-matrix-table thead { display: table-header-group; }
+  .sanction-matrix-table tr { break-inside: avoid; page-break-inside: avoid; }
+
+  /* Sticky positioning is meaningless on paper and can clip cells. */
+  .sanction-matrix-table .matrix-student-id,
+  .sanction-matrix-table .matrix-student-name {
+    position: static !important;
+    left: auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .sanction-matrix-table .matrix-student-id {
+    width: 58px !important;
+    min-width: 58px !important;
+    font-size: 6.4pt;
+    white-space: nowrap !important;
+  }
+
+  .sanction-matrix-table .matrix-student-name {
+    width: 112px !important;
+    min-width: 112px !important;
+  }
+
+  .matrix-name { font-size: 7pt; }
+  .matrix-student-meta { display: none !important; }
+
+  .matrix-major-head .matrix-event-name,
+  .matrix-minor-head .matrix-event-name {
+    font-size: 6.4pt;
+    line-height: 1.15;
+  }
+
+  .matrix-event-meta { font-size: 5.8pt; }
+  .matrix-subhead {
+    min-width: 0;
+    padding: 2px !important;
+    font-size: 5.6pt !important;
+  }
+
+  .sanction-matrix-table .matrix-check {
+    min-width: 22px !important;
+    padding: 2px !important;
+    color: #111 !important;
+    background: #fff !important;
+    font-size: 8pt;
+  }
+
+  .sanction-matrix-table .matrix-check.is-present {
+    color: #111 !important;
+    background: #fff !important;
+  }
+
+  .sanction-matrix-table .matrix-absences {
+    width: 42px !important;
+    min-width: 42px !important;
+    font-size: 7.5pt;
+    white-space: nowrap !important;
+  }
+
+  .sanction-matrix-table .matrix-status {
+    width: 66px !important;
+    min-width: 66px !important;
+    font-size: 6.8pt;
+  }
+
+  .sanction-matrix-table .badge,
+  .sanction-matrix-table .matrix-status .badge {
+    padding: 0;
+    color: #111 !important;
+    background: transparent !important;
+    font-size: 6.8pt;
+    font-weight: 600;
+  }
+}

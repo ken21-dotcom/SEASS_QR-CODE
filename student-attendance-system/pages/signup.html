@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create account | ATTENDLY</title>
+  <!-- Preconnect to font origins to reduce DNS/TLS latency -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'dark';}catch(e){document.documentElement.dataset.theme='dark'}</script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="../css/styles.css?v=3" rel="stylesheet">
+  <link href="../css/dark-style.css?v=3" rel="stylesheet">
+</head>
+<body class="auth-page">
+  <!-- Skip to main content — WCAG 2.4.1 (Bypass Blocks) -->
+  <a href="#main-content" class="visually-hidden focusable">Skip to main content</a>
+
+  <div class="auth-split">
+    <button class="icon-button theme-toggle-fab" type="button" aria-label="Toggle theme" data-theme-toggle><i class="bi bi-moon" data-theme-icon></i></button>
+    <!-- Hero panel (carousel) — identical to the login screen; auth.js drives
+         it by class, so no per-page wiring is needed. -->
+    <div class="auth-hero">
+      <div class="auth-hero-slides">
+        <div class="auth-hero-slide active" style="background-image:url('../images/LOGIN4.webp')"></div>
+        <div class="auth-hero-slide" style="background-image:url('../images/LOGIN.webp')"></div>
+        <div class="auth-hero-slide" style="background-image:url('../images/LOGIN2.webp')"></div>
+        <div class="auth-hero-slide" style="background-image:url('../images/LOGIN3.webp')"></div>
+      </div>
+      <div class="auth-hero-content">
+        <!-- Slide 1 — primary content -->
+        <div class="auth-hero-slide-content active">
+          <h1>Track attendance<br>with <em>a single scan.</em></h1>
+          <p>Fast, reliable QR check-ins for campus events, built for the students and council officers of J.H. Cerilles State College.</p>
+          <div class="auth-hero-details">
+            <span class="auth-hero-detail"><i class="bi bi-qr-code-scan"></i> Secure QR check-in</span>
+            <span class="auth-hero-detail"><i class="bi bi-lightning-charge"></i> Instant attendance logs</span>
+          </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="auth-hero-slide-content">
+          <h1>Enroll once,<br><em>check in fast.</em></h1>
+          <p>Scan your personal QR code once and breeze through every campus event with hands-free check-in.</p>
+          <div class="auth-hero-details">
+            <span class="auth-hero-detail"><i class="bi bi-check2-circle"></i> Automated event check-ins</span>
+          </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="auth-hero-slide-content">
+          <h1>Real-time<br><em>attendance tracking.</em></h1>
+          <p>Officers see live attendance dashboards as students check in — no more manual headcounts.</p>
+          <div class="auth-hero-details">
+            <span class="auth-hero-detail"><i class="bi bi-graph-up"></i> Live attendance analytics</span>
+            <span class="auth-hero-detail"><i class="bi bi-calendar-check"></i> Event scheduling</span>
+          </div>
+        </div>
+        <!-- Slide 4 -->
+        <div class="auth-hero-slide-content">
+          <h1>Secure,<br><em>transparent records.</em></h1>
+          <p>Each check-in is verified against the student's unique QR code and included in the attendance audit trail.</p>
+          <div class="auth-hero-details">
+            <span class="auth-hero-detail"><i class="bi bi-file-earmark-check"></i> Exportable attendance logs</span>
+            <span class="auth-hero-detail"><i class="bi bi-clock-history"></i> Audit trail history</span>
+          </div>
+        </div>
+      </div>
+      <!-- Carousel controls -->
+      <div class="auth-hero-controls" id="heroControls">
+        <div class="auth-hero-indicators">
+          <button class="auth-hero-progress active" data-slide="0" aria-label="Go to slide 1"><span class="auth-hero-track"><span class="auth-hero-progress-fill"></span></span></button>
+          <button class="auth-hero-progress" data-slide="1" aria-label="Go to slide 2"><span class="auth-hero-track"><span class="auth-hero-progress-fill"></span></span></button>
+          <button class="auth-hero-progress" data-slide="2" aria-label="Go to slide 3"><span class="auth-hero-track"><span class="auth-hero-progress-fill"></span></span></button>
+          <button class="auth-hero-progress" data-slide="3" aria-label="Go to slide 4"><span class="auth-hero-track"><span class="auth-hero-progress-fill"></span></span></button>
+        </div>
+        <span class="auth-hero-slide-label">Slide <span class="auth-hero-slide-num" id="slideNum"><span class="auth-hero-slide-num-inner current">01</span></span> / 04</span>
+        <div class="auth-hero-arrows">
+<button class="auth-hero-arrow" id="heroPrev" aria-label="Previous slide"><i class="bi bi-arrow-left"></i></button>
+        <button class="auth-hero-arrow" id="heroNext" aria-label="Next slide"><i class="bi bi-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form panel. Taller than the login panel, so it scrolls. -->
+    <main id="main-content" class="auth-form-panel auth-form-panel--scroll">
+      <div class="auth-form-brand">
+        <div class="auth-logo-badge"><i class="bi bi-person-bounding-box"></i></div>
+        <span>Attendly</span>
+      </div>
+      <div class="auth-form-header">
+        <h2 id="signupFormTitle">Create your account</h2>
+        <p id="signupFormSubtitle">Register as a student to start checking in to campus events with a single scan.</p>
+      </div>
+      <form id="signupForm" class="auth-form" novalidate>
+        <div class="auth-form-row mb-3 auth-field-group">
+          <div>
+            <label for="signup-first-name-field" class="form-label auth-label-uppercase">FIRST NAME</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              <input type="text" class="form-control" id="signup-first-name-field" name="firstName" autocomplete="given-name" placeholder="Juan" maxlength="100" required>
+            </div>
+            <div class="invalid-feedback" id="signup-first-name-error">First name is required.</div>
+          </div>
+          <div>
+            <label for="signup-last-name-field" class="form-label auth-label-uppercase">LAST NAME</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              <input type="text" class="form-control" id="signup-last-name-field" name="lastName" autocomplete="family-name" placeholder="Dela Cruz" maxlength="100" required>
+            </div>
+            <div class="invalid-feedback" id="signup-last-name-error">Last name is required.</div>
+          </div>
+        </div>
+        <div class="mb-3 auth-field-group">
+          <label for="signup-email-field" class="form-label auth-label-uppercase">SCHOOL EMAIL</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <input type="email" class="form-control" id="signup-email-field" name="email" autocomplete="email" placeholder="you@jhcerilles.edu.ph" maxlength="190" required>
+          </div>
+          <div class="invalid-feedback" id="signup-email-error">Please enter a valid email address.</div>
+        </div>
+        <div class="mb-3 auth-field-group">
+          <label for="signupDepartment" class="form-label auth-label-uppercase">DEPARTMENT</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-buildings"></i></span>
+            <select class="form-control auth-select" id="signupDepartment" name="department" required></select>
+            <span class="input-group-text auth-select-caret" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+          </div>
+          <div class="invalid-feedback" id="signupDepartment-error">Please select your department.</div>
+        </div>
+        <div class="auth-form-row mb-3 auth-field-group">
+          <div>
+            <label for="signupCourse" class="form-label auth-label-uppercase">COURSE / PROGRAM</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-journal-text"></i></span>
+              <select class="form-control auth-select" id="signupCourse" name="program" required></select>
+              <span class="input-group-text auth-select-caret" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="invalid-feedback" id="signupCourse-error">Please select your course or program.</div>
+          </div>
+          <div>
+            <label for="signupYear" class="form-label auth-label-uppercase">YEAR LEVEL</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+              <select class="form-control auth-select" id="signupYear" name="yearLevel" required></select>
+              <span class="input-group-text auth-select-caret" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="invalid-feedback" id="signupYear-error">Please select your year level.</div>
+          </div>
+        </div>
+        <div class="auth-form-row mb-3 auth-field-group">
+          <div>
+            <label for="signup-student-id-field" class="form-label auth-label-uppercase">STUDENT ID NUMBER</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
+              <input type="text" class="form-control" id="signup-student-id-field" name="studentIdNumber" autocomplete="off" placeholder="e.g. 2024-00123" maxlength="30" required>
+            </div>
+            <div class="invalid-feedback" id="signup-student-id-error">Student ID number is required.</div>
+          </div>
+          <div>
+            <label for="signup-block-field" class="form-label auth-label-uppercase">BLOCK</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-people"></i></span>
+              <input type="text" class="form-control" id="signup-block-field" name="block" autocomplete="off" placeholder="e.g. A" maxlength="30" required>
+            </div>
+            <div class="invalid-feedback" id="signup-block-error">Block is required.</div>
+          </div>
+        </div>
+        <div class="mb-3 auth-field-group">
+          <label for="signup-password-field" class="form-label auth-label-uppercase">PASSWORD</label>
+          <div class="input-group input-group-password">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" class="form-control" id="signup-password-field" name="password" autocomplete="new-password" placeholder="Password" required>
+            <button type="button" class="input-group-text auth-password-toggle" aria-label="Show password" aria-pressed="false"><i class="bi bi-eye"></i></button>
+          </div>
+          <div class="invalid-feedback" id="signup-password-error">Password must be at least 8 characters.</div>
+          <!-- Strength readout. aria-live so the level is announced as it
+               changes; the label text names the level, not just the colour. -->
+          <div class="auth-strength" id="signupStrength" data-level="0">
+            <div class="auth-strength-bars" aria-hidden="true">
+              <span class="auth-strength-bar"></span>
+              <span class="auth-strength-bar"></span>
+              <span class="auth-strength-bar"></span>
+              <span class="auth-strength-bar"></span>
+            </div>
+            <span class="auth-strength-label" id="signupStrengthLabel" aria-live="polite">8+ characters required with a letter and number</span>
+          </div>
+        </div>
+        <div class="mb-3 auth-field-group auth-field-tight">
+          <label for="signup-confirm-field" class="form-label auth-label-uppercase">CONFIRM PASSWORD</label>
+          <div class="input-group input-group-password">
+            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+            <input type="password" class="form-control" id="signup-confirm-field" name="confirmPassword" autocomplete="new-password" placeholder="Repeat password" required>
+            <button type="button" class="input-group-text auth-password-toggle" aria-label="Show password" aria-pressed="false"><i class="bi bi-eye"></i></button>
+          </div>
+          <div class="invalid-feedback" id="signup-confirm-error">Passwords do not match.</div>
+        </div>
+        <div class="auth-check mb-3">
+          <input type="checkbox" class="auth-check-input" id="signup-terms" name="terms" required>
+          <div>
+            <label class="auth-terms-label" for="signup-terms">I agree to the college's attendance rules.</label>
+          </div>
+        </div>
+        <div class="invalid-feedback auth-check-feedback">Please accept the attendance rules to continue.</div>
+        <button type="submit" class="btn btn-primary auth-login-btn">
+          Create account
+        </button>
+        <p class="auth-switch">Already have an account? <a href="login.html">Sign in</a></p>
+      </form>
+
+      <div id="signupPendingPanel" class="auth-pending" tabindex="-1" hidden>
+        <div class="auth-pending-icon" aria-hidden="true"><i class="bi bi-hourglass-split"></i></div>
+        <h3>Awaiting approval</h3>
+        <p>Your account is waiting for administrator approval. You will be able to sign in after it has been approved.</p>
+        <a class="btn btn-primary auth-login-btn" href="login.html">Back to sign in</a>
+      </div>
+
+      <div id="otpVerificationPanel" class="auth-pending d-none" role="region" aria-labelledby="otp-title" tabindex="-1" hidden>
+        <div class="auth-pending-icon" aria-hidden="true"><i class="bi bi-envelope-check" aria-hidden="true"></i></div>
+        <h3 id="otp-title">Verify your email</h3>
+        <p>We sent a 6-digit code to <span id="otpEmailDisplay"></span>. Enter it below to verify your account.</p>
+        <form id="otpForm" class="auth-form" novalidate>
+          <div class="mb-3 auth-field-group">
+            <label for="otp-field" class="form-label auth-label-uppercase">VERIFICATION CODE</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+              <input type="text" class="form-control text-center" id="otp-field" name="otp" autocomplete="one-time-code" placeholder="123456" maxlength="6" required inputmode="numeric" pattern="\d{6}" style="letter-spacing: 0.5em; font-size: 1.25rem;">
+            </div>
+            <div class="invalid-feedback">Please enter the 6-digit code.</div>
+          </div>
+          <button type="submit" class="btn btn-primary auth-login-btn">Verify Code</button>
+          <p class="auth-switch mt-3"><a href="login.html" id="otpBackToLogin">Back to sign in</a></p>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1090; margin-top: 80px;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/auth.js?v=6"></script>
+  <script src="../js/ui.js?v=4"></script>
+</body>
+</html>

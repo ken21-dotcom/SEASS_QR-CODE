@@ -1,0 +1,1635 @@
+/* ========================================
+   Auth / Login Page — ATTENDLY
+   Minimalist campus identity
+   ======================================== */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* box-sizing: border-box is set globally in reset.css */
+
+/* ── Page reset ── */
+.auth-page {
+  position: relative;
+  margin: 0;
+  padding: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top right, rgba(143, 209, 178, 0.28), transparent 20%),
+    radial-gradient(circle at bottom left, rgba(17, 88, 67, 0.10), transparent 30%),
+    linear-gradient(145deg, #f5f1e9 0%, #f7f4ed 36%, #edf6f1 100%);
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========================================
+   Split Layout
+   ======================================== */
+.auth-split {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  height: min(92vh, 900px);
+  width: min(1680px, 100%);
+  margin: 0 auto;
+  padding: 0;
+  border-radius: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(26, 77, 58, 0.09);
+  box-shadow: 0 28px 60px rgba(24, 39, 30, 0.12), 0 8px 18px rgba(24, 39, 30, 0.06);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+}
+
+/* ========================================
+   LEFT — Hero Panel (full-bleed campus slideshow)
+   ======================================== */
+.auth-hero {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 56px 60px 52px;
+  overflow: hidden;
+  color: #fff;
+  background: #0d221b;
+  box-shadow: inset -18px 0 30px rgba(10, 20, 16, 0.18);
+}
+
+/* ── Slideshow layers ──
+   The four image <div>s sit behind the gradient overlay. Each fills the
+   hero at cover size. The JS drives the crossfade by toggling .active, so
+   the visible image always matches the active progress segment (and manual
+   prev/next/clicks land on the right photo). The .55s opacity transition
+   lets the incoming image rise over the outgoing one — no dip to black, no
+   flash. A slow heroDrift scale gives each photo a whisper of life. */
+
+.auth-hero-slides {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.auth-hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity .55s var(--ease);
+}
+
+.auth-hero-slide.active {
+  opacity: 1;
+  animation: heroDrift 5s linear forwards;
+}
+
+/* Slow editorial drift — a whisper of scale so the cue photo feels alive
+   while on screen. Reads as parallax against the static gradient overlay.
+   Stays under ~1%/s so it never reads as a deliberate zoom. */
+@keyframes heroDrift {
+  from { transform: scale(1); }
+  to   { transform: scale(1.045); }
+}
+
+/* Gradient overlay — deep forest green, two-stop for clean legibility */
+.auth-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(12, 32, 24, .10) 0%,
+      rgba(13, 34, 25, .88) 100%
+    );
+  z-index: 1;
+}
+
+/* ── Hero content ── */
+.auth-hero-content {
+  position: relative;
+  z-index: 3;
+  max-width: 470px;
+}
+
+/* Main heading */
+.auth-hero h1 {
+  margin: 0 0 18px;
+  font-family: var(--font-body);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, .20);
+}
+
+/* Italic accent within heading — serif italic in accent green */
+.auth-hero h1 em {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--campus-accent);
+}
+
+/* Subheading */
+.auth-hero p {
+  margin: 0;
+  max-width: 400px;
+  font-family: var(--font-body);
+  font-size: .92rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, .78);
+}
+
+/* ── Feature details — small pill chips ──
+   Translucent white fill with gold icon accent.
+   Lighter weight, more breathing room. */
+.auth-hero-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 44px;
+  padding-top: 28px;
+}
+
+/* ── Hero slide content ── */
+.auth-hero-slide-content {
+  display: none;
+}
+
+.auth-hero-slide-content.active {
+  display: block;
+  animation: slideFadeIn .45s var(--ease) both;
+}
+
+/* Gentle child stagger — the block, subtext and feature chips rise a hair
+   after one another. Parent carries the fade; children carry the slide. */
+.auth-hero-slide-content.active > * {
+  animation: slideChildIn .4s var(--ease) both;
+}
+.auth-hero-slide-content.active > *:nth-child(1) { animation-delay: .05s; }
+.auth-hero-slide-content.active > *:nth-child(2) { animation-delay: .1s; }
+.auth-hero-slide-content.active > *:nth-child(3) { animation-delay: .15s; }
+
+@keyframes slideFadeIn {
+  from { opacity: 0; filter: blur(4px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+
+@keyframes slideChildIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-hero-slide-content.active,
+  .auth-hero-slide-content.active > * {
+    animation: none;
+  }
+}
+
+/* ── Hero carousel controls ── */
+.auth-hero-controls {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 20px;
+  animation: heroControlsEnter .65s var(--ease) .28s both;
+}
+
+@keyframes heroControlsEnter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.auth-hero-indicators {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 380px;
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .07));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .18), inset 0 0 0 1px rgba(255, 255, 255, .18);
+  -webkit-backdrop-filter: blur(8px) saturate(1.1);
+  backdrop-filter: blur(8px) saturate(1.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* One restrained sheen introduces the progress rail after page load. */
+.auth-hero-indicators::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, .22) 48%, transparent 66%);
+  pointer-events: none;
+  transform: translateX(-115%);
+  animation: heroRailSheen 1.05s var(--ease) .52s both;
+}
+
+@keyframes heroRailSheen {
+  to { transform: translateX(115%); }
+}
+
+/* Story-style progress segments —
+   One slim segment per slide. The active segment's fill travels
+   empty → full over the slide's dwell time (heroProgressFill, 5s linear,
+   driven by animationend in auth.js so it never drifts from the advance).
+   Finished segments sit solid, upcoming ones show only a dim translucent
+   track. A white translucent fill + glass backdrop behind the row keep the
+   bars legible over both light and dark photo areas. */
+.auth-hero-progress {
+  --_fill-bg: linear-gradient(90deg,
+    #2f9e74 0%,
+    var(--campus-accent, #4fce9f) 45%,
+    #7fe3b8 78%,
+    #c6f7e6 100%);
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 18px;
+  height: 22px;          /* generous click target; only the track is visible */
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 1;
+}
+
+/* The visible 3px bar — pill caps, translucent white so it never fights the
+   photo; a soft drop shadow lifts it off the image. */
+.auth-hero-track {
+  display: block;
+  position: relative;   /* containing block for the absolute fill */
+  width: 100%;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, .30);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .38),
+    0 1px 2px rgba(0, 0, 0, .32);
+  overflow: hidden;
+  transition:
+    transform .18s var(--ease),
+    background-color .3s var(--ease),
+    box-shadow .3s var(--ease);
+}
+
+/* Pointer-fine hover — subtle swell and brighten so the segment reads as
+   clickable. The running/active segment stays calm. */
+@media (hover: hover) and (pointer: fine) {
+  .auth-hero-progress:hover:not(.active):not(.done) .auth-hero-track {
+    transform: scaleY(1.5);
+    background: rgba(255, 255, 255, .46);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, .6),
+      0 1px 4px rgba(0, 0, 0, .4);
+  }
+}
+
+/* Keyboard focus — a crisp accent ring around the active bar. */
+.auth-hero-progress:focus-visible {
+  outline: none;
+}
+.auth-hero-progress:focus-visible .auth-hero-track {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .75),
+    0 0 0 2px var(--campus-accent),
+    0 1px 4px rgba(0, 0, 0, .4);
+}
+
+.auth-hero-progress.active,
+.auth-hero-progress.active:hover {
+  cursor: default;
+}
+
+.auth-hero-progress.active .auth-hero-track {
+  transform: scaleY(1.35);
+  background: rgba(255, 255, 255, .38);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .55),
+    0 0 9px rgba(79, 206, 159, .32);
+  animation: heroTrackBreathe 2.2s ease-in-out infinite;
+}
+
+@keyframes heroTrackBreathe {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.22); }
+}
+
+/* Active / done — the fill carries a green→mint gradient plus a soft white
+   edge highlight pinned to the leading edge, so the newest-filled sliver
+   reads brightest as it travels. */
+.auth-hero-progress.active .auth-hero-progress-fill,
+.auth-hero-progress.done .auth-hero-progress-fill {
+  background-color: transparent;
+  background-image:
+    linear-gradient(110deg, transparent 34%, rgba(255, 255, 255, .08) 42%, rgba(255, 255, 255, .72) 50%, rgba(255, 255, 255, .08) 58%, transparent 66%),
+    var(--_fill-bg);
+  background-size: 220% 100%, 100% 100%;
+  background-position: 130% 0, 0 0;
+}
+
+/* Done — filled and held. A brief settle pulse makes the tick of completion
+   tangible before the next segment picks up. */
+.auth-hero-progress.done .auth-hero-progress-fill {
+  transform: scaleX(1);
+  animation: heroSegmentSettle .38s var(--ease) both;
+}
+
+/* Active — animates empty → full over the dwell time. A soft glow rides
+   along the fill so progress reads even over busy texture. */
+.auth-hero-progress.active .auth-hero-progress-fill {
+  transform: scaleX(0);
+  box-shadow: 0 0 8px rgba(79, 206, 159, .42);
+  animation:
+    heroProgressFill 5s linear forwards,
+    heroProgressShimmer 1.35s linear infinite;
+}
+
+@keyframes heroProgressFill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes heroProgressShimmer {
+  from { background-position: 130% 0, 0 0; }
+  to   { background-position: -120% 0, 0 0; }
+}
+
+/* Clicked segment — a quick glow-and-swell before its fill takes over, so a
+   jump lands smoothly instead of cutting. */
+.auth-hero-progress.pop .auth-hero-track {
+  animation: heroSegPop .26s var(--ease) both;
+}
+
+@keyframes heroSegPop {
+  0%   { transform: scaleY(1.6); filter: brightness(1.35); }
+  100% { transform: scaleY(1);   filter: brightness(1); }
+}
+
+@keyframes heroSegmentSettle {
+  0%   { transform: scaleX(1) scaleY(1);   filter: brightness(1.05); }
+  45%  { transform: scaleX(1) scaleY(1.8); filter: brightness(1.28); }
+  100% { transform: scaleX(1) scaleY(1);   filter: brightness(1); }
+}
+
+/* Fill element — grows left → right inside the segment's track */
+.auth-hero-progress-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: transparent;
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+  will-change: transform, background-position;
+}
+
+/* Pause/resume — freeze the active fill in place while hovering the hero */
+.auth-hero-progress.paused .auth-hero-progress-fill {
+  animation-play-state: paused;
+}
+.auth-hero-progress.running .auth-hero-progress-fill {
+  animation-play-state: running;
+}
+
+.auth-hero-slide-label {
+  font-family: var(--font-body);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  color: rgba(255, 255, 255, .55);
+  text-transform: uppercase;
+}
+
+.auth-hero-slide-num {
+  color: rgba(255, 255, 255, .9);
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  height: 1.3em;
+  vertical-align: bottom;
+  line-height: 1.3;
+  width: 1.6em;
+  text-align: center;
+}
+
+.auth-hero-slide-num-inner {
+  display: block;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transition: transform .42s cubic-bezier(.22, 1, .36, 1),
+              opacity .3s ease,
+              filter .42s ease;
+}
+
+.auth-hero-slide-num-inner.current {
+  transform: translateY(0);
+  opacity: 1;
+  filter: blur(0);
+}
+
+.auth-hero-slide-num-inner.exit-up {
+  transform: translateY(-100%);
+  opacity: 0;
+  filter: blur(2px);
+}
+
+.auth-hero-slide-num-inner.enter-down {
+  transform: translateY(100%);
+  opacity: 0;
+  filter: blur(2px);
+}
+
+/* Fade-reset cycle on the indicators row */
+.auth-hero-controls.fade-reset {
+  opacity: 0;
+  transition: opacity .4s cubic-bezier(.4, .0, .2, 1);
+}
+
+.auth-hero-arrows {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.auth-hero-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-circle);
+  border: 1px solid rgba(255, 255, 255, .2);
+  background: rgba(255, 255, 255, .06);
+  color: rgba(255, 255, 255, .7);
+  font-size: .85rem;
+  cursor: pointer;
+  transition: transform 160ms var(--ease),
+              background-color 160ms var(--ease),
+              border-color 160ms var(--ease),
+              color 160ms var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .auth-hero-arrow:hover {
+    background: rgba(255, 255, 255, .16);
+    border-color: rgba(255, 255, 255, .4);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+}
+
+.auth-hero-arrow:active {
+  transform: translateY(0) scale(.94);
+  transition-duration: 80ms;
+}
+
+.auth-hero-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .14);
+  font-family: var(--font-body);
+  font-size: .8rem;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: rgba(255, 255, 255, .88);
+  text-decoration: none;
+  transition: transform 160ms var(--ease),
+              background-color 160ms var(--ease),
+              border-color 160ms var(--ease),
+              box-shadow 160ms var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .auth-hero-detail:hover {
+    background: rgba(255, 255, 255, .14);
+    border-color: rgba(255, 255, 255, .28);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .18);
+  }
+}
+
+.auth-hero-detail i {
+  font-size: .9rem;
+  color: var(--campus-accent);
+  transition: transform 160ms var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .auth-hero-detail:hover i {
+    transform: translateY(-1px);
+  }
+}
+
+/* ========================================
+   RIGHT — Form Panel
+   Warm cream surface, generous breathing room
+   ======================================== */
+.auth-form-panel {
+  flex: 0 0 auto;
+  width: 610px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px 72px;
+  background: rgba(247, 244, 237, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  position: relative;
+  overflow: hidden;
+  min-width: 610px;
+  border-left: 1px solid rgba(26, 77, 58, 0.08);
+}
+
+/* Keep the auth card white and elevated only in light mode. Dark-mode rules
+   in dark-style.css intentionally override both declarations. */
+:root[data-theme="light"] .auth-form-panel {
+  background: #ffffff;
+  box-shadow: 0 20px 40px -10px rgba(26, 77, 58, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(78, 160, 118, 0.10), transparent 28%);
+  pointer-events: none;
+}
+
+/* Form brand — logo lockup: brand mark + wordmark.
+   Restrained, confident; weight and size are pulled back. */
+.auth-form-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 48px;
+  color: var(--campus-bark);
+}
+
+.auth-form-brand i {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--campus-green);
+}
+
+/* Logo badge — rounded-square with gradient + glow */
+.auth-logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1a2e25 0%, var(--campus-green) 100%);
+  box-shadow: 0 0 12px rgba(26, 77, 58, .30),
+              0 2px 6px rgba(0, 0, 0, .12);
+  flex-shrink: 0;
+  transition: transform 160ms var(--ease),
+              box-shadow 160ms var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .auth-logo-badge:hover {
+    box-shadow: 0 0 18px rgba(26, 77, 58, .40),
+                0 4px 10px rgba(0, 0, 0, .16);
+    transform: translateY(-1px);
+  }
+}
+
+.auth-logo-badge:active {
+  transform: translateY(0) scale(.96);
+  transition-duration: 80ms;
+}
+
+.auth-logo-badge i {
+  font-size: 1.15rem;
+  line-height: 1;
+  color: #fff;
+}
+
+.auth-form-brand span {
+  font-family: var(--font-body);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+
+/* Form header */
+.auth-form-header {
+  margin-bottom: 40px;
+}
+
+.auth-form-header h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 2.4vw, 2.8rem);
+  font-weight: 400;
+  letter-spacing: -.04em;
+  line-height: 1.05;
+  color: var(--campus-bark);
+}
+
+.auth-form-header p {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: .9rem;
+  line-height: 1.55;
+  color: var(--campus-fog-strong);
+}
+
+/* Auth status note — explains why a clean install asks for an admin */
+.auth-setup-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding: 12px 14px;
+  border: 1px solid rgba(14, 159, 110, .25);
+  border-radius: 12px;
+  background: rgba(14, 159, 110, .08);
+  color: var(--campus-bark);
+  font-family: var(--font-body);
+  font-size: .8rem;
+  line-height: 1.5;
+}
+
+.auth-setup-note > i {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--campus-green);
+  font-size: 1.05rem;
+}
+
+/* ── Form fields ── */
+.auth-form .form-label {
+  font-family: var(--font-body);
+  font-size: var(--font-size-label);
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--campus-bark);
+}
+
+/* Uppercase label variant */
+.auth-form .auth-label-uppercase {
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .7rem;
+  color: var(--campus-fog-strong);
+}
+
+.auth-form .input-group {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-input);
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(20, 34, 27, 0.04);
+  transition: border-color var(--transition-fast) var(--ease), box-shadow var(--transition-fast) var(--ease), transform var(--transition-fast) var(--ease);
+}
+
+.auth-form .input-group:focus-within {
+  border-color: var(--color-border-focus);
+  box-shadow:
+    0 0 0 2px rgba(var(--bs-primary-rgb), .28),
+    0 0 16px rgba(var(--bs-primary-rgb), .22),
+    0 10px 22px rgba(20, 34, 27, 0.04);
+}
+
+.auth-form .input-group-text {
+  background: #f4f8f6;
+  border: 0 !important;
+  color: var(--campus-fog-strong);
+  font-size: .85rem;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.auth-form .form-control {
+  border: 0 !important;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-family: var(--font-body);
+  font-size: .92rem;
+  padding: 12px 14px;
+  background: #fff;
+  box-shadow: none !important;
+  outline: none;
+  color: #1e2922;
+  transition: border-color var(--transition-fast) var(--ease),
+              box-shadow var(--transition-fast) var(--ease),
+              background var(--transition-fast) var(--ease),
+              transform var(--transition-fast) var(--ease),
+              border-color 160ms var(--ease);
+}
+
+.auth-form .form-control:not(:placeholder-shown),
+.auth-form .form-control:focus,
+.auth-form .form-control:focus-visible {
+  color: #1e2922;
+}
+
+.auth-form .form-control:hover {
+  box-shadow: none !important;
+}
+
+/* Validation is text-only: invalid fields keep their normal border. */
+.auth-form .form-control.is-invalid,
+.auth-form .form-select.is-invalid,
+.auth-form .auth-check-input.is-invalid,
+.auth-form .input-group:has(> .is-invalid) .form-control.is-invalid,
+.auth-form .input-group:has(> .is-invalid) .form-select.is-invalid {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.auth-form .input-group:has(.is-invalid) {
+  border-color: var(--color-border-input) !important;
+}
+
+.auth-form .input-group:has(.is-invalid) + .invalid-feedback {
+  display: block;
+}
+.auth-form .form-control.is-invalid,
+.auth-form .form-control.is-invalid:focus,
+.auth-form .form-control.is-invalid:focus-visible,
+.auth-form .form-select.is-invalid,
+.auth-form .form-select.is-invalid:focus,
+.auth-form .form-select.is-invalid:focus-visible,
+.auth-form .auth-check-input.is-invalid,
+.auth-form .auth-check-input.is-invalid:focus,
+.auth-form .auth-check-input.is-invalid:focus-visible {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.auth-form .input-group:has(.is-invalid) {
+  box-shadow: none !important;
+}
+
+.auth-form .invalid-feedback {
+  display: none;
+  width: 100%;
+  margin-top: 6px;
+  font-size: .7rem;
+  line-height: 1.4;
+  color: #dc3545;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  text-align: left;
+}
+
+.auth-form .auth-field-group:has(.is-invalid) > .invalid-feedback,
+.auth-form .mb-3:has(.is-invalid) > .invalid-feedback,
+.auth-form .mb-4:has(.is-invalid) > .invalid-feedback,
+.auth-form .auth-check:has(.is-invalid) + .invalid-feedback {
+  display: block;
+}
+
+:root:not([data-theme="light"]) .auth-form .invalid-feedback {
+  color: #ff6b6b;
+}
+
+.auth-form .auth-check-feedback {
+  margin-top: 6px;
+  padding-left: 32px;
+}
+
+/* Subtle idle outline; stronger ring only when active */
+.auth-form .form-control:focus,
+.auth-form .form-control:focus-visible {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: #fff;
+  color: #1e2922;
+  outline: none;
+}
+
+.auth-form .form-control:-webkit-autofill,
+.auth-form .form-control:-webkit-autofill:hover,
+.auth-form .form-control:-webkit-autofill:focus,
+.auth-form .form-control:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.94) inset, 0 0 0 1px rgba(26, 77, 58, 0.12) inset !important;
+  -webkit-text-fill-color: var(--campus-bark) !important;
+  border-color: rgba(26, 77, 58, 0.28) !important;
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.auth-form .form-control::placeholder {
+  color: rgba(95, 111, 102, 0.72);
+  font-weight: 400;
+  opacity: 1;
+}
+
+/* ── Password visibility toggle ──
+   With the eye button as the last child of the field, the input's right
+   corners square off and the toggle carries the outer rounding. */
+.auth-form .input-group-password .form-control {
+  border-radius: 0;
+}
+
+.auth-form .auth-password-toggle {
+    border: 0 !important;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 0 14px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--campus-fog-strong);
+  transition: color var(--transition-fast) var(--ease),
+              background var(--transition-fast) var(--ease);
+}
+
+.auth-form .auth-password-toggle:hover,
+.auth-form .auth-password-toggle:focus-visible {
+  background: transparent;
+  color: var(--campus-green);
+}
+
+.auth-form .auth-password-toggle i {
+  font-size: .95rem;
+  line-height: 1;
+  pointer-events: none;
+  transition: transform 160ms var(--ease),
+              opacity 160ms var(--ease);
+}
+
+/* Brief flip on the eye icon when toggled — a tactile "flick" so the
+   swap reads as a physical action rather than an instant replace. */
+.auth-form .auth-password-toggle.is-switching i {
+  transform: rotate(-20deg) scale(.8);
+  opacity: .4;
+}
+
+.auth-form .auth-password-toggle:active {
+  transform: scale(.92);
+  transition-duration: 80ms;
+}
+
+/* ── Forgot password link — small, right-aligned under the field ── */
+.auth-form .auth-forgot {
+  font-family: var(--font-body);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  color: var(--campus-fog-strong);
+  text-decoration: none;
+  transition: color var(--transition-fast) var(--ease);
+}
+
+.auth-form .auth-forgot:hover {
+    color: var(--campus-link);
+  }
+
+/* ── Submit button — the single deliberate moment ──
+   Solid green, confident; scale-on-press for tactile feedback. */
+.auth-login-btn {
+  width: 100%;
+  padding: 16px 24px;
+  margin-top: 12px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1a4d3a 0%, #163f31 100%);
+  border: none;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(26, 77, 58, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+  position: relative;
+  transition: transform 160ms var(--ease),
+              box-shadow 160ms var(--ease),
+              filter 160ms var(--ease);
+}
+
+.auth-login-btn .bi-person-bounding-box {
+  color: var(--campus-accent);
+}
+
+/* Accent brand mark must survive btn-primary's white default */
+.btn-primary.auth-login-btn .bi-person-bounding-box {
+  color: var(--campus-accent);
+}
+
+/* Sheen sweep - a soft light band glides across on hover, hinting at the
+   scan action without being distracting. Transforms only. */
+.auth-login-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .18), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+  transition: transform 500ms var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .auth-login-btn:hover {
+    background: #1e5039;
+    box-shadow: 0 4px 16px rgba(26, 77, 58, .22);
+  }
+
+  .auth-login-btn:hover::after {
+    transform: skewX(-20deg) translateX(320%);
+  }
+}
+
+.auth-login-btn:active {
+  transform: scale(.97);
+  box-shadow: 0 1px 4px rgba(26, 77, 58, .16);
+  transition-duration: 100ms;
+}
+
+/* ========================================
+   Theme Toggle FAB — subtle, glass-like
+   ======================================== */
+.theme-toggle-fab {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 20;
+  background: rgba(255, 255, 255, .72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(26, 77, 58, .12);
+  box-shadow: 0 8px 18px rgba(16, 28, 22, 0.08);
+  transition: transform 160ms var(--ease),
+              background-color 160ms var(--ease),
+              border-color 160ms var(--ease),
+              box-shadow 160ms var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle-fab:hover {
+    background: rgba(255, 255, 255, .85);
+    border-color: rgba(255, 255, 255, .5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+  }
+}
+
+.theme-toggle-fab:active {
+  transform: scale(.92);
+  transition-duration: 80ms;
+}
+
+.theme-toggle-fab i {
+  transition: transform 180ms var(--ease);
+}
+
+.theme-toggle-fab:active i {
+  transform: rotate(-40deg);
+}
+
+/* ========================================
+   Motion — one crisp entrance sequence.
+   Disabled for reduced-motion users.
+   ======================================== */
+@keyframes authFormFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-form-panel > * {
+  opacity: 0;
+  animation: authFormFadeUp .4s var(--ease) forwards;
+}
+
+.auth-form-panel > *:nth-child(1) { animation-delay: .04s; }
+.auth-form-panel > *:nth-child(2) { animation-delay: .1s; }
+.auth-form-panel > *:nth-child(3) { animation-delay: .16s; }
+.auth-form-panel > *:nth-child(4) { animation-delay: .22s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-form-panel > * {
+    opacity: 1;
+    animation: none;
+  }
+
+  .auth-login-btn,
+  .auth-form .form-control,
+  .auth-logo-badge,
+  .auth-hero-arrow,
+  .auth-hero-progress,
+  .auth-hero-detail,
+  .auth-password-toggle,
+  .theme-toggle-fab {
+    transition: none;
+  }
+
+  .auth-hero-slide {
+    transition: none;
+    animation: none;
+  }
+
+  .auth-hero-progress.active .auth-hero-progress-fill {
+    animation: none;
+    transform: scaleX(1);
+  }
+
+  .auth-hero-progress.done .auth-hero-progress-fill,
+  .auth-hero-progress.pop .auth-hero-track {
+    animation: none;
+  }
+
+  .auth-hero-controls,
+  .auth-hero-indicators::before,
+  .auth-hero-progress.active .auth-hero-track {
+    animation: none;
+  }
+
+  .auth-hero-track {
+    transform: none;
+  }
+
+  .auth-hero-slide-num-inner {
+    transition: none;
+  }
+
+  .auth-hero-controls.fade-reset {
+    transition: none;
+  }
+
+  .auth-hero-slide-content.active,
+  .auth-hero-slide-content.active > * {
+    animation: none;
+  }
+
+  /* No lift/translate motion; keep simple color changes only. */
+  .auth-logo-badge:hover,
+  .auth-hero-arrow:hover,
+  .auth-hero-detail:hover {
+    transform: none;
+  }
+
+  .auth-login-btn::after {
+    display: none;
+  }
+}
+
+/* ========================================
+   Responsive — Tablet & Mobile
+   ======================================== */
+@media (max-width: 1100px) {
+  .auth-hero {
+    flex: 1 1 52%;
+    padding: 48px 44px 44px;
+  }
+
+  .auth-form-panel {
+    flex: 0 0 420px;
+    padding: 48px 48px;
+  }
+}
+
+@media (max-width: 900px) {
+  .auth-hero {
+    display: none;
+  }
+
+  .auth-form-panel {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    padding: 44px 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-form-panel {
+    padding: 36px 24px;
+  }
+
+  .auth-form-header h2 {
+    font-size: 1.4rem;
+  }
+}
+
+/* ========================================
+   SIGN UP — same screen, more fields
+   ------------------------------------------------------------
+   The sign-up screen reuses the login split, hero, brand lockup and
+   every control style above. Only three things are new: the panel has
+   to scroll (a sign-up form is taller than any laptop viewport), the
+   taxonomy needs selects, and the password field earns a strength
+   readout. Nothing here re-declares an existing token.
+   ======================================== */
+
+/* ── Scrollable form panel ──
+   The login form is short enough to sit centred in the 100vh panel.
+   A sign-up form is not, so this variant pins content to the top and
+   scrolls: centring a scrollable column makes the first field feel
+   out of reach, because the scroll origin is wherever the centring
+   maths put it. */
+.auth-form-panel--scroll {
+  justify-content: flex-start;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-top: 72px;
+  padding-bottom: 72px;
+}
+
+.auth-form-panel--scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.auth-form-panel--scroll::-webkit-scrollbar-thumb {
+  background: rgba(26, 77, 58, .22);
+  border: 3px solid transparent;
+  border-radius: var(--radius-pill);
+  background-clip: content-box;
+}
+
+.auth-form-panel--scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 77, 58, .38);
+  background-clip: content-box;
+}
+
+/* A shorter brand margin keeps more of the form above the fold on a
+   laptop, where the hero is competing for the same screen. */
+.auth-form-panel--scroll .auth-form-brand {
+  margin-bottom: 40px;
+}
+
+.auth-form-panel--scroll .auth-form-header {
+  margin-bottom: 36px;
+}
+
+/* ── Standalone auth panel ──
+   The forced password-change screen needs the same form surface without
+   the marketing hero beside it. Keep the width and material, drop the
+   full-height split and centre the card on the page. */
+.auth-page--single .auth-form-panel--standalone {
+  width: min(610px, 100%);
+  min-width: 0;
+  height: auto;
+  max-height: 100%;
+  border: 1px solid rgba(26, 77, 58, 0.09);
+  border-radius: 32px;
+  box-shadow: 0 28px 60px rgba(24, 39, 30, 0.12), 0 8px 18px rgba(24, 39, 30, 0.06);
+}
+
+.auth-form-panel--standalone .auth-form-brand {
+  align-self: flex-start;
+}
+
+.auth-account-line {
+  margin-top: 10px !important;
+  font-family: var(--font-body);
+  font-size: .8rem !important;
+  font-weight: 600;
+  color: var(--campus-green) !important;
+  word-break: break-word;
+}
+
+.auth-form-error {
+  margin: 0 0 18px;
+  padding: 11px 14px;
+  border: 1px solid rgba(195, 53, 53, .25);
+  border-radius: 12px;
+  background: rgba(195, 53, 53, .08);
+  color: var(--campus-risk);
+  font-family: var(--font-body);
+  font-size: .82rem;
+  line-height: 1.45;
+}
+
+.auth-form-error[hidden],
+.auth-setup-note[hidden] {
+  display: none;
+}
+
+/* ── Pending registration success ──
+   Signup deliberately does not sign the student in, so this panel
+   replaces the form and explains who unblocks the account. */
+.auth-pending {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 0 8px;
+}
+
+.auth-pending[hidden] {
+  display: none;
+}
+
+.auth-pending-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 50%;
+  background: #1a4d3a;
+  color: #ffffff;
+  font-size: 1.65rem;
+}
+
+.auth-pending-icon i,
+.auth-pending-icon .bi {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+.auth-pending h3 {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 400;
+  letter-spacing: -.03em;
+  color: var(--campus-bark);
+}
+
+.auth-pending p {
+  max-width: 38ch;
+  margin: 0 0 24px;
+  font-family: var(--font-body);
+  font-size: .9rem;
+  line-height: 1.55;
+  color: var(--campus-fog-strong);
+}
+
+.auth-pending .auth-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-decoration: none;
+}
+
+.auth-pending .auth-login-btn:hover {
+  color: #fff;
+}
+
+/* ── Two-up field row ──
+   Course and year level pair up naturally; department is wide enough to
+   stand alone above them. Collapses to a single column on phones. */
+.auth-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 14px;
+}
+
+/* ── Selects ──
+   The <select> carries .form-control rather than .form-select so it
+   inherits the exact input styling above — same border, padding, focus
+   ring and dark surface — instead of a near-copy that would drift.
+   The native arrow is dropped (appearance: none) and replaced by a
+   caret add-on, mirroring the password toggle on the same row. */
+.auth-form .auth-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color-scheme: light;
+  cursor: pointer;
+  padding-right: 16px;
+  text-overflow: ellipsis;
+}
+
+.auth-form .auth-select option {
+  background-color: #fff;
+  color: #17251e;
+}
+
+.auth-form .auth-select-group {
+  cursor: pointer;
+  transition: border-color 180ms var(--ease),
+              box-shadow 180ms var(--ease),
+              transform 180ms var(--ease);
+}
+
+.auth-form .auth-select-group:hover {
+  border-color: rgba(26, 77, 58, 0.52);
+}
+
+.auth-form .auth-select-group:active {
+  transform: translateY(1px);
+}
+
+.auth-form .auth-select-group.is-picker-open {
+  border-color: var(--campus-green);
+  box-shadow: 0 0 0 3px rgba(26, 77, 58, 0.12), 0 10px 22px rgba(20, 34, 27, 0.04);
+}
+
+.auth-form .auth-select-caret {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0 16px;
+  pointer-events: none;
+  user-select: none;
+  transition: color 180ms var(--ease);
+}
+
+.auth-form .auth-select-caret i {
+  font-size: .8rem;
+  line-height: 1;
+  display: block;
+  transform-origin: center;
+  transition: transform 220ms var(--ease), color 180ms var(--ease);
+}
+
+.auth-form .input-group:has(.auth-select:focus) .auth-select-caret,
+.auth-form .input-group.is-picker-open .auth-select-caret {
+  color: var(--campus-green);
+}
+
+.auth-form .input-group:has(.auth-select:focus) .auth-select-caret i,
+.auth-form .input-group.is-picker-open .auth-select-caret i {
+  transform: rotate(180deg);
+}
+
+/* ── Password strength meter ──
+   Four segments, filled left to right, coloured as one ordered scale
+   (--campus-risk → --campus-gold → --campus-green) so "strong" never
+   reads as hotter than "weak". The bar itself is the signal; the
+   label names it for anyone who can't read colour. Driven by a
+   data-level attribute set in auth.js — no colour is set inline. */
+.auth-strength {
+  margin-top: 10px;
+}
+
+.auth-strength-bars {
+  display: flex;
+  gap: 5px;
+}
+
+.auth-strength-bar {
+  flex: 1 1 0;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: rgba(26, 77, 58, .14);
+  transition: background var(--transition-normal) var(--ease);
+}
+
+.auth-strength-label {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-body);
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: #7d97b3;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: color var(--transition-normal) var(--ease), opacity var(--transition-normal) var(--ease), max-height var(--transition-normal) var(--ease), margin-top var(--transition-normal) var(--ease);
+}
+
+.auth-form .input-group-password:focus-within ~ .auth-strength .auth-strength-label,
+.auth-form .input-group-password:focus-within ~ .auth-strength .auth-strength-label {
+  opacity: 1;
+  max-height: 20px;
+  margin-top: 8px;
+}
+
+.auth-form .input-group-password:has(.is-invalid) ~ .auth-strength .auth-strength-label,
+.auth-form .input-group-password:has(:invalid) ~ .auth-strength .auth-strength-label {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+}
+
+.auth-form .invalid-feedback + .auth-strength,
+.auth-form .auth-strength + .invalid-feedback,
+.auth-form .auth-check-feedback {
+  color: var(--campus-risk);
+}
+
+/* Every filled segment repaints per level, so the scale has exactly one
+   place to change. Weak → fair → good → strong, in that order. */
+.auth-strength[data-level="1"] .auth-strength-bar:nth-child(-n+1) { background: var(--campus-risk); }
+.auth-strength[data-level="2"] .auth-strength-bar:nth-child(-n+2) { background: var(--campus-gold); }
+.auth-strength[data-level="3"] .auth-strength-bar:nth-child(-n+3) { background: var(--campus-green); }
+.auth-strength[data-level="4"] .auth-strength-bar:nth-child(-n+4) { background: var(--campus-green); }
+
+/* Only the weakest step tints the label. The bars carry the full scale, so
+   tinting every label would be redundant — and the mid-scale colours are
+   too light to read as text on the cream panel. --campus-risk flips per
+   theme, so the red stays legible in both. */
+.auth-strength[data-level="1"] .auth-strength-label { color: var(--campus-risk); }
+
+/* ── Terms checkbox ──
+   Bootstrap's .form-check-input draws its check with a dark background-image,
+   which disappears on this page's dark surface. Drawing the tick with two
+   borders keeps one appearance in both themes and no SVG to maintain. */
+.auth-form .auth-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* The label and its feedback stack beside the box rather than inside a
+   flex row, so a validation message doesn't get stretched into a column
+   of its own on the right. */
+.auth-form .auth-check > div {
+  min-width: 0;
+}
+
+.auth-form .auth-check-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  margin-top: 1px;
+  border: 1.5px solid var(--color-border-input);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  transition: background var(--transition-fast) var(--ease),
+              border-color var(--transition-fast) var(--ease),
+              box-shadow var(--transition-fast) var(--ease);
+}
+
+.auth-form .auth-check-input::after {
+  content: '';
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) scale(0);
+  transition: transform 140ms var(--ease);
+}
+
+.auth-form .auth-check-input:checked {
+  background: var(--campus-green);
+  border-color: var(--campus-green);
+}
+
+.auth-form .auth-check-input:checked::after {
+  transform: rotate(-45deg) scale(1);
+}
+
+.auth-form .auth-check-input:focus-visible {
+  outline: none;
+  border-color: var(--campus-green);
+  box-shadow: 0 0 0 3px rgba(26, 77, 58, .12);
+}
+
+.auth-terms-label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: .8rem;
+  line-height: 1.5;
+  color: var(--campus-fog-strong);
+}
+
+.auth-terms-label a {
+    color: var(--campus-link);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+.auth-terms-label a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Cross-links between login and sign up ── */
+.auth-switch {
+  margin: 22px 0 0;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: .85rem;
+  color: var(--campus-fog-strong);
+}
+
+.auth-switch a {
+    color: var(--campus-link);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color var(--transition-fast) var(--ease);
+}
+
+.auth-switch a:hover {
+    color: var(--campus-link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+/* The confirm field sits directly under the strength meter, so it needs
+   less air above it than the meter needed below the password. */
+.auth-form .auth-field-group {
+  margin-bottom: 18px;
+}
+
+.auth-form .auth-field-tight {
+  margin-bottom: 14px;
+}
+
+@media (max-width: 480px) {
+  .auth-form-panel--scroll {
+    padding: 48px 20px;
+  }
+
+  .auth-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-strength-bar,
+  .auth-strength-label,
+  .auth-form .auth-check-input,
+  .auth-form .auth-check-input::after {
+    transition: none;
+  }
+}
+
+/* ========================================
+   Toast Variants — login-page toasts
+   ======================================== */
+
+/* Error toast — dark red for "Invalid email or password" (light mode) */
+.toast-error {
+  background: #f8d7da !important;
+  color: #9d1c24 !important;
+  border-left: 5px solid #dc3545;
+  box-shadow: 0 6px 18px rgba(220, 53, 69, .18);
+}
+
+.toast-error .toast-body {
+  font-weight: 600;
+}
+
+.toast-error .btn-close {
+  filter: invert(12%) sepia(80%) saturate(4000%) hue-rotate(351deg) brightness(85%) contrast(110%);
+}
+
+/* Success toast — dark green for "Login successful" (light mode) */
+.toast-success {
+  background: #d7f5e5 !important;
+  color: #0b7f58 !important;
+  border-left: 5px solid #0e9f6e;
+  box-shadow: 0 6px 18px rgba(14, 159, 110, .18);
+}
+
+.toast-success .toast-body {
+  font-weight: 600;
+}
+
+.toast-success .btn-close {
+  filter: invert(30%) sepia(80%) saturate(600%) hue-rotate(120deg) brightness(80%) contrast(90%);
+}
+
+/* NOTE: The "kiosk quick-link" block that used to live here
+   (.auth-kiosk-divider / .auth-kiosk-link) was removed — neither class is
+   referenced by any page or script, so the login page has no event-kiosk
+   shortcut. The dark-theme .landing-cta--login overrides were removed from
+   dark-style.css for the same reason.
+
+   NOTE: All dark-theme styles (auth pages included) have been
+   consolidated in dark-style.css. Register it AFTER this file (and
+   after styles.css) so its dark rules override these. */

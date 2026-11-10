@@ -1,0 +1,45 @@
+/* ========================================
+   Severity Badges — ATTENDLY
+   Shared across the Student, SSC Officer and
+   Administrator portals.
+   ========================================
+
+   Moved out of app-shell.css. These are not shell
+   chrome — they are a data-display component that
+   ui.js emits from severityBadge() wherever a sanction
+   severity appears, so they no longer belong in a
+   file about the page frame.
+
+   Loads after variables.css and app-shell.css, before
+   the per-role dashboard sheets, which is the same slot
+   the rules previously occupied inside app-shell.css.
+   dark-style.css loads last and overrides the one label
+   colour that has to change in dark theme.
+   ======================================== */
+
+/* ── Severity badges (emitted by severityBadge() in ui.js) ──
+ * The fills are vivid brand colours and are kept as-is. Each fill has exactly
+ * one label colour that clears WCAG AA 4.5:1 against it, so the label is what
+ * flips — not the severity hue. Verified by tools/contrast-check.js:
+ *   warning    #212529 on #f5b301 -> 8.32:1
+ *   probation  #212529 on #f2701b -> 5.22:1  (white would be 2.95:1)
+ *   suspension #ffffff on #dc3545 -> 4.53:1  (#212529 would be 3.41:1)
+ * The dark-theme suspension fill is lighter than the light one, so dark-style.css
+ * flips that one label back to #212529.
+ */
+.badge-warning-severity {
+  background-color: var(--color-badge-warning);
+  color: #212529;
+}
+
+.badge-probation-severity {
+  background-color: var(--color-badge-probation);
+  color: #212529;
+}
+
+.badge-suspension-severity {
+  background-color: var(--color-badge-suspension);
+  color: #fff;
+}
+
+.badge { font-weight: 600; letter-spacing: .02em; }

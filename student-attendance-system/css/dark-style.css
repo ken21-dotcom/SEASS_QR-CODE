@@ -1,0 +1,895 @@
+/* ========================================
+   Dark Style — ATTENDLY
+   ========================================
+   All dark-mode / theme styling for the app lives here in one
+   place so it is easy to find and maintain.
+
+   Contents:
+   1. Dark design-token palette ([data-theme="dark"] CSS custom properties)
+   2. Shared surface / component overrides (cards, tables, forms,
+      modals, tabs, calendars, toasts, dashboards, kiosk,
+      announcements, demo login, etc.)
+   3. Auth / login page dark overrides
+
+   HOW TO REGISTER (done in every page's <head>):
+     <link href="../css/styles.css" rel="stylesheet">
+     <link href="../css/dark-style.css" rel="stylesheet">   ← load LAST
+
+   It must load AFTER styles.css (and after any page-specific sheet,
+   e.g. auth.css on the login page) so these dark rules win the
+   cascade. The [data-theme="dark"] token block overrides the light
+   :root tokens; the component rules override the corresponding
+   light component rules because they load later AND carry at least
+   equal specificity.
+   ======================================== */
+
+
+/* ────────────────────────────────────────────────
+   1. DARK DESIGN-TOKEN PALETTE
+   Overrides the light :root tokens when dark theme is active.
+   ──────────────────────────────────────────────── */
+[data-theme="dark"] {
+  /* Phase 3 — deep forest-green theme. --color-bg-body is the canonical
+     dark surface; --color-bg-app / --color-bg-app-grad alias it so every
+     surface that already references them picks up the new tone. The whole
+     palette is keyed to the brand emerald (#0e9f6e) instead of slate, so
+     the dark UI reads as ATTENDLY rather than a generic dark theme. */
+  --color-bg-body: #0a120e;
+  --color-bg-app: var(--color-bg-body);
+  --color-bg-app-grad: var(--color-bg-body);
+  --color-bg-card: #121c16;
+  --color-bg-card-elevated: #1a2a20;
+  /* Sidebar sits a shade deeper than the cards so the shell still frames
+     the workspace. Active link uses the bright brand green. */
+  --color-bg-sidebar: #060d09;
+  --color-bg-sidebar-hover: rgba(14, 159, 110, .18);
+  --color-bg-input: #1a2a20;
+  --color-bg-success-light: #0a2a1f;
+  --color-bg-warning-light: #2a250f;
+  --color-bg-danger-light: #2a1416;
+  --color-probation-bg: #2a1a0a;
+  /* The light-theme info/violet tints are near-white; keeping them would put
+     bright chips on dark cards in the activity feed. */
+  --color-bg-info-light: #1a2a3a;
+  --color-bg-violet-light: #2a1a3a;
+
+  --color-border-default: #22332a;
+  --color-border-input: #677b98;
+  --color-border-sidebar: rgba(255,255,255,.05);
+  --color-border-table: #22332a;
+  --color-border-focus: #0e9f6e;
+
+  --color-text-primary: #cbd5e1;
+  --color-text-heading: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-text-sidebar: rgba(226,240,233,.6);
+  --color-text-sidebar-active: #ffffff;
+  --color-text-success: #19e6cf;
+  --color-text-success-light: #5eead4;
+  --color-text-warning: #fbbf24;
+  --color-text-danger: #f87171;
+  --color-text-probation: #fb923c;
+  --color-text-info: #93c5fd;
+  --color-text-violet: #c4b5fd;
+
+  --color-badge-warning: #fbbf24;
+  --color-badge-probation: #fb923c;
+  --color-badge-suspension: #f87171;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.3);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.15);
+  --shadow-card: 0 1px 2px rgba(0,0,0,.2);
+  --shadow-card-hover: 0 2px 8px rgba(0,0,0,.32);
+  --shadow-focus: 0 0 0 3px rgba(32, 180, 134, .25);
+  --shadow-pop: 0 8px 28px rgba(0,0,0,.4), 0 2px 6px rgba(0,0,0,.2);
+
+  /* The dark suspension fill (#ec5864) is lighter than the light-theme one, so
+     white text drops to 3.42:1 and the near-black label reaches 4.52:1.
+     Probation and warning already use #212529 in app-shell.css. */
+  .badge-suspension-severity {
+    color: #212529;
+  }
+
+  /* Bootstrap design tokens — re-theme baseline components so utilities,
+     input groups, tabs, alerts, dropdowns etc. follow the theme too. */
+  --bs-body-bg: var(--color-bg-body);
+  --bs-body-color: var(--color-text-primary);
+  --bs-secondary-color: var(--color-text-muted);
+  --bs-secondary-bg: var(--color-bg-card);
+  --bs-tertiary-bg: var(--color-bg-input);
+  --bs-emphasis-color: var(--color-text-heading);
+  --bs-border-color: #607a9f;
+  --bs-card-bg: var(--color-bg-card);
+  --bs-card-color: var(--color-text-primary);
+  --bs-heading-color: var(--color-text-heading);
+  --bs-link-color: #14b8a6;
+  --bs-link-hover-color: #5eead4;
+  --bs-primary: #0e9f6e;
+  --bs-primary-rgb: 14, 159, 110;
+  --bs-success-bg: #064e3b;
+  --bs-success-text-emphasis: #19e6cf;
+  --bs-warning-bg: #422006;
+  --bs-warning-text-emphasis: #fbbf24;
+  --bs-danger-bg: #450a0a;
+  --bs-danger-text-emphasis: #f87171;
+
+  /* Top-accent bar — the mint brand step reads better than --brand-500 on
+     the darker card surface. Flat fill, same reveal timing as light theme. */
+  --accent-bar-fill: var(--brand-400);
+}
+
+[data-theme="dark"] body {
+  background: var(--color-bg-app-grad);
+  background-attachment: fixed;
+  color: var(--color-text-primary);
+}
+
+
+/* ────────────────────────────────────────────────
+   2. SHARED SURFACE / COMPONENT OVERRIDES
+   ──────────────────────────────────────────────── */
+
+[data-theme="dark"] .dashboard-card,
+[data-theme="dark"] .student-table,
+[data-theme="dark"] .dash-panel,
+[data-theme="dark"] .activity-panel,
+[data-theme="dark"] .kiosk-card,
+[data-theme="dark"] .kiosk-result {
+  background: var(--color-bg-card);
+  border-color: var(--color-border-default);
+  box-shadow: var(--shadow-card);
+}
+
+[data-theme="dark"] .stat-value,
+[data-theme="dark"] .card-heading h2,
+[data-theme="dark"] .role-intro h1,
+[data-theme="dark"] .dashboard-intro h1,
+[data-theme="dark"] .subpage-intro h1 {
+  color: var(--color-text-heading);
+}
+
+[data-theme="dark"] .announcement-item strong { color: var(--color-text-heading); }
+
+[data-theme="dark"] .modal-content {
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer { border-color: var(--color-border-default); }
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background: var(--color-bg-input);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-input);
+}
+
+/* Auth form surface — deep brand-green panel, not the slate card fill,
+     so the login/signup split still reads as the JHCSC identity surface. */
+  [data-theme="dark"] .auth-form .input-group {
+    background: #0d221b;
+    border-color: var(--color-border-input);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
+  }
+
+  [data-theme="dark"] .auth-form .input-group:focus-within {
+    border-color: var(--color-border-focus);
+    box-shadow:
+      0 0 0 2px rgba(14, 159, 110, 0.30),
+      0 0 18px rgba(14, 159, 110, 0.24),
+      0 10px 22px rgba(0, 0, 0, 0.24);
+  }
+
+  [data-theme="dark"] .auth-form .form-control:-webkit-autofill,
+  [data-theme="dark"] .auth-form .form-control:-webkit-autofill:hover,
+  [data-theme="dark"] .auth-form .form-control:-webkit-autofill:focus,
+  [data-theme="dark"] .auth-form .form-control:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px rgba(13, 34, 27, 0.94) inset, 0 0 0 1px rgba(120, 157, 132, 0.15) inset !important;
+    -webkit-text-fill-color: var(--color-text-heading) !important;
+    border-color: rgba(120, 157, 132, 0.28) !important;
+    background-color: rgba(13, 34, 27, 0.94) !important;
+  }
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+  background: var(--color-bg-input);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-focus);
+  box-shadow:
+    0 0 0 2px rgba(32, 180, 134, 0.30),
+    0 0 16px rgba(32, 180, 134, 0.24);
+  outline: none;
+}
+
+[data-theme="dark"] .form-control[readonly] {
+  background: #0f1914;
+  color: var(--color-text-muted);
+}
+
+/* Native controls keep their light-theme glyphs (calendar picker, file
+   button, scrollbars) unless the browser is told the surface is dark.
+   Without this the date/time icons render black on the dark input. */
+[data-theme="dark"] :is(
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"],
+  input[type="month"],
+  input[type="file"]
+) {
+  color-scheme: dark;
+}
+
+/* Bootstrap's select chevron is a black SVG background. The shorthand above
+   clears it, so redraw a muted chevron that is visible on the dark surface. */
+[data-theme="dark"] .form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2397ad9f' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right .75rem center;
+  background-size: 16px 12px;
+  padding-right: 2.25rem;
+}
+
+[data-theme="dark"] .table { color: var(--color-text-primary); }
+
+/* Table row hover — light green tint for consistency with light theme */
+@media (hover: hover) and (pointer: fine) {
+  [data-theme="dark"] .student-table tbody tr:hover {
+    background: rgba(32, 180, 134, .08);
+  }
+}
+
+/* Status badges — dark mode */
+[data-theme="dark"] .status-badge.absent {
+  background: linear-gradient(135deg, #450a0a 0%, #450a0a 100%);
+  color: var(--color-text-danger);
+  border-color: #7f1d1d;
+}
+
+[data-theme="dark"] .status-badge.present {
+  background: linear-gradient(135deg, #064e3b 0%, #0a3d2e 100%);
+  color: var(--color-text-success-light);
+  border-color: #0f766e;
+}
+
+[data-theme="dark"] .status-badge.late {
+  background: linear-gradient(135deg, #422006 0%, #422006 100%);
+  color: var(--color-text-warning);
+  border-color: #78350f;
+}
+
+/* Records card — dark mode */
+[data-theme="dark"] .records-card {
+  background: linear-gradient(135deg, #1e293b 0%, #273449 100%);
+  border-color: #0f766e;
+}
+
+[data-theme="dark"] .records-card .card-heading h2 {
+  color: var(--color-text-heading);
+}
+
+[data-theme="dark"] .card { background: var(--color-bg-card); }
+
+[data-theme="dark"] .donut-chart::before { background: var(--color-bg-card); }
+
+[data-theme="dark"] .donut-chart {
+  background: conic-gradient(var(--bs-primary) var(--present-rate, 0%), #1e293b 0);
+  box-shadow: 0 2px 12px rgba(14, 159, 110, .1);
+}
+
+[data-theme="dark"] .calendar-cell { color: var(--color-text-muted); }
+[data-theme="dark"] .calendar-cell.today { color: var(--color-text-heading); }
+
+/* Calendar key — dark mode */
+[data-theme="dark"] .calendar-key {
+  border-top-color: var(--color-border-default);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .reader-instruction {
+  background: linear-gradient(135deg, #1e293b 0%, #273449 100%);
+  border-color: #0f766e;
+}
+
+[data-theme="dark"] .weather-main strong { color: var(--color-text-heading); }
+[data-theme="dark"] .weather-main > div > span { color: var(--color-text-muted); }
+[data-theme="dark"] .weather-feels-like { color: var(--color-text-muted) !important; }
+
+[data-theme="dark"] .role-profile small { color: var(--color-text-muted); }
+
+[data-theme="dark"] .toast {
+  background: var(--color-bg-card) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* ── Toast variants — dark mode ──
+   Override the blanket .toast rule above so error/success
+   toasts stay visually distinct in dark mode. */
+
+[data-theme="dark"] .toast-error {
+  background: #450a0a !important;
+  color: var(--color-text-danger) !important;
+  border-left: 5px solid #f87171;
+  box-shadow: 0 6px 18px rgba(248, 113, 113, .15);
+}
+
+[data-theme="dark"] .toast-error .btn-close {
+  filter: invert(1) brightness(0.8);
+}
+
+[data-theme="dark"] .toast-success {
+  background: #064e3b !important;
+  color: var(--color-text-success-light) !important;
+  border-left: 5px solid var(--color-text-success);
+  box-shadow: 0 6px 18px rgba(14, 159, 110, .15);
+}
+
+[data-theme="dark"] .toast-success .btn-close {
+  filter: invert(1);
+}
+
+[data-theme="dark"] .icon-button {
+  background: var(--color-bg-card);
+  border-color: var(--color-border-default);
+  color: var(--color-text-muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-theme="dark"] .icon-button:hover {
+    background: var(--color-bg-input);
+    border-color: var(--color-text-heading);
+    color: var(--color-text-success-light);
+    box-shadow: var(--shadow-xs);
+  }
+}
+
+[data-theme="dark"] .theme-toggle-fab {
+  background: rgba(19, 29, 24, .7);
+  border-color: rgba(255, 255, 255, .08);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-theme="dark"] .theme-toggle-fab:hover {
+    background: rgba(30, 46, 38, .9);
+    border-color: rgba(255, 255, 255, .18);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .35);
+  }
+}
+
+[data-theme="dark"] .announcement-icon { background: var(--color-bg-success-light); }
+
+[data-theme="dark"] .calendar-cell.has-event.is-upcoming-event:not(.today) {
+  background: var(--brand-700);
+  color: var(--color-text-heading);
+  box-shadow: 0 3px 10px rgba(0,0,0,.3);
+}
+
+[data-theme="dark"] .calendar-cell.has-event.is-past-event:not(.today),
+[data-theme="dark"] .calendar-cell.has-event.is-cancelled-event:not(.today) {
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .calendar-cell.is-selected { outline-color: var(--color-text-heading); }
+
+/* Student ID card — dark mode */
+[data-theme="dark"] .student-id-card {
+  background: linear-gradient(135deg, #1e293b 0%, #273449 100%);
+  border-color: #0f766e;
+}
+
+[data-theme="dark"] .student-id-card::before {
+  background: linear-gradient(90deg, var(--brand-400), var(--brand-500), var(--brand-600));
+}
+
+[data-theme="dark"] .student-id-avatar {
+  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+  color: var(--color-text-heading);
+  border-color: rgba(32, 180, 134, .3);
+}
+
+[data-theme="dark"] .btn-close { filter: invert(1); }
+
+[data-theme="dark"] {
+  --bs-modal-bg: #131d18;
+  --bs-modal-color: var(--color-text-heading);
+  --bs-modal-header-border-color: #1f3027;
+  --bs-modal-footer-border-color: #1f3027;
+}
+
+/* Status pills */
+[data-theme="dark"] .enrollment-pill.enrolled {
+  background: linear-gradient(135deg, #064e3b 0%, #0a3d2e 100%);
+  color: var(--color-text-success);
+  border-color: #0f766e;
+}
+
+[data-theme="dark"] .enrollment-pill.needs-reenrollment {
+  background: linear-gradient(135deg, #422006 0%, #422006 100%);
+  color: var(--color-text-warning);
+  border-color: #78350f;
+}
+
+[data-theme="dark"] .enrollment-pill.not-enrolled {
+  background: linear-gradient(135deg, #450a0a 0%, #450a0a 100%);
+  color: var(--color-text-danger);
+  border-color: #7f1d1d;
+}
+
+/* Calendar markers */
+[data-theme="dark"] .calendar-today { background: var(--brand-500); border-color: var(--brand-500); }
+[data-theme="dark"] .calendar-dot { background: var(--color-bg-card); border-color: var(--color-text-success-light); }
+[data-theme="dark"] .calendar-dot.upcoming { background: var(--brand-500); border-color: var(--brand-500); }
+[data-theme="dark"] .calendar-dot.past { background: var(--color-bg-input); border-color: var(--color-border-default); }
+
+/* Announcements & donut chart */
+[data-theme="dark"] .announcement-icon.event-icon {
+  background: var(--color-bg-success-light);
+  color: var(--color-text-success);
+}
+
+[data-theme="dark"] .chart-legend > div { color: var(--color-text-muted); }
+[data-theme="dark"] .chart-legend strong { color: var(--color-text-heading); }
+[data-theme="dark"] .donut-chart small { color: var(--color-text-muted); }
+[data-theme="dark"] .stat-icon,
+[data-theme="dark"] .card-menu { color: var(--color-text-muted); }
+
+[data-theme="dark"] .verification-checks { color: var(--color-text-muted); }
+
+[data-theme="dark"] .reader-instruction span { color: var(--color-text-muted); }
+
+[data-theme="dark"] .reader-instruction > i {
+  color: var(--color-text-heading);
+}
+
+/* Tables */
+[data-theme="dark"] .student-table { color: var(--color-text-primary); }
+
+[data-theme="dark"] .student-table thead th {
+  border-bottom-color: var(--color-border-table);
+  color: var(--color-text-muted);
+  background: rgba(32, 180, 134, .04);
+}
+
+[data-theme="dark"] .records-card .student-table thead th {
+  background: rgba(79, 206, 159, .04);
+  color: var(--color-text-heading);
+}
+
+/* Dashboard card headers — transparent bg, heading text color,
+   subtle bottom border. Overrides Bootstrap's .bg-white default. */
+[data-theme="dark"] .card-header {
+  background: transparent;
+  border-bottom-color: var(--color-border-default);
+  color: var(--color-text-heading);
+}
+
+[data-theme="dark"] .card-header .card-title,
+[data-theme="dark"] .card-header h5,
+[data-theme="dark"] .card-header h4,
+[data-theme="dark"] .card-header h3 {
+  color: var(--color-text-heading);
+}
+
+[data-theme="dark"] .card-header i,
+[data-theme="dark"] .card-header .bi {
+  color: var(--color-text-success);
+}
+
+/* Table header rows inside dashboard cards — use the themed header bg */
+[data-theme="dark"] .card .table thead th,
+[data-theme="dark"] .card .table-responsive thead th {
+  background: rgba(32, 180, 134, .04);
+  color: var(--color-text-muted);
+  border-bottom-color: var(--color-border-table);
+}
+
+/* System activity list table header row inside admin dashboard card */
+[data-theme="dark"] #eventsTableBody ~ .table-responsive thead th,
+[data-theme="dark"] .card .table > :is(thead, tbody) th {
+  background: rgba(32, 180, 134, .04);
+  color: var(--color-text-muted);
+  border-bottom-color: var(--color-border-table);
+}
+
+/* Borders & topbar — solid opaque topbar with no visible seam */
+[data-theme="dark"] .student-topbar,
+[data-theme="dark"] .role-topbar {
+  border-bottom-color: transparent;
+  background: var(--color-bg-app);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .announcement-item { border-bottom-color: var(--color-border-default); }
+
+/* Announcement hover — light green background for visibility and consistency */
+@media (hover: hover) and (pointer: fine) {
+  [data-theme="dark"] .announcement-item:hover {
+    background: rgba(32, 180, 134, .12);
+  }
+}
+
+/* Muted secondary text on cards */
+[data-theme="dark"] .intro-copy,
+[data-theme="dark"] .stat-foot,
+[data-theme="dark"] .chart-caption,
+[data-theme="dark"] .calendar-weekdays,
+[data-theme="dark"] .calendar-key,
+[data-theme="dark"] .weather-details,
+[data-theme="dark"] .weather-location,
+[data-theme="dark"] .student-breadcrumb,
+[data-theme="dark"] .topbar-date,
+[data-theme="dark"] .empty-records { color: var(--color-text-muted); }
+
+/* NOTE: the dark .alert-warning override was removed — there is no .alert
+   markup in the app (the re-enrollment modal it was written for does not
+   exist). Bootstrap's own alert theming applies if one is added later. */
+
+/* Report tabs */
+[data-theme="dark"] .nav-tabs { border-bottom-color: var(--bs-border-color); }
+
+[data-theme="dark"] .nav-tabs .nav-link {
+  color: var(--color-text-muted);
+  border-color: var(--bs-border-color);
+}
+
+[data-theme="dark"] .nav-tabs .nav-link:hover { color: var(--color-text-heading); }
+
+[data-theme="dark"] .nav-tabs .nav-link.active {
+  color: var(--color-text-heading);
+  background: var(--color-bg-card);
+  border-color: var(--bs-border-color);
+}
+
+/* ────────────────────────────────────────────────
+   3. AUTH / LOGIN PAGE DARK OVERRIDES
+   ──────────────────────────────────────────────── */
+
+/* Form panel — deep green-black surface, warm light text */
+:root:not([data-theme="light"]) .auth-page,
+:root[data-theme="dark"] .auth-page {
+  --campus-bark: #ecebe4;
+  --campus-fog: #9fb0a6;
+  --campus-fog-strong: #71857a;
+  --campus-link: var(--campus-accent);
+
+  /* Lifted risk red — the light value loses too much contrast on the dark
+     form surface. Matches the invalid-feedback red used below. */
+  --campus-risk: #f87171;
+
+  /* Neutralize the app-wide dark teal tokens on the login page only, so
+     no element on the auth screen can fall through to a generic #20b486
+     accent. Scoped to .auth-page — other pages keep their dark tokens. */
+  --bs-primary: #1a4d3a;
+  --bs-primary-rgb: 26, 77, 58;
+  --color-border-focus: var(--campus-green);
+  --shadow-focus: 0 0 0 3px rgba(26, 77, 58, .12);
+}
+
+:root:not([data-theme="light"]) .auth-form-panel,
+:root[data-theme="dark"] .auth-form-panel {
+  background: #0f1a14;
+}
+
+/* Form brand + heading */
+:root:not([data-theme="light"]) .auth-form-brand,
+:root[data-theme="dark"] .auth-form-brand,
+:root:not([data-theme="light"]) .auth-form-header h2,
+:root[data-theme="dark"] .auth-form-header h2 {
+  color: #ecebe4;
+}
+
+:root:not([data-theme="light"]) .auth-form-header p,
+:root[data-theme="dark"] .auth-form-header p {
+  color: #9fb0a6;
+}
+
+/* Form inputs */
+:root:not([data-theme="light"]) .auth-form .form-control,
+:root[data-theme="dark"] .auth-form .form-control {
+  background: #18251f;
+  border: 0 !important;
+  color: var(--color-text-heading);
+  box-shadow: none !important;
+  outline: none;
+}
+
+:root:not([data-theme="light"]) .auth-form .form-control::placeholder,
+:root[data-theme="dark"] .auth-form .form-control::placeholder {
+  color: rgba(185, 194, 188, 0.68);
+}
+
+:root:not([data-theme="light"]) .auth-form .form-control:focus,
+:root[data-theme="dark"] .auth-form .form-control:focus,
+:root:not([data-theme="light"]) .auth-form .form-control:focus-visible,
+:root[data-theme="dark"] .auth-form .form-control:focus-visible {
+  background: #18251f;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none;
+}
+
+/* Invalid feedback — ensure red is visible on dark form surface.
+   Override Bootstrap's --bs-form-invalid-color custom property
+   which .invalid-feedback and .is-invalid border use. */
+:root:not([data-theme="light"]) .auth-form,
+:root[data-theme="dark"] .auth-form {
+  --bs-form-invalid-color: #f87171;
+  --bs-form-invalid-border-color: rgba(90, 171, 141, 0.42);
+  --bs-form-invalid-box-shadow: none;
+}
+
+/* Input group adornments */
+:root:not([data-theme="light"]) .auth-form .input-group-text,
+:root[data-theme="dark"] .auth-form .input-group-text {
+    background: #18251f;
+  border: 0 !important;
+    color: var(--campus-fog);
+  }
+
+/* Form labels */
+:root:not([data-theme="light"]) .auth-form .form-label,
+:root[data-theme="dark"] .auth-form .form-label {
+  color: var(--color-text-heading);
+}
+
+/* Login button — brighter green for visibility on dark, gold accent */
+[data-theme="dark"] .auth-login-btn {
+  background: #21593f;
+  box-shadow: 0 2px 8px rgba(26, 77, 58, .3);
+}
+
+[data-theme="dark"] .auth-login-btn:hover {
+  background: #2a6b4c;
+  box-shadow: 0 4px 16px rgba(26, 77, 58, .35);
+}
+
+[data-theme="dark"] .auth-login-btn:active {
+  transform: scale(.97);
+  box-shadow: 0 1px 4px rgba(26, 77, 58, .2);
+}
+
+/* Password toggle — square inner edge is already handled in auth.css.
+   auth.css sets the light base to --campus-fog-strong (#5f6f66), which is tuned
+   for the light input fill. On the dark input fill (#18251f) that mid sage only
+   reaches 3.67:1, so the dark base becomes --campus-fog (#9fb0a6) instead. */
+:root:not([data-theme="light"]) .auth-form .auth-password-toggle,
+:root[data-theme="dark"] .auth-form .auth-password-toggle {
+  color: var(--campus-fog);
+}
+
+/* on dark the green hover turns gold to match the focus-visible ring. */
+:root:not([data-theme="light"]) .auth-form .auth-password-toggle:hover,
+:root:not([data-theme="light"]) .auth-form .auth-password-toggle:focus-visible {
+  color: var(--campus-gold);
+}
+
+/* Forgot password link — gold hover on dark surfaces */
+:root:not([data-theme="light"]) .auth-form .auth-forgot:hover {
+  color: var(--campus-gold);
+}
+
+/* Dark hero overlay — deep black-green, two-stop */
+[data-theme="dark"] .auth-hero::after {
+  background:
+    linear-gradient(180deg,
+      rgba(5, 12, 8, .18) 0%,
+      rgba(5, 14, 10, .92) 100%
+    );
+}
+
+/* Auth status note — dark mode */
+:root:not([data-theme="light"]) .auth-setup-note,
+:root[data-theme="dark"] .auth-setup-note {
+  border-color: rgba(52, 211, 153, .28);
+  background: rgba(16, 185, 129, .12);
+  color: #d7e5dc;
+}
+
+/* Uppercase labels — dark mode */
+:root:not([data-theme="light"]) .auth-form .auth-label-uppercase,
+:root[data-theme="dark"] .auth-form .auth-label-uppercase {
+  color: #9fb0a6;
+}
+
+/* ── Sign-up extras (see the SIGN UP section in auth.css) ── */
+
+/* Select caret + trailing add-on share the password toggle's surface, so
+   they read as one control rather than two stacked edges. */
+:root:not([data-theme="light"]) .auth-form .auth-select,
+:root[data-theme="dark"] .auth-form .auth-select {
+  color-scheme: dark;
+}
+
+:root:not([data-theme="light"]) .auth-form .auth-select option,
+:root[data-theme="dark"] .auth-form .auth-select option {
+  background-color: #18251f;
+  color: var(--color-text-heading);
+}
+
+:root:not([data-theme="light"]) .auth-form .auth-select-caret,
+:root[data-theme="dark"] .auth-form .auth-select-caret {
+  background: #18251f;
+  border-color: var(--color-border-input);
+  color: #9fb0a6;
+}
+
+:root:not([data-theme="light"]) .auth-form .auth-select-group:hover,
+:root[data-theme="dark"] .auth-form .auth-select-group:hover {
+  border-color: rgba(52, 211, 153, .45);
+}
+
+:root:not([data-theme="light"]) .auth-form .auth-select-group.is-picker-open,
+:root[data-theme="dark"] .auth-form .auth-select-group.is-picker-open {
+  border-color: var(--campus-green);
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, .14), 0 10px 22px rgba(0, 0, 0, .28);
+}
+
+:root:not([data-theme="light"]) .auth-form .input-group:has(.auth-select:focus) .auth-select-caret,
+:root:not([data-theme="light"]) .auth-form .input-group.is-picker-open .auth-select-caret,
+:root[data-theme="dark"] .auth-form .input-group:has(.auth-select:focus) .auth-select-caret,
+:root[data-theme="dark"] .auth-form .input-group.is-picker-open .auth-select-caret {
+  color: #6ee7b7;
+}
+
+/* Unfilled meter segments need a lighter track to stay visible on the
+   dark panel; the filled ones already carry their own colour. */
+:root:not([data-theme="light"]) .auth-strength-bar,
+:root[data-theme="dark"] .auth-strength-bar {
+  background: #223028;
+}
+
+/* Terms label sits on the panel, not on an input, so it takes the muted
+   sage rather than the light label colour used for form-labels above. */
+:root:not([data-theme="light"]) .auth-terms-label,
+:root[data-theme="dark"] .auth-terms-label {
+  color: #9fb0a6;
+}
+
+/* Sign-in link — mint on dark, matching the hero accent, with gold hover
+   so it agrees with the other auth links in this theme. */
+:root:not([data-theme="light"]) .auth-switch,
+:root[data-theme="dark"] .auth-switch {
+  color: #9fb0a6;
+}
+
+:root:not([data-theme="light"]) .auth-switch a,
+:root[data-theme="dark"] .auth-switch a {
+  color: var(--campus-accent);
+}
+
+:root:not([data-theme="light"]) .auth-switch a:hover,
+:root[data-theme="dark"] .auth-switch a:hover {
+  color: var(--campus-gold);
+}
+
+/* ========================================
+   Kiosk page — dark mode
+   ======================================== */
+
+/* Glassy topbar + footer get dark glass surfaces */
+:root:not([data-theme="light"]) .kiosk-topbar,
+:root[data-theme="dark"] .kiosk-topbar {
+  background: rgba(10, 20, 16, .72);
+  border-bottom-color: var(--color-border-sidebar);
+}
+
+:root:not([data-theme="light"]) .kiosk-footer,
+:root[data-theme="dark"] .kiosk-footer {
+  background: rgba(10, 20, 16, .6);
+  border-top-color: var(--color-border-sidebar);
+}
+
+:root:not([data-theme="light"]) .kiosk-event-select,
+:root[data-theme="dark"] .kiosk-event-select {
+  background-color: #152620;
+  border-color: var(--color-border-input);
+  color: var(--color-text-primary);
+}
+
+:root:not([data-theme="light"]) .kiosk-scan,
+:root[data-theme="dark"] .kiosk-scan {
+  background: var(--color-bg-card);
+}
+
+:root:not([data-theme="light"]) .kiosk-manual,
+:root[data-theme="dark"] .kiosk-manual {
+  background: var(--color-bg-card);
+}
+
+:root:not([data-theme="light"]) .kiosk-manual-toggle:hover,
+:root[data-theme="dark"] .kiosk-manual-toggle:hover {
+  background: #152620;
+}
+
+:root:not([data-theme="light"]) .kiosk-count,
+:root[data-theme="dark"] .kiosk-count {
+  background: #152620;
+  border-color: var(--color-border-input);
+}
+
+:root:not([data-theme="light"]) .kiosk-manual-input,
+:root[data-theme="dark"] .kiosk-manual-input {
+  background: #152620;
+  border-color: var(--color-border-input);
+  color: var(--color-text-primary);
+}
+
+:root:not([data-theme="light"]) .kiosk-result-overlay,
+:root[data-theme="dark"] .kiosk-result-overlay {
+  background: rgba(3, 8, 6, .62);
+}
+
+/* Gold accents — brighter on dark so they stay visible */
+:root:not([data-theme="light"]) .kiosk-page,
+:root[data-theme="dark"] .kiosk-page {
+  --kiosk-gold: #e0c468;
+  --kiosk-gold-light: #f5ecc8;
+  --kiosk-gold-muted: rgba(224, 196, 104, .12);
+}
+
+/* Recent check-ins ticker */
+:root:not([data-theme="light"]) .kiosk-ticker,
+:root[data-theme="dark"] .kiosk-ticker {
+  background: var(--color-bg-card);
+  border-color: var(--color-border-default);
+}
+:root:not([data-theme="light"]) .kiosk-ticker-label,
+:root[data-theme="dark"] .kiosk-ticker-label {
+  color: var(--color-text-muted);
+  border-bottom-color: var(--color-border-default);
+}
+:root:not([data-theme="light"]) .kiosk-ticker-item,
+:root[data-theme="dark"] .kiosk-ticker-item {
+  border-bottom-color: var(--color-border-table);
+}
+:root:not([data-theme="light"]) .kiosk-ticker-avatar,
+:root[data-theme="dark"] .kiosk-ticker-avatar {
+  background: var(--color-bg-success-light);
+  border-color: rgba(32, 180, 134, .25);
+  color: var(--color-text-success);
+}
+:root:not([data-theme="light"]) .kiosk-ticker-name,
+:root[data-theme="dark"] .kiosk-ticker-name {
+  color: var(--color-text-heading);
+}
+
+/* Theme fab — dark glass */
+:root:not([data-theme="light"]) .kiosk-theme-fab,
+:root[data-theme="dark"] .kiosk-theme-fab {
+  background: rgba(19, 29, 24, .7);
+  border-color: rgba(255, 255, 255, .1);
+  color: var(--color-text-muted);
+}
+@media (hover: hover) and (pointer: fine) {
+  :root:not([data-theme="light"]) .kiosk-theme-fab:hover,
+  :root[data-theme="dark"] .kiosk-theme-fab:hover {
+    background: rgba(30, 46, 38, .9);
+    border-color: rgba(255, 255, 255, .2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .35);
+    color: var(--color-text-heading);
+  }
+}
+
+/* The redesigned scan button wraps the sensor itself; keep its canvas clear. */
+:root:not([data-theme="light"]) .kiosk-scan-button,
+:root[data-theme="dark"] .kiosk-scan-button {
+  background: transparent;
+  border-color: transparent;
+}
+@media (hover: hover) and (pointer: fine) {
+  :root:not([data-theme="light"]) .kiosk-scan-button:hover,
+  :root[data-theme="dark"] .kiosk-scan-button:hover {
+    background: transparent;
+  }
+}
+
+/* NOTE: the "Landing page — dark mode" section that used to end this file was
+   removed. There is no landing page — the app goes straight to login.html /
+   signup.html. .landing-card, .landing-cta--login and .landing-page are
+   referenced nowhere in pages/ or js/, so all of it was dead. The
+   .landing-page-scoped .theme-toggle-fab overrides went with it; the live
+   button (login.html, signup.html) is already covered globally by the
+   [data-theme="dark"] .theme-toggle-fab rules at the top of this file. */
+

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:tns="http://attendly.local/soap"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             targetNamespace="http://attendly.local/soap"
+             name="AttendanceService">
+    <types>
+        <xsd:schema targetNamespace="http://attendly.local/soap">
+            <xsd:complexType name="AttendanceRecord">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:string"/>
+                    <xsd:element name="eventId" type="xsd:string"/>
+                    <xsd:element name="studentId" type="xsd:string"/>
+                    <xsd:element name="checkInTime" type="xsd:string"/>
+                    <xsd:element name="verificationMethod" type="xsd:string"/>
+                    <xsd:element name="eventName" type="xsd:string" nillable="true"/>
+                    <xsd:element name="eventDate" type="xsd:string" nillable="true"/>
+                    <xsd:element name="startTime" type="xsd:string" nillable="true"/>
+                    <xsd:element name="endTime" type="xsd:string" nillable="true"/>
+                    <xsd:element name="venue" type="xsd:string" nillable="true"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="AttendanceRecordArray">
+                <xsd:sequence>
+                    <xsd:element name="record" type="tns:AttendanceRecord" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="getStudentAttendance">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="studentId" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getStudentAttendanceResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="return" type="tns:AttendanceRecordArray"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </types>
+    <message name="getStudentAttendanceRequest">
+        <part name="parameters" element="tns:getStudentAttendance"/>
+    </message>
+    <message name="getStudentAttendanceResponse">
+        <part name="parameters" element="tns:getStudentAttendanceResponse"/>
+    </message>
+    <portType name="AttendancePortType">
+        <operation name="getStudentAttendance">
+            <input message="tns:getStudentAttendanceRequest"/>
+            <output message="tns:getStudentAttendanceResponse"/>
+        </operation>
+    </portType>
+    <binding name="AttendanceBinding" type="tns:AttendancePortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="getStudentAttendance">
+            <soap:operation soapAction="getStudentAttendance"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="AttendanceService">
+        <port name="AttendancePort" binding="tns:AttendanceBinding">
+            <soap:address location="http://localhost/attendly-backend/public/soap-server.php"/>
+        </port>
+    </service>
+</definitions>

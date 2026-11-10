@@ -1,0 +1,191 @@
+/* ========================================
+   Student Attendance System - Main Stylesheet
+   Modular CSS Architecture
+   ======================================== */
+
+/* 1. Design Tokens (must load first) */
+@import './variables.css';
+
+/* 2. Reset & Base Styles */
+@import './reset.css';
+
+/* 3. Unified App Shell (SSC Officer, Administrator, Student) */
+@import './app-shell.css';
+
+/* 3b. Severity badges — shared data-display component, emitted by
+       severityBadge() in ui.js. Sits in the same cascade slot the rules
+       previously held inside app-shell.css. */
+@import './severity.css';
+
+/* 4. Student Dashboard & Subpages */
+@import './student-dashboard.css';
+
+/* 5. Role Dashboard (Admin & SSC Officer) */
+@import './role-dashboard.css';
+
+/* 5b. Shared Stat Card component (all roles) */
+@import './stat-card.css';
+
+/* 5c. Dashboard hover top-accent variant (modifier-scoped to the
+       three dashboard pages only — Student / SSC / Admin) */
+@import './dashboard-hover.css';
+
+/* 6. Kiosk Page */
+@import './kiosk.css';
+
+/* 7. Auth / Login Page */
+@import './auth.css';
+
+/* 8. Cross-role responsive and visual refinements */
+@import './frontend-refresh.css';
+
+/* ========================================
+   Additional page-specific styles can be
+   added here as needed (e.g., auth pages,
+   print styles, etc.)
+   ======================================== */
+
+/* ========================================
+   Grouped Student List
+   (SSC + Admin "Manage Students" pages)
+
+   Renders the student table as collapsible
+   Department → Course sections with a Year
+   Level column. All colors use the design
+   tokens so light/dark themes adapt.
+   ======================================== */
+
+/* ── Filter toolbar above the list ── */
+.student-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+.student-filter-bar .form-select {
+  min-width: 175px;
+  width: auto;
+  font-size: .8rem;
+  background-color: var(--color-bg-input);
+  border-color: var(--color-border-input);
+  color: var(--color-text-primary);
+}
+.student-filter-search {
+  position: relative;
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+.student-filter-search .search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: .85rem;
+  pointer-events: none;
+}
+.student-filter-search .form-control {
+  padding-left: 34px;
+  font-size: .8rem;
+  background-color: var(--color-bg-input);
+  border-color: var(--color-border-input);
+  color: var(--color-text-primary);
+}
+.student-count-chip {
+  margin-left: auto;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* ── Collapsible group headers ── */
+.org-group-head {
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast);
+}
+.org-group-head:hover { background: var(--color-bg-success-light); }
+.org-group-head:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+.org-group-head-dept td {
+  background: var(--color-bg-success-light);
+  border-top: 1px solid var(--brand-200);
+  border-bottom: 1px solid var(--brand-200);
+  padding: 10px 16px;
+}
+.org-group-head-course td {
+  background: var(--color-bg-success-light);
+  opacity: .72;
+  border-bottom: 1px solid var(--color-border-table);
+  padding: 7px 16px 7px 34px;
+}
+.org-group-head-collapsed .org-group-chevron { transform: rotate(-90deg); }
+.org-group-chevron {
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-600);
+  transition: transform var(--transition-fast) var(--ease);
+}
+.org-group-icon { color: var(--brand-600); }
+.org-group-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.org-group-title {
+  font-weight: 700;
+  color: var(--color-text-heading);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.org-group-head-dept .org-group-title {
+  font-size: .82rem;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+.org-group-head-course .org-group-title { font-size: .78rem; }
+.org-group-pill {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: .66rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-success);
+}
+.org-group-hidden { display: none; }
+
+/* ── Year Level cell badge ── */
+.year-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+  font-size: .68rem;
+  font-weight: 600;
+  background: var(--color-bg-success-light);
+  border: 1px solid var(--brand-200);
+  color: var(--color-text-success);
+}
+.year-badge.year-unassigned {
+  background: var(--color-bg-warning-light);
+  border-color: rgba(245, 179, 1, .35);
+  color: var(--color-text-warning);
+}
+
+/* ── Dark theme refinement ── */
+[data-theme="dark"] .org-group-head-course td {
+  background: rgba(14, 159, 110, .10);
+}
+[data-theme="dark"] .org-group-pill {
+  background: var(--color-bg-card-elevated);
+  border-color: var(--color-border-default);
+}

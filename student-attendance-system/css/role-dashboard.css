@@ -1,0 +1,754 @@
+/* ========================================
+   Role Dashboard — Admin & SSC Officer
+
+   Only what is UNIQUE to the role workspaces.
+
+   Everything the admin and SSC shells share with the student portal —
+   .role-shell, .role-sidebar, .role-brand, .role-profile, .role-nav,
+   .role-main, .role-topbar, .role-intro, .section-kicker, .intro-copy,
+   .global-search and both responsive breakpoints — lives in
+   app-shell.css and is NOT repeated here.
+
+   This sheet used to re-declare all seventeen of those selectors
+   verbatim. Because it loads after app-shell.css at equal specificity,
+   every edit to app-shell.css was silently overridden. Keep this file
+   to the role-specific surface: the entrance stagger, compliance
+   badges, the three card/panel families, their list rows, data tables
+   and card headers.
+   ======================================== */
+
+/* ── Ensure the role main content fills the available screen space next to
+   the sidebar. This rule is scoped to .role-dashboard-page so it does not
+   conflict with the existing student-dashboard layout. ── */
+.role-dashboard-page .role-main {
+  width: 100%;
+  flex-grow: 1;
+}
+
+/* ── Section entrance animation ──
+   Staggers the four top-level content blocks. Previously targeted
+   `.role-main > section`, which only ever matched .role-intro — the
+   :nth-of-type(2)/(3) delays could not match anything, so the stat row
+   and panels below appeared with no transition at all. */
+.role-main > .role-intro,
+.role-main > .stat-grid,
+.role-main > .dash-panels,
+.role-main > .activity-feed {
+  animation: roleRise .22s var(--ease) both;
+}
+.role-main > .role-intro { animation-delay: .03s; }
+.role-main > .stat-grid { animation-delay: .07s; }
+.role-main > .dash-panels { animation-delay: .11s; }
+.role-main > .activity-feed { animation-delay: .15s; }
+
+@keyframes roleRise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .role-main > .role-intro,
+  .role-main > .stat-grid,
+  .role-main > .dash-panels,
+  .role-main > .activity-feed { animation: none; }
+}
+
+/* ── Compliance badges ── */
+.compliance-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 0 0;
+}
+
+.compliance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-success-light);
+  color: var(--color-text-success);
+  font-size: .65rem;
+  font-weight: 600;
+}
+
+.compliance-badge i { font-size: .7rem; }
+
+/* ════════════════════════════════════════════════════════════
+   TOP-ACCENT BAR — the three card families below share one
+   treatment, defined once by the --accent-bar-* tokens in
+   variables.css: flat solid emerald, hidden at rest, revealed on
+   hover by growing from centre, clipped into --radius-card corners.
+
+   dashboard-hover.css re-asserts the identical rule scoped to the
+   `dashboard-hover-accent` modifier. Both copies now agree; the flat
+   fill replaces the old --accent-glow gradient, which only reached
+   these three selectors on the pages lacking that modifier.
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Shared dashboard card ──
+   NOTE: .role-action-card was removed from this group. No page uses it —
+   the action panels on the role dashboards are .role-card / .dash-panel. */
+.role-card {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-card), 0 0 0 0.5px rgba(0,0,0,.02);
+  transition: box-shadow var(--transition-normal) var(--ease),
+              transform var(--transition-normal) var(--ease),
+              border-color var(--transition-normal) var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+.role-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--accent-bar-height);
+  background: var(--accent-bar-fill);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  opacity: 0;
+  transform-origin: center;
+  transform: scaleX(var(--accent-bar-rest-scale));
+  transition: var(--accent-bar-transition);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .role-card:hover {
+    box-shadow: var(--shadow-card-hover), 0 1px 8px rgba(14, 159, 110, .08);
+    transform: translateY(-2px);
+    border-color: var(--brand-200);
+  }
+  .role-card:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .role-card::before {
+    transition: none;
+  }
+
+  .role-card:hover {
+    transform: none;
+  }
+
+  .role-card:hover::before {
+    transform: none;
+  }
+}
+
+/* ── Stat cards & grids now live in css/stat-card.css (shared component).
+   .stat-trend likewise moved there — it was duplicated here with
+   different metrics (margin-top 8px vs 3px, weight 600 vs 700). ── */
+
+/* ── Dashboard panels (events / sanctions / activity) ── */
+/* Note: .dash-panels as a grid wrapper is no longer used on role dashboards.
+   The bottom panels are now placed inside Bootstrap rows with col-lg-* columns.
+   Keep the selector for backward compatibility with other pages that may still
+   use it, but do not apply grid layout globally. */
+.dash-panels {
+  display: block;
+}
+
+.dash-panel {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-card), 0 0 0 0.5px rgba(0,0,0,.02);
+  overflow: hidden;
+  transition: box-shadow var(--transition-normal) var(--ease),
+              transform var(--transition-normal) var(--ease),
+              border-color var(--transition-normal) var(--ease);
+  position: relative;
+}
+
+.dash-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--accent-bar-height);
+  background: var(--accent-bar-fill);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  opacity: 0;
+  transform-origin: center;
+  transform: scaleX(var(--accent-bar-rest-scale));
+  transition: var(--accent-bar-transition);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dash-panel:hover {
+    box-shadow: var(--shadow-card-hover), 0 1px 8px rgba(14, 159, 110, .08);
+    transform: translateY(-2px);
+    border-color: var(--brand-200);
+  }
+  .dash-panel:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-panel::before,
+  .activity-panel::before {
+    transition: none;
+  }
+
+  .dash-panel:hover,
+  .activity-panel:hover {
+    transform: none;
+  }
+
+  .dash-panel:hover::before,
+  .activity-panel:hover::before {
+    transform: none;
+  }
+}
+
+.dash-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.dash-panel-header h3 {
+  margin: 0;
+  font-size: var(--font-size-card-title);
+  font-weight: 700;
+  color: var(--color-text-heading);
+}
+
+.dash-panel-header a {
+  font-size: .72rem;
+  color: var(--bs-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition-fast) var(--ease);
+}
+
+.dash-panel-header a:hover { color: var(--brand-700); text-decoration: underline; }
+
+.dash-panel-body { padding: 0; }
+
+/* ── Upcoming events list ── */
+.upcoming-event-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-border-default);
+  transition: background var(--transition-fast) var(--ease),
+              transform var(--transition-fast) var(--ease);
+}
+
+.upcoming-event-item:last-child { border-bottom: 0; }
+
+@media (hover: hover) and (pointer: fine) {
+  .upcoming-event-item:hover {
+    background: rgba(14,159,110,.06);
+    transform: translateX(3px);
+  }
+}
+
+.event-date-badge {
+  flex: 0 0 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-success-light);
+  color: var(--color-text-success);
+  line-height: 1.1;
+}
+
+.event-date-badge .ev-month { font-size: .55rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.event-date-badge .ev-day { font-size: 1.05rem; font-weight: 800; }
+.event-date-badge .ev-dow { font-size: .5rem; color: var(--color-text-muted); }
+
+.event-info { flex: 1; min-width: 0; }
+.event-info strong { display: block; font-size: .8rem; color: var(--color-text-heading); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.event-info small { color: var(--color-text-muted); font-size: .7rem; }
+
+.event-time-badge {
+  flex: 0 0 auto;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-input);
+  color: var(--color-text-muted);
+  font-size: .68rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Sanctions preview list ── */
+.sanction-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-border-default);
+  transition: background var(--transition-fast) var(--ease),
+              transform var(--transition-fast) var(--ease);
+}
+
+.sanction-preview-item:last-child { border-bottom: 0; }
+
+@media (hover: hover) and (pointer: fine) {
+  .sanction-preview-item:hover {
+    background: rgba(14,159,110,.06);
+    transform: translateX(3px);
+  }
+}
+
+.sanction-severity-icon {
+  flex: 0 0 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-circle);
+  font-size: .85rem;
+}
+
+.sanction-severity-icon.warning { background: var(--color-bg-warning-light); color: var(--color-text-warning); }
+.sanction-severity-icon.probation { background: var(--color-probation-bg); color: var(--color-text-probation); }
+.sanction-severity-icon.suspension { background: var(--color-bg-danger-light); color: var(--color-text-danger); }
+
+.sanction-preview-info { flex: 1; min-width: 0; }
+.sanction-preview-info strong { display: block; font-size: .8rem; color: var(--color-text-heading); }
+.sanction-preview-info small { color: var(--color-text-muted); font-size: .7rem; }
+
+.sanction-severity-pill {
+  flex: 0 0 auto;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.sanction-severity-pill.warning { background: var(--color-bg-warning-light); color: var(--color-text-warning); }
+.sanction-severity-pill.probation { background: var(--color-probation-bg); color: var(--color-text-probation); }
+.sanction-severity-pill.suspension { background: var(--color-bg-danger-light); color: var(--color-text-danger); }
+
+/* ── Recent Activity feed ── */
+.activity-feed { margin-top: 0; }
+
+.activity-panel {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-card), 0 0 0 0.5px rgba(0,0,0,.02);
+  overflow: hidden;
+  transition: box-shadow var(--transition-normal) var(--ease),
+              transform var(--transition-normal) var(--ease),
+              border-color var(--transition-normal) var(--ease);
+  position: relative;
+}
+
+.activity-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--accent-bar-height);
+  background: var(--accent-bar-fill);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  opacity: 0;
+  transform-origin: center;
+  transform: scaleX(var(--accent-bar-rest-scale));
+  transition: var(--accent-bar-transition);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .activity-panel:hover {
+    box-shadow: var(--shadow-card-hover), 0 1px 8px rgba(14, 159, 110, .08);
+    transform: translateY(-2px);
+    border-color: var(--brand-200);
+  }
+  .activity-panel:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-border-default);
+  transition: background var(--transition-fast) var(--ease),
+              transform var(--transition-fast) var(--ease);
+}
+
+.activity-item:last-child { border-bottom: 0; }
+
+@media (hover: hover) and (pointer: fine) {
+  .activity-item:hover {
+    background: rgba(14,159,110,.06);
+    transform: translateX(3px);
+  }
+}
+
+/* ── Activity icon chips ──
+   All five are token-driven. .enrolled and .biometric were the only
+   off-brand raw hex in the app (Google blue #1a73e8 and purple
+   #8430ce) with no dark-theme override, which rendered near-white
+   chips on dark cards; the blue also measured 3.93:1, under the 4.5:1
+   AA floor for its 12px glyph. Now --color-bg-info-light /
+   --color-text-info and --color-bg-violet-light / --color-text-violet,
+   which adapt per theme and clear AA in both. */
+.activity-icon {
+  flex: 0 0 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-circle);
+  font-size: .75rem;
+}
+
+.activity-icon.check-in { background: var(--color-bg-success-light); color: var(--color-text-success); }
+.activity-icon.sanction { background: var(--color-bg-warning-light); color: var(--color-text-warning); }
+.activity-icon.enrolled { background: var(--color-bg-info-light); color: var(--color-text-info); }
+.activity-icon.edited { background: var(--color-bg-input); color: var(--color-text-muted); }
+
+.activity-text { flex: 1; min-width: 0; }
+.activity-text strong { font-size: .78rem; color: var(--color-text-heading); }
+.activity-text span { font-size: .72rem; color: var(--color-text-muted); }
+
+.activity-time {
+  flex: 0 0 auto;
+  font-size: .65rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  padding-top: 2px;
+}
+
+/* ── Data table wrapper — prevents overflow ── */
+.data-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table-wrapper table {
+  min-width: 500px;
+  font-size: .82rem;
+}
+
+.data-table-wrapper table th,
+.data-table-wrapper table td {
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Card header for tables ── */
+.role-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-border-default);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.role-card-header h3 {
+  margin: 0;
+  font-size: var(--font-size-card-title);
+  font-weight: 700;
+  color: var(--color-text-heading);
+}
+
+/* ── Bootstrap .card-header inside dashboard cards ──
+   The admin dashboard uses Bootstrap .card + .card-header for its
+   "System-Wide Events", "Quick Actions" and "Recent System Activity"
+   panels. Strip the hardcoded .bg-white so the header inherits the card
+   surface and stays themed in both light and dark mode. */
+/* Make plain dashboard cards transparent so their .card-header applies
+   its own background/text/border instead of inheriting white from the
+   card itself. This also applies to the SSC dashboard. */
+.role-dashboard-page .card {
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+
+.role-dashboard-page .card .card-header {
+  background: transparent;
+  color: var(--color-text-heading);
+  border-bottom: 1px solid var(--color-border-default);
+  padding: 14px 20px;
+  padding-bottom: 16px !important; /* Adds breathing room below the titles */
+  margin-bottom: 8px; /* Adds a small gap between the header and the content */
+}
+
+.role-dashboard-page .card-header .card-title {
+  font-size: var(--font-size-card-title);
+  font-weight: 700;
+  color: var(--color-text-heading);
+}
+
+.role-dashboard-page .card-header i,
+.role-dashboard-page .card-header .bi {
+  color: var(--color-text-success);
+}
+
+/* ── Dark theme hover overrides ── */
+[data-theme="dark"] .upcoming-event-item:hover,
+[data-theme="dark"] .sanction-preview-item:hover,
+[data-theme="dark"] .activity-item:hover,
+[data-theme="dark"] .search-result-item:hover,
+[data-theme="dark"] .user-dropdown-item:hover {
+  background: rgba(79,206,159,.08);
+}
+
+/* ── Responsive ──
+   Sidebar, topbar, nav and intro breakpoints live in app-shell.css.
+   Only the role-specific blocks below are repeated here. */
+@media (max-width: 950px) {
+  .global-search { flex: 0 1 240px; }
+  .dash-panels { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 650px) {
+  .activity-item { padding: 10px 14px; }
+  .upcoming-event-item { padding: 10px 14px; }
+  .sanction-preview-item { padding: 10px 14px; }
+  .compliance-bar { padding: 8px 0 0; }
+}
+
+/* ── Admin dashboard: sticky table header + balanced columns ──
+   The "System-Wide Events" table can have many rows, so the header
+   sticks to the top of the scroll container. Both cards carry .h-100
+   so the row is balanced; the Quick Actions buttons stay aligned to
+   the top and any spare height sits under the last button. */
+.role-dashboard-page .card.shadow-sm.h-100 {
+  display: flex;
+  flex-direction: column;
+}
+
+.role-dashboard-page .card.shadow-sm.h-100 .card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sticky table header inside the events card scroll container.
+   Deliberately NOT a flex container: a <table> laid out as a shrinkable flex
+   item compresses its rows to fit instead of scrolling, which is what chopped
+   the last row in half. min-height: 0 lets the box shrink so the overflow
+   actually scrolls. */
+.role-dashboard-page .card.shadow-sm.h-100 .card-body .table-responsive {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Sticky is applied to the header CELLS, not the <thead>. Sticking the row
+   group relies on a collapsed-border box that Chrome paints inconsistently
+   once the table scrolls, which is what let a scrolled row show through the
+   header. Cells stick reliably and keep their own opaque background. */
+.role-dashboard-page .card.shadow-sm.h-100 .card-body .table-responsive thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--color-bg-card) !important;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.role-dashboard-page .card .table thead th {
+  background-color: var(--color-bg-card) !important;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.role-dashboard-page .card .table thead th i,
+.role-dashboard-page .card .table thead th .bi {
+  color: var(--color-text-success) !important;
+}
+
+.role-dashboard-page .card .table thead th:first-child {
+  border-top-left-radius: var(--radius-sm);
+}
+
+.role-dashboard-page .card .table thead th:last-child {
+  border-top-right-radius: var(--radius-sm);
+}
+
+.role-dashboard-page .card .table-responsive th,
+.role-dashboard-page .card .table-responsive td {
+  white-space: nowrap;
+  padding: 10px 14px;
+}
+
+/* Give the events table a comfortable bottom pad so the last row text
+   never sits exactly on the scrollbar track edge. */
+.role-dashboard-page .card.shadow-sm .card-body .table-responsive {
+  padding-bottom: 10px;
+}
+
+/* Quick Actions card: the body fills the stretched card but the buttons
+   stack from the top, so spare height falls below them, not above. */
+.role-dashboard-page .card.shadow-sm .card-body.d-flex.flex-column {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+}
+
+/* ── Equal-height pair ──
+   The left card sizes itself from its rows and its table region takes whatever
+   the card header leaves, so the last row is never cut in half. Its height is
+   capped, and past the cap the table scrolls instead of growing the card. The
+   right card stretches to the row the left card establishes, with 510px as a
+   floor so it still looks full when there are only three events. */
+
+/* 1. The row stretches its columns */
+.role-dashboard-page .row.align-items-stretch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+/* 2. Left card: grows with its rows, capped so a long list scrolls instead of
+   pushing the card off the page. The cap is the tallest the card ever gets. */
+.role-dashboard-page .row.align-items-stretch > .col-lg-8 > .card {
+  max-height: 545px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 3. Right card gets the same height as a bulletproof floor */
+.role-dashboard-page .row.align-items-stretch > .col-lg-4 > .card {
+  min-height: 510px !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 4. Right card body fills the card, buttons spread evenly through it */
+.role-dashboard-page .row.align-items-stretch > .col-lg-4 > .card > .card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly; /* This pushes the buttons apart to fill the space */
+  padding: 1.5rem; /* Balanced padding around the buttons */
+}
+
+/* 4b. The card body must be a flex column itself, and be allowed to shrink:
+   otherwise its content sets a min-content floor and a long event list spills
+   out of the fixed-height card instead of scrolling inside it. */
+.role-dashboard-page .row.align-items-stretch > .col-lg-8 > .card > .card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* 5. The table region absorbs the rest of the left card and scrolls past it,
+   so rows are never clipped by the card and the header still sticks. */
+.role-dashboard-page .row.align-items-stretch > .col-lg-8 > .card > .card-body > .table-responsive {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+
+/* ── Table action buttons — one consistent rounded rectangle ──
+   Admin and SSC manage tables render Edit / Delete / Deactivate /
+   Reactivate as .btn-sm directly inside a <td> (no .table-actions
+   wrapper). Without a shared width the 44px min-height plus tight
+   padding makes short labels collapse into circles. Give every labelled
+   action the same minimum size, padding and radius so the row reads as
+   one control group. Icon-only controls (kiosk station copy/remove)
+   carry aria-label and keep their compact square size. */
+.role-dashboard-page table .btn-sm:not([aria-label]) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 96px;
+  min-height: 40px;
+  padding: .25rem .75rem;
+  border-radius: var(--radius-md);
+  font-size: .75rem;
+  font-weight: 650;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* Action-button colours. These selectors outrank Bootstrap's
+   .btn-outline-* defaults and ssc.css's button colours, so each control
+   reads the same way on light and dark cards. */
+
+/* Edit — neutral outline */
+.role-dashboard-page table .btn-sm.btn-outline-secondary {
+  border-color: var(--color-border-input);
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+/* Deactivate — solid danger. Bootstrap's outline-warning left an amber
+   border and amber text on a white card, which was unreadable in light
+   mode. The danger fill is used in both themes. */
+.role-dashboard-page table .btn-sm.btn-outline-warning {
+  border-color: var(--color-danger);
+  background: var(--color-danger);
+  color: var(--color-text-on-danger);
+}
+
+/* Reactivate — success outline */
+.role-dashboard-page table .btn-sm.btn-outline-success {
+  border-color: color-mix(in srgb, var(--color-text-success) 55%, transparent);
+  background: transparent;
+  color: var(--color-text-success);
+}
+
+/* Delete / Reject / Deny — danger outline */
+.role-dashboard-page table .btn-sm.btn-outline-danger {
+  border-color: color-mix(in srgb, var(--color-text-danger) 55%, transparent);
+  background: transparent;
+  color: var(--color-text-danger);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .role-dashboard-page table .btn-sm.btn-outline-secondary:hover {
+    border-color: var(--color-border-input);
+    background: var(--color-border-default);
+    color: var(--color-text-heading);
+  }
+
+  .role-dashboard-page table .btn-sm.btn-outline-warning:hover {
+    border-color: var(--color-danger-hover);
+    background: var(--color-danger-hover);
+    color: var(--color-text-on-danger);
+  }
+
+  .role-dashboard-page table .btn-sm.btn-outline-success:hover {
+    border-color: var(--color-text-success);
+    background: var(--color-bg-success-light);
+    color: var(--color-text-success);
+  }
+
+  .role-dashboard-page table .btn-sm.btn-outline-danger:hover {
+    border-color: var(--color-text-danger);
+    background: var(--color-bg-danger-light);
+    color: var(--color-text-danger);
+  }
+}

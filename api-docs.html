@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ATTENDLY API Documentation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.10.3/swagger-ui.min.css" />
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.10.3/swagger-ui-bundle.min.js"></script>
+  <script>
+    const spec = {
+      "openapi": "3.0.0",
+      "info": {
+        "title": "ATTENDLY API",
+        "version": "1.0.0"
+      },
+      "servers": [{ "url": "http://localhost:8000/api" }],
+      "paths": {
+        "/auth/login": {
+          "post": {
+            "summary": "Login",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "email": { "type": "string" }, "password": { "type": "string" } } }
+                }
+              }
+            },
+            "responses": { "200": { "description": "OK" } }
+          }
+        },
+        "/events": {
+          "post": {
+            "summary": "Create Event",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "name": { "type": "string" }, "date": { "type": "string" }, "startTime": { "type": "string" }, "endTime": { "type": "string" }, "venue": { "type": "string" }, "eventType": { "type": "string" } } }
+                }
+              }
+            },
+            "responses": { "201": { "description": "Created" } }
+          }
+        },
+        "/attendance/qr-check-in": {
+          "post": {
+            "summary": "QR Check-in",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "eventId": { "type": "integer" }, "qrToken": { "type": "string" }, "action": { "type": "string" } } }
+                }
+              }
+            },
+            "responses": { "200": { "description": "OK" } }
+          }
+        },
+        "/attendance": {
+          "get": {
+            "summary": "List Attendance",
+            "responses": { "200": { "description": "List of attendance records" } }
+          }
+        }
+      }
+    };
+    SwaggerUIBundle({ spec: spec, dom_id: '#swagger-ui' });
+  </script>
+</body>
+</html>

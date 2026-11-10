@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSC Dashboard | Attendance System</title>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'light'}catch(e){}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="../../css/styles.css" rel="stylesheet">
+  <link href="../../css/dark-style.css" rel="stylesheet">
+  <link href="../../css/ssc.css" rel="stylesheet">
+</head>
+<body class="role-dashboard-page dashboard-hover-accent">
+  <a href="#main-content" class="visually-hidden focusable">Skip to main content</a>
+  <div class="role-shell">
+    <aside class="role-sidebar">
+      <a class="role-brand" href="ssc-dashboard.html"><i class="bi bi-person-bounding-box"></i><span>ATTENDLY</span></a>
+      <div class="role-profile">
+        <div class="role-avatar ssc-avatar">SSC</div>
+        <div><strong>SSC Officer</strong><small>Supreme Student Council</small></div>
+      </div>
+      <nav class="role-nav" aria-label="SSC navigation">
+        <a class="active" aria-current="page" href="ssc-dashboard.html"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="ssc-manage-students.html"><i class="bi bi-people"></i> Students</a>
+        <a href="ssc-manage-events.html"><i class="bi bi-calendar-event"></i> Events</a>
+        <a href="ssc-reports.html"><i class="bi bi-bar-chart-line"></i> Reports</a>
+        <a href="../kiosk.html"><i class="bi bi-display"></i> Kiosk</a>
+      </nav>
+      <div class="role-sidebar-footer">
+        <button class="role-sidebar-action logout-action" type="button" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Log out</button>
+      </div>
+    </aside>
+
+    <main id="main-content" class="role-main">
+      <!-- ── Top bar ── -->
+      <header class="role-topbar">
+        <div><span class="student-breadcrumb">Workspace /</span><strong>SSC dashboard</strong></div>
+
+        <!-- Global search -->
+        <div class="global-search" id="globalSearch">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" id="globalSearchInput" aria-label="Search students and events" placeholder="Search students and events…" autocomplete="off">
+          <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><i class="bi bi-x-lg"></i></button>
+          <div class="search-results-dropdown" id="searchResults"></div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="icon-button" type="button" aria-label="Notifications"><i class="bi bi-bell"></i></button>
+          <button class="icon-button" type="button" aria-label="Toggle theme" data-theme-toggle><i class="bi bi-moon" data-theme-icon></i></button>
+
+          <!-- User account dropdown -->
+          <div class="user-dropdown-wrap" id="userDropdownWrap">
+            <button class="user-dropdown-toggle" id="userDropdownToggle" type="button" aria-haspopup="true" aria-expanded="false">
+              <div class="user-dropdown-avatar">SSC</div>
+              <span>SSC Officer</span>
+              <i class="bi bi-chevron-down" style="font-size:.6rem;color:var(--color-text-muted)"></i>
+            </button>
+            <div class="user-dropdown-menu" id="userDropdownMenu" role="menu">
+              <div class="user-dropdown-header">
+                <strong>SSC Officer</strong>
+                <small>ssc-officer@attendly.edu</small>
+              </div>
+              <button class="user-dropdown-item" role="menuitem" onclick="window.location.href='ssc-manage-students.html'">
+                <i class="bi bi-person-circle"></i> My profile
+              </button>
+              <div class="user-dropdown-divider"></div>
+              <button class="user-dropdown-item logout" role="menuitem" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i> Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ── Intro ── -->
+      <section class="role-intro">
+        <div>
+          <p class="section-kicker">System overview</p>
+          <h1>Everything in view.</h1>
+          <p class="intro-copy">Manage students, events, sanctions, and reports from one workspace.</p>
+          <div class="compliance-bar">
+            <span class="compliance-badge"><i class="bi bi-file-earmark-lock"></i> RA 10172 compliant</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Top Overview Cards (4 Columns) ── -->
+      <div class="row g-4 mb-4">
+        <div class="col-lg-3">
+          <article class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Total Events</span>
+              <i class="stat-icon bi bi-calendar-event" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value" id="statTotalEvents">0</div>
+          </article>
+        </div>
+        <div class="col-lg-3">
+          <article class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Active Events</span>
+              <i class="stat-icon bi bi-lightning-charge" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value" id="statActiveEvents">0</div>
+          </article>
+        </div>
+        <div class="col-lg-3">
+          <article class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Total Attendance</span>
+              <i class="stat-icon bi bi-person-check" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value" id="statTotalAttendance">0</div>
+          </article>
+        </div>
+        <div class="col-lg-3">
+          <article class="stat-card stat-card--featured">
+            <div class="stat-head">
+              <span class="stat-label">Flagged Students</span>
+              <i class="stat-icon bi bi-exclamation-triangle" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value" id="statFlaggedStudents">0</div>
+          </article>
+        </div>
+      </div>
+
+      <!-- ── Active Event Monitoring (Hero Card) ── -->
+      <div class="row g-4 mb-4">
+        <div class="col-12">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="card-title mb-0"><i class="bi bi-lightning-charge-fill me-2"></i>Live Event Monitor</h5>
+                <span class="badge bg-success" id="liveEventBadge" style="display:none">LIVE</span>
+              </div>
+              <div id="activeEventContent">
+                <!-- JS-populated: shows live event or muted message -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Bottom Grid (2 Columns) ── -->
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="dash-panel h-100">
+            <div class="dash-panel-header">
+              <h3><i class="bi bi-calendar-event" style="margin-right:6px;color:var(--color-text-success)"></i>Upcoming Events</h3>
+              <a href="ssc-manage-events.html">View all →</a>
+            </div>
+            <div class="dash-panel-body" id="upcomingEventsList">
+              <!-- JS-populated -->
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="activity-panel h-100">
+            <div class="dash-panel-header">
+              <h3><i class="bi bi-activity" style="margin-right:6px;color:var(--color-text-success)"></i>Recent Activity</h3>
+            </div>
+            <div class="dash-panel-body" id="recentActivityList">
+              <!-- JS-populated -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="toastContainer" class="position-fixed top-0 end-0 p-3"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/data.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/ui.js"></script>
+  <script src="../../js/ssc.js"></script>
+  <script>
+    /* ─────────────────────────────────────
+       SSC Dashboard — enhanced features
+       ───────────────────────────────────── */
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+      initGlobalSearch({
+        students: 'ssc-manage-students.html',
+        events: 'ssc-manage-events.html',
+      });
+
+      /* ── Trend indicators ── */
+      // No historical comparison data is available, so don't display invented trends.
+      document.querySelectorAll('.stat-trend').forEach(function (trend) {
+        trend.hidden = true;
+        var foot = trend.closest('.stat-foot');
+        if (foot) foot.hidden = true;
+      });
+
+      /* ── Top Overview Cards ── */
+      function renderTopOverviewCards() {
+        var totalEventsEl = document.getElementById('statTotalEvents');
+        var activeEventsEl = document.getElementById('statActiveEvents');
+        var totalAttendanceEl = document.getElementById('statTotalAttendance');
+        var flaggedStudentsEl = document.getElementById('statFlaggedStudents');
+
+        if (!totalEventsEl || !activeEventsEl || !totalAttendanceEl || !flaggedStudentsEl) return;
+
+        var events = getEvents();
+        var attendance = getAttendance();
+        var users = getUsers();
+
+        // Total Events: count of all events
+        totalEventsEl.textContent = events.length;
+
+        // Active Events: events with status 'live' or happening today
+        var today = new Date().toISOString().slice(0, 10);
+        var activeEvents = events.filter(function (e) {
+          return e.status === 'live' || e.status === 'ongoing' || e.date === today;
+        });
+        activeEventsEl.textContent = activeEvents.length;
+
+        // Total Attendance: distinct student/event pairs (four_point stores
+        // two scan rows per student, so counting rows would double-count).
+        totalAttendanceEl.textContent = typeof countUniqueAttendance === 'function'
+          ? countUniqueAttendance(attendance)
+          : attendance.length;
+
+        // Flagged Students: students with >3 absences (absent or late)
+        var absencesByStudent = {};
+        attendance.forEach(function (a) {
+          if (a.status === 'absent' || a.status === 'late') {
+            absencesByStudent[a.studentId] = (absencesByStudent[a.studentId] || 0) + 1;
+          }
+        });
+
+        var flaggedCount = 0;
+        Object.keys(absencesByStudent).forEach(function (studentId) {
+          if (absencesByStudent[studentId] > 3) {
+            flaggedCount++;
+          }
+        });
+        flaggedStudentsEl.textContent = flaggedCount;
+      }
+
+      renderTopOverviewCards();
+
+      /* ── Active Event Monitoring (Hero Card) ── */
+      function renderActiveEventMonitor() {
+        var container = document.getElementById('activeEventContent');
+        var badge = document.getElementById('liveEventBadge');
+        if (!container) return;
+
+        var events = getEvents();
+        var attendance = getAttendance();
+        var users = getUsers();
+        var today = new Date().toISOString().slice(0, 10);
+
+        // Find the first event that is live/ongoing or happening today
+        var liveEvent = events.filter(function (e) {
+          return e.status === 'live' || e.status === 'ongoing' || e.date === today;
+        })[0];
+
+        if (!liveEvent) {
+          container.innerHTML = '<div class="text-center py-4"><i class="bi bi-calendar-x" style="font-size:2rem;color:var(--color-text-muted)"></i><p class="text-muted mt-2 mb-0">No active events right now.</p></div>';
+          if (badge) badge.style.display = 'none';
+          return;
+        }
+
+        // Count total students in the event and check-ins for the event
+        var eventCheckInStudentIds = {};
+        attendance.forEach(function (a) {
+          if (a.eventId === liveEvent.id) eventCheckInStudentIds[a.studentId] = true;
+        });
+        var totalStudents = users.filter(function (u) { return u.role === 'student'; }).length;
+        var checkInCount = Object.keys(eventCheckInStudentIds).length;
+        var progressPercent = totalStudents > 0 ? Math.round((checkInCount / totalStudents) * 100) : 0;
+
+        if (badge) {
+          badge.style.display = 'inline-block';
+          badge.classList.add('animate-pulse');
+        }
+
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var d = new Date(liveEvent.date + 'T00:00:00');
+        var formattedDate = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+
+        var progressBarStyle = 'width:' + progressPercent + '%;transition:width 0.5s ease-in-out';
+        container.innerHTML = '<div class="row align-items-center">' +
+          '<div class="col-md-8">' +
+            '<h4 class="mb-1">' + escapeHtml(liveEvent.name) + '</h4>' +
+            '<p class="text-muted mb-1"><i class="bi bi-geo-alt me-1"></i>' + escapeHtml(liveEvent.location) + '</p>' +
+            '<p class="text-muted mb-0"><i class="bi bi-calendar-date me-1"></i>' + formattedDate + ' · ' + escapeHtml(liveEvent.time) + '</p>' +
+          '</div>' +
+          '<div class="col-md-4">' +
+            '<div class="text-center mb-2">' +
+              '<div class="fs-4 fw-bold" id="liveEventProgressText">' + progressPercent + '%</div>' +
+              '<small class="text-muted">Check-in rate</small>' +
+            '</div>' +
+            '<div class="progress" style="height:12px;border-radius:6px;overflow:hidden">' +
+              '<div class="progress-bar bg-success" role="progressbar" id="liveEventProgressBar" style="' + progressBarStyle + '" aria-valuenow="' + progressPercent + '" aria-valuemin="0" aria-valuemax="100"></div>' +
+            '</div>' +
+            '<small class="text-muted">' + checkInCount + ' / ' + totalStudents + ' students checked in</small>' +
+          '</div>' +
+        '</div>';
+      }
+
+      renderActiveEventMonitor();
+
+      /* ── Upcoming Events list ── */
+      function renderUpcomingEvents() {
+        var container = document.getElementById('upcomingEventsList');
+        if (!container) return;
+        var events = getEvents();
+        var today = new Date().toISOString().slice(0, 10);
+        var upcoming = events.filter(function (e) { return e.date >= today; })
+          .sort(function (a, b) { return a.date.localeCompare(b.date) || a.time.localeCompare(b.time); })
+          .slice(0, 3);
+
+        if (!upcoming.length) {
+          container.innerHTML = '<div style="padding:24px 20px;text-align:center;color:var(--color-text-muted);font-size:.78rem"><i class="bi bi-calendar-x" style="font-size:1.4rem;display:block;margin-bottom:6px"></i>No upcoming events</div>';
+          return;
+        }
+
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var dows = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+        container.innerHTML = upcoming.map(function (ev) {
+          var d = new Date(ev.date + 'T00:00:00');
+          return '<div class="upcoming-event-item">' +
+            '<div class="event-date-badge">' +
+              '<span class="ev-month">' + months[d.getMonth()] + '</span>' +
+              '<span class="ev-day">' + d.getDate() + '</span>' +
+              '<span class="ev-dow">' + dows[d.getDay()] + '</span>' +
+            '</div>' +
+            '<div class="event-info"><strong>' + escapeHtml(ev.name) + '</strong><small>' + escapeHtml(ev.location) + (ev.publicId ? ' · ' + escapeHtml(ev.publicId) : '') + '</small></div>' +
+            '<span class="event-time-badge"><i class="bi bi-clock" style="margin-right:3px"></i>' + escapeHtml(ev.time) + '</span>' +
+          '</div>';
+        }).join('');
+      }
+
+      renderUpcomingEvents();
+
+
+      /* ── Recent Activity feed ── */
+      function renderRecentActivity() {
+        var container = document.getElementById('recentActivityList');
+        if (!container) return;
+
+        var activities = [];
+        var users = getUsers();
+        var attendance = getAttendance();
+        var events = getEvents();
+
+        // Attendance check-ins (last 5)
+        attendance.forEach(function (a) {
+          var student = users.find(function (u) { return u.id === a.studentId; });
+          var event = events.find(function (e) { return e.id === a.eventId; });
+          var eventLabel = event
+            ? (event.publicId ? event.publicId + ' · ' : '') + event.name
+            : 'event';
+          activities.push({
+            type: 'check-in',
+            icon: 'bi-check-circle',
+            text: '<strong>' + escapeHtml(student ? student.name : 'Unknown') + '</strong> <span>checked in to ' + escapeHtml(eventLabel) + '</span>',
+            time: a.date + 'T' + (a.time || '00:00'),
+            sortKey: a.date + ' ' + (a.time || '00:00')
+          });
+        });
+
+        // Sort by time descending
+        activities.sort(function (a, b) { return b.sortKey.localeCompare(a.sortKey); });
+
+        if (!activities.length) {
+          container.innerHTML = '<div style="padding:24px 20px;text-align:center;color:var(--color-text-muted);font-size:.78rem"><i class="bi bi-clock-history" style="font-size:1.4rem;display:block;margin-bottom:6px"></i>No recent activity</div>';
+          return;
+        }
+
+        container.innerHTML = activities.slice(0, 5).map(function (act) {
+          var iconClass = act.type === 'check-in' ? 'check-in' : 'check-in';
+          var displayTime = formatActivityTime(act.time);
+          return '<div class="activity-item d-flex align-items-center p-3 border-bottom">' +
+            '<div class="activity-icon ' + iconClass + '"><i class="bi ' + act.icon + '"></i></div>' +
+            '<div class="activity-text">' + act.text + '</div>' +
+            '<span class="activity-time">' + displayTime + '</span>' +
+          '</div>';
+        }).join('');
+        // Ensure the last item does not show a bottom border.
+        var items = container.querySelectorAll('.activity-item');
+        if (items[items.length - 1]) {
+          items[items.length - 1].classList.remove('border-bottom');
+        }
+      }
+
+      function formatActivityTime(dateStr) {
+        try {
+          var d = new Date(dateStr);
+          var now = new Date();
+          var diffMs = now - d;
+          var diffMins = Math.floor(diffMs / 60000);
+          if (diffMins < 1) return 'Just now';
+          if (diffMins < 60) return diffMins + 'm ago';
+          var diffHrs = Math.floor(diffMins / 60);
+          if (diffHrs < 24) return diffHrs + 'h ago';
+          var diffDays = Math.floor(diffHrs / 24);
+          if (diffDays < 7) return diffDays + 'd ago';
+          return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        } catch (e) {
+          return dateStr;
+        }
+      }
+
+      renderRecentActivity();
+
+    }); // end DOMContentLoaded
+  </script>
+</body>
+</html>

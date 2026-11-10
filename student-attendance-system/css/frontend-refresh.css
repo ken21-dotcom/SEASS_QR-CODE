@@ -1,0 +1,1014 @@
+/* ========================================
+   Shared Frontend Refresh
+   Final polish shared by student, SSC, and
+   administrator workspaces. Kiosk and auth
+   retain their purpose-built layouts.
+   ======================================== */
+
+:is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) {
+  --workspace-content-max: 1440px;
+  --workspace-gutter: clamp(18px, 4.5vw, 72px);
+}
+
+/* Keep wide screens composed instead of stretching dashboard content forever. */
+:is(.role-main, .student-main) {
+  padding-inline: var(--workspace-gutter);
+}
+
+:is(.role-main, .student-main) > :not(.role-topbar, .student-topbar) {
+  width: min(100%, var(--workspace-content-max));
+  margin-inline: auto;
+}
+
+/* The student dashboard is a four-column workspace, so it fills the width
+   next to the sidebar instead of sitting inside the shared centred cap.
+   Padding stays symmetric through --workspace-gutter on .student-main. */
+.student-dashboard-page .student-main > :not(.student-topbar) {
+  width: 100%;
+  margin-inline: 0;
+}
+
+/* A quieter, more tactile surface language across every workspace. */
+:is(.role-card, .dashboard-card, .dash-panel, .activity-panel, .stat-card) {
+  box-shadow:
+    0 1px 2px rgba(15, 31, 23, .035),
+    0 10px 30px rgba(15, 31, 23, .045);
+}
+
+:is(.role-card, .dashboard-card, .dash-panel, .activity-panel) {
+  border-color: color-mix(in srgb, var(--color-border-default) 82%, var(--brand-200));
+}
+
+:is(.form-control, .form-select) {
+  min-height: 42px;
+  border-radius: var(--radius-sm);
+  transition:
+    border-color var(--transition-fast) var(--ease),
+    box-shadow var(--transition-fast) var(--ease),
+    background-color var(--transition-fast) var(--ease);
+}
+
+:is(.form-control, .form-select):focus {
+  border-color: var(--color-border-focus);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--brand-500) 30%, transparent),
+    0 0 14px color-mix(in srgb, var(--brand-500) 24%, transparent);
+}
+
+:is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) .btn {
+  min-height: 40px;
+  border-radius: var(--radius-sm);
+  font-weight: 650;
+  letter-spacing: .005em;
+  box-shadow: 0 1px 2px rgba(18, 28, 24, .04);
+}
+
+/* Remove the hover-only accent stripe and card lift; keep a quiet border cue. */
+.dashboard-hover-accent :is(.stat-card, .dashboard-card, .dash-panel, .activity-panel, .role-card)::before {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-hover-accent :is(.stat-card, .dashboard-card, .dash-panel, .activity-panel, .role-card):hover {
+    transform: none;
+    border-color: var(--brand-300);
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+:is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) .btn-success {
+  border-color: var(--brand-700);
+  background: linear-gradient(135deg, var(--brand-600), var(--brand-700));
+  box-shadow: 0 6px 16px rgba(14, 159, 110, .16), inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) .btn-success:hover {
+    border-color: var(--brand-700);
+    background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+    transform: translateY(-1px);
+    box-shadow: 0 9px 20px rgba(14, 159, 110, .22);
+  }
+}
+
+/* Make dense data areas easier to scan. */
+:is(.role-card, .dashboard-card) .table-responsive {
+  scrollbar-color: var(--brand-300) transparent;
+  scrollbar-width: thin;
+}
+
+:is(.role-card, .dashboard-card) .table > :not(caption) > * > * {
+  padding-block: .82rem;
+}
+
+:is(.role-card, .dashboard-card) .table thead th {
+  color: var(--color-text-muted);
+  font-size: .75rem;
+  font-weight: 750;
+  letter-spacing: .065em;
+  text-transform: uppercase;
+}
+
+/* ── In-table empty state ──
+   A single shared cell keeps every blank data table from collapsing into
+   an unexplained white box. The text wraps even inside .data-table-wrapper,
+   which normally forces table cells onto one line. */
+.table td.role-empty-cell {
+  max-width: none !important;
+  padding: 30px 18px !important;
+  overflow: visible !important;
+  color: var(--color-text-muted);
+  text-align: center;
+  text-overflow: clip !important;
+  white-space: normal !important;
+}
+
+.table td.role-empty-cell > i {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--brand-500);
+  font-size: 1.35rem;
+}
+
+.table td.role-empty-cell > strong {
+  display: block;
+  color: var(--color-text-heading);
+  font-size: .9rem;
+  font-weight: 650;
+}
+
+.table td.role-empty-cell > span {
+  display: block;
+  margin-top: 2px;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+/* Small dashboard metadata needs a stronger light-theme tone than the
+   general-purpose muted token to remain legible at compact sizes. */
+:root:not([data-theme="dark"]) .dash-panel-header a { color: var(--brand-700); }
+
+/* This file used to re-declare --color-text-muted to #53675c on .dashboard-card
+   as a partial workaround for the base token sitting at 4.37:1. The base token is
+   now #65756c and clears AA on every surface it lands on (see
+   tools/contrast-check.js), so the override is gone — keeping it would give
+   dashboard cards darker metadata than the rest of the app. */
+:root:not([data-theme="dark"]) .dashboard-card :is(.section-kicker, .text-link) {
+  color: var(--brand-700);
+}
+
+:root:not([data-theme="dark"]) .calendar-cell.has-event:not(.today) {
+  color: #086243;
+}
+
+:root:not([data-theme="dark"]) .event-date-badge .ev-dow {
+  color: var(--brand-700);
+  font-weight: 700;
+}
+
+:root:not([data-theme="dark"]) :is(
+  .event-info small,
+  .event-time-badge,
+  .sanction-preview-info small,
+  .activity-text span,
+  .activity-time
+) {
+  color: #53675c;
+}
+
+:root:not([data-theme="dark"]) .sanction-severity-pill.warning { color: #795000; }
+:root:not([data-theme="dark"]) .sanction-severity-pill.probation { color: #a33d00; }
+
+[data-theme="dark"] .student-breadcrumb {
+  color: #9bb1a5;
+  opacity: 1;
+}
+
+[data-theme="dark"] .sanction-severity-pill.probation {
+  color: #ffc08a;
+  background: #3a2112;
+}
+
+/* The menu button is injected by ui.js only when an app shell exists. */
+.app-mobile-menu-toggle {
+  display: none;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.app-mobile-menu-toggle i {
+  font-size: 1.1rem;
+  transition: transform var(--transition-normal) var(--ease);
+}
+
+.app-mobile-menu-toggle[aria-expanded="true"] i { transform: rotate(90deg); }
+
+.app-drawer-close { display: none; }
+
+.app-nav-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1090;
+  border: 0;
+  padding: 0;
+  background: rgba(4, 15, 10, .58);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity var(--transition-normal) var(--ease);
+}
+
+.app-nav-backdrop[hidden] { display: none; }
+
+@media (max-width: 650px) {
+  :is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) {
+    --workspace-gutter: 16px;
+  }
+
+  body.nav-drawer-open { overflow: hidden; }
+
+  :is(.role-shell, .student-shell, .app-shell) { display: block; }
+
+  /* Replace the tall, permanently expanded mobile navigation with a drawer. */
+  :is(.role-sidebar, .student-sidebar, .app-sidebar) {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1100;
+    width: min(84vw, 316px);
+    height: 100dvh;
+    min-height: 0;
+    padding: 24px 18px 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform: translateX(-105%);
+    visibility: hidden;
+    box-shadow: 24px 0 64px rgba(4, 15, 10, .28);
+    transition:
+      transform var(--transition-slow) var(--ease),
+      visibility 0s linear var(--transition-slow);
+  }
+
+  :is(.role-sidebar, .student-sidebar, .app-sidebar).is-open {
+    transform: translateX(0);
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  :is(.role-brand, .student-brand, .app-brand) {
+    padding: 0 12px 20px;
+  }
+
+  :is(.role-profile, .student-profile, .app-profile) {
+    padding: 16px 10px 20px;
+  }
+
+  :is(.role-nav, .student-nav, .app-nav) {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  :is(.role-nav, .student-nav, .app-nav) a {
+    justify-content: flex-start;
+    min-height: 44px;
+    padding: 11px 14px;
+    font-size: .8rem;
+  }
+
+  :is(.role-nav, .student-nav, .app-nav) a i {
+    display: inline-block;
+    width: 20px;
+    font-size: 1rem;
+  }
+
+  :is(.role-nav, .student-nav, .app-nav) a.active::before {
+    display: block;
+  }
+
+  :is(.role-sidebar-footer, .student-sidebar-footer, .app-sidebar-footer) {
+    display: grid;
+    padding-top: 16px;
+  }
+
+  .app-mobile-menu-toggle { display: inline-grid; }
+
+  .app-drawer-close {
+    display: inline-grid;
+    position: absolute;
+    top: 18px;
+    right: 16px;
+    z-index: 1;
+    width: 38px;
+    height: 38px;
+    border-color: rgba(255, 255, 255, .12);
+    background: rgba(255, 255, 255, .07);
+    color: rgba(255, 255, 255, .82);
+  }
+
+  .app-drawer-close:hover,
+  .app-drawer-close:focus-visible {
+    border-color: rgba(255, 255, 255, .28);
+    background: rgba(255, 255, 255, .12);
+    color: #fff;
+  }
+
+  .app-nav-backdrop {
+    display: block;
+  }
+
+  .app-nav-backdrop.is-visible { opacity: 1; }
+
+  :is(.role-main, .student-main) {
+    padding-inline: var(--workspace-gutter);
+  }
+
+  :is(.role-topbar, .student-topbar, .app-topbar) {
+    gap: 10px;
+    height: 66px;
+    margin-inline: calc(var(--workspace-gutter) * -1);
+    padding-inline: var(--workspace-gutter);
+    border-bottom-color: color-mix(in srgb, var(--color-border-default) 84%, transparent);
+    box-shadow: 0 8px 24px rgba(15, 31, 23, .035);
+  }
+
+  :is(.role-topbar, .student-topbar, .app-topbar) > div:first-of-type {
+    min-width: 0;
+    margin-right: auto;
+    line-height: 1.25;
+  }
+
+  :is(.role-topbar, .student-topbar, .app-topbar) > div:first-of-type strong {
+    display: block;
+    overflow: hidden;
+    color: var(--color-text-heading);
+    font-size: .8rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :is(.role-topbar, .student-topbar, .app-topbar) .student-breadcrumb {
+    display: none;
+  }
+
+  .topbar-actions { gap: 7px; }
+
+  .topbar-actions .icon-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .topbar-date { display: none; }
+
+  .user-dropdown-toggle {
+    width: 36px;
+    height: 36px;
+    padding: 2px;
+    justify-content: center;
+  }
+
+  .user-dropdown-toggle > i { display: none; }
+
+  .student-filter-bar {
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .student-filter-bar .form-select,
+  .student-filter-search {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .student-count-chip {
+    width: 100%;
+    margin: 2px 0 0;
+    text-align: right;
+  }
+
+  :is(.dashboard-intro, .subpage-intro, .role-intro) {
+    gap: 16px;
+    padding: 30px 0 22px;
+  }
+
+  :is(.dashboard-intro, .subpage-intro, .role-intro) h1 {
+    font-size: clamp(1.75rem, 9vw, 2.25rem);
+  }
+
+  .intro-copy {
+    margin-top: 9px;
+    font-size: .88rem;
+  }
+
+  :is(.role-card, .dashboard-card, .dash-panel, .activity-panel, .stat-card) {
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  :is(.role-topbar, .student-topbar, .app-topbar) {
+    gap: 8px;
+  }
+
+  :is(.dashboard-card) {
+    padding-inline: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-mobile-menu-toggle i,
+  .app-nav-backdrop,
+  :is(.role-sidebar, .student-sidebar, .app-sidebar) {
+    transition: none;
+  }
+}
+
+/* Quiet, minimal workspace treatment. Keep depth and motion restrained so
+   primary actions and data carry the visual hierarchy. */
+:is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) {
+  --workspace-gutter: clamp(20px, 3.5vw, 52px);
+}
+
+:is(.role-sidebar, .student-sidebar) {
+  background: #10251d;
+}
+
+:is(.role-card, .dashboard-card, .dash-panel, .activity-panel, .stat-card) {
+  border-color: var(--color-border-default);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.stat-card {
+  background: var(--color-bg-card);
+}
+
+.stat-card--featured {
+  border-color: var(--brand-300);
+  background: var(--color-bg-card);
+}
+
+/* Remove the hover-only accent stripe and card lift; keep a quiet border cue. */
+.dashboard-hover-accent :is(.stat-card, .dashboard-card, .dash-panel, .activity-panel, .role-card)::before {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-hover-accent :is(.stat-card, .dashboard-card, .dash-panel, .activity-panel, .role-card):hover {
+    transform: none;
+    border-color: var(--brand-300);
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+:is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) .btn {
+  min-height: 44px;
+  box-shadow: none;
+}
+
+:is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) .btn-success {
+  border-color: var(--brand-700);
+  background: var(--brand-700);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) .btn-success:hover {
+    border-color: #086747;
+    background: #086747;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+:is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) :is(.form-control, .form-select) {
+  min-height: 44px;
+  border-color: var(--color-border-input);
+  background-color: var(--color-bg-card);
+}
+
+:is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) .form-label {
+  color: var(--color-label);
+  font-size: var(--font-size-label);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.stat-label { font-size: .8rem; }
+.stat-foot { font-size: .75rem; }
+.stat-foot[hidden] { display: none !important; }
+
+:is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) :is(.form-control, .form-select):focus-visible {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--brand-500) 32%, transparent),
+    0 0 16px color-mix(in srgb, var(--brand-500) 26%, transparent);
+}
+
+/* Existing skip links used Bootstrap's visually-hidden class without its
+   focusable companion. Make them visible when keyboard users reach them. */
+.visually-hidden.focusable:focus,
+.visually-hidden.focusable:focus-visible {
+  position: fixed !important;
+  top: 12px;
+  left: 12px;
+  z-index: 2000;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  clip: auto !important;
+  clip-path: none !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  padding: 10px 14px !important;
+  border: 1px solid var(--color-border-default) !important;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-card);
+  color: var(--color-text-heading);
+  box-shadow: var(--shadow-card-hover);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+@media (max-width: 650px) {
+  :is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) {
+    --workspace-gutter: 16px;
+  }
+
+  :is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) .icon-button,
+  :is(.role-topbar, .student-topbar, .app-topbar) .topbar-actions .icon-button,
+  .app-mobile-menu-toggle {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .user-dropdown-toggle {
+    width: 44px;
+    height: 44px;
+  }
+
+  .app-drawer-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  :is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) :is(.form-control, .form-select) {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-hover-accent :is(.stat-card, .dashboard-card, .dash-panel, .activity-panel, .role-card),
+  :is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page) .btn {
+    transition: none;
+  }
+}
+
+.settings-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.settings-card {
+  overflow: hidden;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-card);
+}
+
+.settings-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.settings-card-header h2,
+.settings-policy-grid h3 {
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: var(--font-size-card-title);
+  font-weight: 700;
+}
+
+.settings-card-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-card-header i { color: var(--brand-700); }
+
+.settings-card-body { padding: 20px; }
+.settings-help {
+  margin: 0 0 18px;
+  color: var(--color-text-muted);
+}
+
+.settings-policy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.settings-policy-grid h3 {
+  margin-bottom: 12px;
+  font-size: .9rem;
+}
+
+.settings-policy-grid .form-control { max-width: 12rem; }
+
+.settings-station-form-wrap {
+  border-top: 1px solid var(--color-border-default);
+}
+
+.settings-stations-table { overflow-x: auto; }
+.settings-stations-table .table { min-width: 660px; margin: 0; font-size: .84rem; }
+
+.settings-stations-table .table thead th {
+  color: var(--color-text-muted);
+  font-size: .75rem;
+  font-weight: 750;
+  letter-spacing: .065em;
+  text-transform: uppercase;
+}
+
+.settings-stations-table .table td,
+.settings-stations-table .table th {
+  vertical-align: middle;
+}
+
+.settings-stations-table .table td:last-child {
+  width: 56px;
+  white-space: nowrap;
+}
+
+.settings-station-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+}
+
+.settings-station-field {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.correction-card { margin-bottom: 18px; }
+.correction-card .table { min-width: 620px; }
+
+/* The correction card has no padding of its own, but .dashboard-card clips
+   to its rounded corners (overflow: hidden). Without a gutter the top-left
+   "Need a correction?" kicker and the bottom correction-request table sit
+   flush against the border and get cut off by the radius — matching the
+   records-card padding keeps both themes legible. */
+.correction-card {
+  padding: clamp(16px, 2.4vw, 26px);
+}
+.correction-card .card-heading { margin-bottom: 14px; }
+.correction-card .table-responsive { margin-bottom: 0; }
+
+/* Proof-of-attendance picker: file input, live thumbnail, and a remove action
+   so a student can see exactly what will be sent for review. */
+.correction-proof-field .form-control[type="file"] {
+  padding: 10px 12px;
+  color: var(--color-text-primary);
+}
+
+.correction-proof-field .form-control[type="file"]::file-selector-button {
+  margin-right: 10px;
+}
+
+.correction-proof-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-input);
+}
+
+.correction-proof-preview img {
+  width: 76px;
+  height: 76px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.correction-proof-preview .btn { margin-left: auto; }
+
+/* The proof viewer is shared by the student page and both staff report
+   tables, so its styles live here rather than in reports.css. */
+.correction-proof-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.correction-proof-btn i { font-size: .9rem; }
+
+.correction-proof-missing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted, #687385);
+  font-size: .78rem;
+  white-space: nowrap;
+}
+
+.correction-proof-caption {
+  margin: 0 0 12px;
+  color: var(--color-text-muted, #687385);
+  font-size: .82rem;
+}
+
+.correction-proof-frame {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  border: 1px solid var(--color-border-default, #dce2ea);
+  border-radius: 12px;
+  background: var(--color-bg-input, #f4f8f6);
+}
+
+.correction-proof-frame img {
+  display: block;
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+[data-theme="dark"] .correction-proof-frame {
+  background: #0f1914;
+}
+
+@media (max-width: 650px) {
+  .correction-card .form-text { display: block; margin: 8px 0 0 !important; }
+}
+
+@media (max-width: 650px) {
+  .settings-card-header { padding: 14px 16px; }
+  .settings-card-body { padding: 16px; }
+  .settings-policy-grid { grid-template-columns: 1fr; gap: 18px; }
+  .settings-policy-grid .form-control { max-width: none; }
+}
+
+/* ── Cross-role consistency sweep ───────────────────────────────
+   Shared presentation only: table rhythm, modal spacing and theme
+   surfaces. Page-specific report and dashboard rules remain in
+   their own stylesheets and win where they are more specific. */
+
+/* Tables: one padding/vertical-rhythm rule for every data table. */
+:is(.role-card, .dashboard-card) .table > :not(caption) > * > * {
+  padding: .82rem 1rem;
+  vertical-align: middle;
+}
+
+/* A quiet header surface makes dense rosters easier to scan in both
+   themes without flattening the report tables' existing treatments. */
+:is(.role-card, .dashboard-card) .table > thead > tr > th {
+  background: color-mix(in srgb, var(--color-bg-input) 82%, transparent);
+}
+
+/* Action columns read as a group rather than another data column. */
+.data-table-wrapper .table > * > tr > :last-child {
+  text-align: right;
+}
+
+/* Group headers and empty-state cells span the row and stay centred/left. */
+.data-table-wrapper .table > * > tr.org-group-head > td {
+  text-align: left;
+}
+
+.data-table-wrapper .table > * > tr > td.role-empty-cell {
+  text-align: center;
+}
+
+/* Modals: centred on every screen, roomy fields and a clear action row. */
+.modal-dialog {
+  max-width: min(560px, calc(100vw - 32px));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.modal-content {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.modal-header {
+  padding: 18px 22px;
+}
+
+.modal-body {
+  padding: 20px 22px 24px;
+}
+
+.modal-body .form-label {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.modal-body .mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+.modal-body .row {
+  --bs-gutter-x: 1rem;
+}
+
+.modal-body textarea.form-control {
+  min-height: 92px;
+}
+
+.modal-footer {
+  gap: 8px;
+  padding: 16px 22px;
+  border-top: 1px solid var(--color-border-default);
+}
+
+.modal-footer .btn {
+  min-width: 104px;
+}
+
+.modal-footer .btn-secondary {
+  border-color: var(--color-border-input);
+  background: var(--color-bg-input);
+  color: var(--color-text-primary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .modal-footer .btn-secondary:hover {
+    border-color: var(--brand-500);
+    background: var(--color-bg-card-elevated);
+    color: var(--color-text-heading);
+  }
+}
+
+@media (max-width: 520px) {
+  .modal-dialog {
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   Final design-consistency pass
+   One motion and surface language for every workspace page:
+   buttons, table rows, cards, modals, data headers and titles.
+   ============================================================ */
+
+/* Hover transitions use the same 200ms easing everywhere. */
+.btn {
+  transition:
+    color .2s ease-in-out,
+    background-color .2s ease-in-out,
+    border-color .2s ease-in-out,
+    box-shadow .2s ease-in-out,
+    transform .2s ease-in-out;
+}
+
+.table tbody tr {
+  transition: background-color .2s ease-in-out;
+}
+
+/* Panels and cards share one radius, surface, and shadow token. */
+:is(.role-card, .dashboard-card, .dash-panel, .activity-panel, .stat-card, .settings-card, .card) {
+  border-radius: var(--radius-card);
+}
+
+:is(.role-card, .dashboard-card, .dash-panel, .activity-panel, .stat-card, .settings-card) {
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-card);
+}
+
+:is(.role-card, .dashboard-card, .dash-panel, .activity-panel, .stat-card, .settings-card, .card) {
+  transition:
+    border-color .2s ease-in-out,
+    box-shadow .2s ease-in-out,
+    transform .2s ease-in-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.role-card, .dashboard-card, .dash-panel, .activity-panel, .settings-card):hover {
+    border-color: var(--brand-300);
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+.modal-content {
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-pop);
+}
+
+/* All data-table headers read as one compact uppercase eyebrow. The
+   sanction matrix keeps its event names in normal case for legibility. */
+:is(.role-dashboard-page, .student-dashboard-page, .student-subpage-page)
+  .table:not(.sanction-matrix-table) thead th {
+  color: var(--color-text-muted);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+:is(.card-title, .modal-title, .card h5, .card h6,
+  .dashboard-card h5, .dashboard-card h6) {
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+/* Correction-review actions: fixed alignment, equal padding, no wrapping. */
+.correction-review-table th:last-child,
+.correction-review-table td:last-child {
+  vertical-align: middle;
+}
+
+.correction-review-table .table-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.correction-review-table .table-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  margin: 0 !important;
+  padding: .35rem .8rem;
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .correction-review-table .table-actions .btn:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* Deny-reason modal */
+#denyReasonInput {
+  min-height: 120px;
+  resize: vertical;
+}
+
+#denyReasonInput.is-invalid {
+  border-color: var(--color-text-danger);
+}
+
+.deny-request-error {
+  min-height: 1.25rem;
+  margin: 8px 0 0;
+  color: var(--color-text-danger);
+  font-size: .78rem;
+  line-height: 1.4;
+}
+
+/* ── Shared typography contract ──
+   Card titles, field labels, and muted helper/label text use the same
+   size and colour tokens on every dashboard (student, SSC, admin). */
+:is(.card-heading h2, .role-card-header h3, .dash-panel-header h3, .settings-card-header h2) {
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: var(--font-size-card-title);
+  font-weight: 700;
+  letter-spacing: -.01em;
+  line-height: 1.3;
+}
+
+:is(.form-label) {
+  color: var(--color-label);
+  font-size: var(--font-size-label);
+  font-weight: 600;
+}
+
+:is(.form-text, .profile-detail-label, .settings-help, .records-caption) {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-muted);
+  line-height: 1.5;
+}

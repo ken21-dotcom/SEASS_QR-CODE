@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | ATTENDLY</title>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'light'}catch(e){}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="../../css/styles.css" rel="stylesheet">
+  <link href="../../css/dark-style.css" rel="stylesheet">
+</head>
+<body class="role-dashboard-page dashboard-hover-accent">
+  <a href="#main-content" class="visually-hidden focusable">Skip to main content</a>
+  <div class="role-shell">
+    <!-- ── Sidebar ── -->
+    <aside class="role-sidebar">
+      <a class="role-brand" href="admin-dashboard.html"><i class="bi bi-person-bounding-box"></i><span>ATTENDLY</span></a>
+      <div class="role-profile">
+        <div class="role-avatar ssc-avatar">AD</div>
+        <div><strong>Administrator</strong><small>System Admin</small></div>
+      </div>
+      <nav class="role-nav" aria-label="Admin navigation">
+        <a class="active" aria-current="page" href="admin-dashboard.html"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+        <a href="admin-manage-students.html"><i class="bi bi-people"></i> Students</a>
+        <a href="admin-manage-officers.html"><i class="bi bi-person-badge"></i> Officers</a>
+        <a href="admin-reports.html"><i class="bi bi-bar-chart-line"></i> Reports</a>
+        <a href="admin-settings.html"><i class="bi bi-gear"></i> Settings</a>
+      </nav>
+      <div class="role-sidebar-footer">
+        <button class="role-sidebar-action logout-action" type="button" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Log out</button>
+      </div>
+    </aside>
+
+    <main id="main-content" class="role-main">
+      <!-- ── Top bar ── -->
+      <header class="role-topbar">
+        <div><span class="student-breadcrumb">Workspace /</span><strong>Admin dashboard</strong></div>
+
+        <!-- Global search -->
+        <div class="global-search" id="globalSearch">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" id="globalSearchInput" aria-label="Search students, officers, and events" placeholder="Search students, officers, events…" autocomplete="off">
+          <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><i class="bi bi-x-lg"></i></button>
+          <div class="search-results-dropdown" id="searchResults"></div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="icon-button" type="button" aria-label="Notifications"><i class="bi bi-bell"></i></button>
+          <button class="icon-button" type="button" aria-label="Toggle theme" data-theme-toggle><i class="bi bi-moon" data-theme-icon></i></button>
+
+          <!-- User account dropdown -->
+          <div class="user-dropdown-wrap" id="userDropdownWrap">
+            <button class="user-dropdown-toggle" id="userDropdownToggle" type="button" aria-haspopup="true" aria-expanded="false">
+              <div class="user-dropdown-avatar">AD</div>
+              <span>Administrator</span>
+              <i class="bi bi-chevron-down" style="font-size:.6rem;color:var(--color-text-muted)"></i>
+            </button>
+            <div class="user-dropdown-menu" id="userDropdownMenu" role="menu">
+              <div class="user-dropdown-header">
+                <strong>Administrator</strong>
+                <small id="adminEmail">admin@example.com</small>
+              </div>
+              <button class="user-dropdown-item" role="menuitem" onclick="window.location.href='admin-settings.html'">
+                <i class="bi bi-gear"></i> Settings
+              </button>
+              <div class="user-dropdown-divider"></div>
+              <button class="user-dropdown-item logout" role="menuitem" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i> Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ── Intro ── -->
+      <section class="role-intro">
+        <div>
+          <p class="section-kicker">System overview</p>
+          <h1>Everything in view.</h1>
+          <p class="intro-copy">Manage students, officers, events, and system-wide reports from one workspace.</p>
+          <div class="compliance-bar">
+            <span class="compliance-badge"><i class="bi bi-file-earmark-lock"></i> RA 10172 compliant</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 1: Top Overview Cards (4 Columns) ── -->
+      <div class="row g-4 mb-4">
+        <div class="col-lg-3">
+          <article class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Total Students</span>
+              <i class="stat-icon bi bi-people" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value" id="statTotalStudents">0</div>
+          </article>
+        </div>
+        <div class="col-lg-3">
+          <article class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Total Events</span>
+              <i class="stat-icon bi bi-calendar-event" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value" id="statTotalEvents">0</div>
+          </article>
+        </div>
+        <div class="col-lg-3">
+          <article class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">System Attendance Rate</span>
+              <i class="stat-icon bi bi-graph-up-arrow" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value" id="statAttendanceRate">0%</div>
+          </article>
+        </div>
+        <div class="col-lg-3">
+          <article class="stat-card stat-card--featured">
+            <div class="stat-head">
+              <span class="stat-label">Flagged Students</span>
+              <i class="stat-icon bi bi-exclamation-triangle" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value" id="statFlaggedStudents">0</div>
+          </article>
+        </div>
+      </div>
+
+      <!-- ── Section 2: Middle Section (Events Table & Quick Actions) ── -->
+      <div class="row g-4 mb-4 align-items-stretch">
+        <div class="col-lg-8">
+          <div class="card shadow-sm h-100">
+            <div class="card-header pb-0">
+              <h5 class="card-title mb-0"><i class="bi bi-calendar-event me-2"></i>System-Wide Events</h5>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th>Event Name</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="eventsTableBody">
+                    <!-- JS-populated -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="eventsTableEmpty" style="display:none;padding:24px 20px;text-align:center;color:var(--color-text-muted);font-size:.78rem">
+                <i class="bi bi-calendar-x" style="font-size:1.4rem;display:block;margin-bottom:6px"></i>No events found
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-header pb-0">
+              <h5 class="card-title mb-0"><i class="bi bi-lightning-charge me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body p-4 d-flex flex-column">
+              <div class="d-grid gap-3">
+                <a href="admin-manage-events.html" class="btn btn-primary btn-lg text-decoration-none text-center">
+                  <i class="bi bi-plus-circle me-2"></i>Create New Event
+                </a>
+                <a href="admin-manage-students.html" class="btn btn-outline-primary btn-lg text-decoration-none text-center">
+                  <i class="bi bi-person-plus me-2"></i>Add Student
+                </a>
+                <a href="admin-reports.html" class="btn btn-outline-secondary btn-lg text-decoration-none text-center">
+                  <i class="bi bi-bar-chart-line me-2"></i>View Reports
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 3: Bottom Section (Recent System Activity) ── -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header py-3">
+              <h5 class="card-title mb-0"><i class="bi bi-activity me-2"></i>Recent System Activity</h5>
+            </div>
+            <div class="card-body p-0">
+              <div id="systemActivityList">
+                <!-- JS-populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="toastContainer" class="position-fixed top-0 end-0 p-3"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/data.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/ui.js"></script>
+  <script src="../../js/administrator-panel.js"></script>
+  <script>
+    /* ─────────────────────────────────────
+       Admin Dashboard — enhanced features
+       ───────────────────────────────────── */
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+      initGlobalSearch({
+        students: 'admin-manage-students.html',
+        officers: 'admin-manage-officers.html',
+        events: 'admin-reports.html',
+      });
+
+      /* ── Section 1: Top Overview Cards ── */
+      function renderTopOverviewCards() {
+        var totalStudentsEl = document.getElementById('statTotalStudents');
+        var totalEventsEl = document.getElementById('statTotalEvents');
+        var attendanceRateEl = document.getElementById('statAttendanceRate');
+        var flaggedStudentsEl = document.getElementById('statFlaggedStudents');
+
+        if (!totalStudentsEl || !totalEventsEl || !attendanceRateEl || !flaggedStudentsEl) return;
+
+        var users = getUsers();
+        var events = getEvents();
+        var attendance = getAttendance();
+
+        // Total Students: count of active students
+        var activeStudents = users.filter(function (u) { return u.role === 'student' && u.status !== 'inactive'; });
+        totalStudentsEl.textContent = activeStudents.length;
+
+        // Total Events: count of all events
+        totalEventsEl.textContent = events.length;
+
+        // System Attendance Rate: distinct student/event pairs / (students * events)
+        var totalPossible = activeStudents.length * events.length;
+        var attendedPairs = typeof countUniqueAttendance === 'function'
+          ? countUniqueAttendance(attendance)
+          : attendance.length;
+        var attendanceRate = totalPossible > 0 ? Math.round((attendedPairs / totalPossible) * 100) : 0;
+        attendanceRateEl.textContent = attendanceRate + '%';
+
+        // Flagged Students: students with >3 absences (absent or late)
+        var absencesByStudent = {};
+        attendance.forEach(function (a) {
+          if (a.status === 'absent' || a.status === 'late') {
+            absencesByStudent[a.studentId] = (absencesByStudent[a.studentId] || 0) + 1;
+          }
+        });
+
+        var flaggedCount = 0;
+        Object.keys(absencesByStudent).forEach(function (studentId) {
+          if (absencesByStudent[studentId] > 3) {
+            flaggedCount++;
+          }
+        });
+        flaggedStudentsEl.textContent = flaggedCount;
+      }
+
+      renderTopOverviewCards();
+
+      /* ── Section 2: Events Table ── */
+      function renderEventsTable() {
+        var tbody = document.getElementById('eventsTableBody');
+        var emptyMsg = document.getElementById('eventsTableEmpty');
+        if (!tbody) return;
+
+        var events = getEvents();
+        var today = new Date().toISOString().slice(0, 10);
+
+        if (!events.length) {
+          tbody.innerHTML = '';
+          if (emptyMsg) emptyMsg.style.display = 'block';
+          return;
+        }
+
+        if (emptyMsg) emptyMsg.style.display = 'none';
+
+        tbody.innerHTML = events.map(function (ev) {
+          var status = ev.date < today ? 'Past' :
+                       ev.date === today ? 'Active' : 'Upcoming';
+          var statusClass = status === 'Active' ? 'bg-success text-white' :
+                            status === 'Upcoming' ? 'bg-primary text-white' : 'bg-secondary text-white';
+          var d = new Date(ev.date + 'T00:00:00');
+          var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          var formattedDate = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+          return '<tr>' +
+            '<td><strong>' + escapeHtml(ev.name) + '</strong></td>' +
+            '<td>' + formattedDate + '</td>' +
+            '<td><span class="badge ' + statusClass + '">' + status + '</span></td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      renderEventsTable();
+
+      /* ── Section 3: Recent System Activity ── */
+      function renderSystemActivity() {
+        var container = document.getElementById('systemActivityList');
+        if (!container) return;
+
+        var activities = [];
+        var users = getUsers();
+        var attendance = getAttendance();
+        var events = getEvents();
+        var auditLogs = getAuditLogs();
+
+        // Use audit logs if available (from API), otherwise fall back to derived activity
+        if (auditLogs && auditLogs.length > 0) {
+          // Map audit logs to activity items
+          auditLogs.slice(0, 5).forEach(function (log) {
+            var activity = auditLogActivity(log);
+
+            activities.push({
+              type: 'audit',
+              icon: activity.icon,
+              text: activity.text,
+              time: log.createdAt || log.date,
+              sortKey: log.createdAt || log.date || ''
+            });
+          });
+        } else {
+          // Fallback: derive activity from attendance, users, and events
+          // Attendance check-ins
+          attendance.forEach(function (a) {
+            var student = users.find(function (u) { return u.id === a.studentId; });
+            var event = events.find(function (e) { return e.id === a.eventId; });
+            var eventLabel = event ? event.name : 'event';
+            activities.push({
+              type: 'check-in',
+              icon: 'bi-check-circle',
+              text: escapeHtml(student ? student.name : 'Unknown') + ' checked in to ' + escapeHtml(eventLabel),
+              time: a.date + 'T' + (a.time || '00:00'),
+              sortKey: a.date + ' ' + (a.time || '00:00')
+            });
+          });
+
+          // Student enrollments (users with student role)
+          users.filter(function (u) { return u.role === 'student'; }).forEach(function (s) {
+            activities.push({
+              type: 'enrolled',
+              icon: 'bi-person-plus',
+              text: escapeHtml(s.name) + ' enrolled in the system',
+              time: '2026-01-15T10:00',
+              sortKey: '2026-01-15 10:00'
+            });
+          });
+
+          // Event creations
+          events.forEach(function (ev) {
+            activities.push({
+              type: 'event-created',
+              icon: 'bi-calendar-plus',
+              text: 'Admin created event ' + escapeHtml(ev.name),
+              time: ev.date + 'T00:00',
+              sortKey: ev.date + ' 00:00'
+            });
+          });
+        }
+
+        // Sort by time descending
+        activities.sort(function (a, b) { return b.sortKey.localeCompare(a.sortKey); });
+
+        if (!activities.length) {
+          container.innerHTML = '<div style="padding:24px 20px;text-align:center;color:var(--color-text-muted);font-size:.78rem"><i class="bi bi-clock-history" style="font-size:1.4rem;display:block;margin-bottom:6px"></i>No recent activity</div>';
+          return;
+        }
+
+        container.innerHTML = activities.slice(0, 5).map(function (act) {
+          var iconClass = act.type === 'check-in' ? 'check-in' :
+                          act.type === 'enrolled' ? 'enrolled' : 'event-created';
+          var displayTime = formatActivityTime(act.time);
+          return '<div class="activity-item">' +
+            '<div class="activity-icon ' + iconClass + '"><i class="bi ' + act.icon + '"></i></div>' +
+            '<div class="activity-text">' + act.text + '</div>' +
+            '<span class="activity-time">' + displayTime + '</span>' +
+          '</div>';
+        }).join('');
+        // Ensure the last item does not show a bottom border.
+        var items = container.querySelectorAll('.activity-item');
+        if (items[items.length - 1]) {
+          items[items.length - 1].classList.remove('border-bottom');
+        }
+      }
+
+      function formatActivityTime(dateStr) {
+        try {
+          var d = new Date(dateStr);
+          var now = new Date();
+          var diffMs = now - d;
+          var diffMins = Math.floor(diffMs / 60000);
+          if (diffMins < 1) return 'Just now';
+          if (diffMins < 60) return diffMins + 'm ago';
+          var diffHrs = Math.floor(diffMins / 60);
+          if (diffHrs < 24) return diffHrs + 'h ago';
+          var diffDays = Math.floor(diffHrs / 24);
+          if (diffDays < 7) return diffDays + 'd ago';
+          return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        } catch (e) {
+          return dateStr;
+        }
+      }
+
+      renderSystemActivity();
+
+    }); // end DOMContentLoaded
+  </script>
+</body>
+</html>
